@@ -1,0 +1,1411 @@
+{
+  "name": "Torneio Exemplo",
+  "type": "hybrid",
+  "status": "active",
+  "sports": [
+    {
+      "id": "futsal",
+      "name": "Futsal",
+      "type": "team",
+      "playersOnField": 5,
+      "scoring": {
+        "type": "goals",
+        "winPoints": 3,
+        "drawPoints": 1,
+        "lossPoints": 0
+      },
+      "matchDuration": 40
+    },
+    {
+      "id": "volei",
+      "name": "Volei",
+      "type": "team",
+      "playersOnField": 6,
+      "scoring": {
+        "type": "sets",
+        "winPoints": 2,
+        "lossPoints": 1
+      }
+    }
+  ],
+  "teams": [
+    {
+      "id": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "name": "Águias de Fogo",
+      "group": "A",
+      "delegationChiefId": "969adacd-d6e2-46c8-8847-75c6f4c7475e",
+      "logo": "🛡️",
+      "stats": {
+        "points": 0,
+        "played": 0,
+        "won": 0,
+        "drawn": 0,
+        "lost": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "goalDifference": 0
+      }
+    },
+    {
+      "id": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "name": "Guerreiros da Madrugada",
+      "group": "B",
+      "delegationChiefId": "25c3277e-839b-4a32-8f5d-77c167cd21d9",
+      "logo": "🛡️",
+      "stats": {
+        "points": 0,
+        "played": 0,
+        "won": 0,
+        "drawn": 0,
+        "lost": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "goalDifference": 0
+      }
+    },
+    {
+      "id": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "name": "Dragões da Serra",
+      "group": "A",
+      "delegationChiefId": "499c6390-80c0-4f53-b0e6-ecd3f4413715",
+      "logo": "🛡️",
+      "stats": {
+        "points": 0,
+        "played": 0,
+        "won": 0,
+        "drawn": 0,
+        "lost": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "goalDifference": 0
+      }
+    },
+    {
+      "id": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "name": "Esporte Clube Recreativo",
+      "group": "B",
+      "delegationChiefId": "96d6cebb-8d52-44b5-8352-c6ecf40c9e65",
+      "logo": "🛡️",
+      "stats": {
+        "points": 0,
+        "played": 0,
+        "won": 0,
+        "drawn": 0,
+        "lost": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "goalDifference": 0
+      }
+    },
+    {
+      "id": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "name": "Lobos de Futsal",
+      "group": "A",
+      "delegationChiefId": "9944852e-353c-4667-9ac3-0b1d7a425fc6",
+      "logo": "🛡️",
+      "stats": {
+        "points": 0,
+        "played": 0,
+        "won": 0,
+        "drawn": 0,
+        "lost": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "goalDifference": 0
+      }
+    },
+    {
+      "id": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "name": "União dos Amigos",
+      "group": "B",
+      "delegationChiefId": "7a6ebee3-657f-476b-940e-a1b0e7343874",
+      "logo": "🛡️",
+      "stats": {
+        "points": 0,
+        "played": 0,
+        "won": 0,
+        "drawn": 0,
+        "lost": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "goalDifference": 0
+      }
+    },
+    {
+      "id": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "name": "Real Madrid da Vila",
+      "group": "A",
+      "delegationChiefId": "71a55e43-4eff-4a87-9e4b-bc86481a138f",
+      "logo": "🛡️",
+      "stats": {
+        "points": 0,
+        "played": 0,
+        "won": 0,
+        "drawn": 0,
+        "lost": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "goalDifference": 0
+      }
+    },
+    {
+      "id": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "name": "Leões do Vale",
+      "group": "B",
+      "delegationChiefId": "39b060b7-f074-4484-8d19-3ebbc74ecde3",
+      "logo": "🛡️",
+      "stats": {
+        "points": 0,
+        "played": 0,
+        "won": 0,
+        "drawn": 0,
+        "lost": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "goalDifference": 0
+      }
+    }
+  ],
+  "players": [
+    {
+      "id": "7370125f-cbb2-4f9a-9d1f-1fba8c63077d",
+      "teamId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "name": "Carlos Paredão Silva",
+      "number": 1,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "e99f4f06-3373-469d-adeb-aa456fd054d3",
+      "teamId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "name": "Bruno Rocha",
+      "number": 4,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "264f5b86-38ac-44a8-87ca-c0fc4668d915",
+      "teamId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "name": "André Lima",
+      "number": 5,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "a7df704c-d767-4570-b192-e47a3756d633",
+      "teamId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "name": "Lucas Foguete Santos",
+      "number": 7,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "b729dbf3-77e2-4016-bb6e-439786ff46ae",
+      "teamId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "name": "Vitor Souza",
+      "number": 10,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "ff907389-3531-4fb5-b91e-4e952752f7a5",
+      "teamId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "name": "Daniel Mendes",
+      "number": 3,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "5e02a8d6-2ed3-4017-a452-eb8bd2bac885",
+      "teamId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "name": "Gabriel Neves",
+      "number": 9,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "10353084-7660-49a5-b5ce-56dc52e24710",
+      "teamId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "name": "Marcos Muralha Costa",
+      "number": 1,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "1db41ff5-6704-402d-bd58-323929a632a7",
+      "teamId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "name": "Rodrigo Alves",
+      "number": 4,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "1cacc13c-f288-4380-89db-c243a7aa54a2",
+      "teamId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "name": "Rafael Mago Junior",
+      "number": 5,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "90aad1a1-3a85-4208-8d1e-7cfb50ba74b6",
+      "teamId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "name": "Tiago Ferreira",
+      "number": 7,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "b49c2e46-97a8-4928-9f25-bd31a90d8fe7",
+      "teamId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "name": "Fernando Porto",
+      "number": 10,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "38139040-6d28-453b-a9b4-46cdae805dd2",
+      "teamId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "name": "Hugo Diniz",
+      "number": 3,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "fcc1571b-97dd-473f-a242-542f835188c4",
+      "teamId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "name": "Matheus Sniper Castro",
+      "number": 9,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "3e0f13a2-e626-4ec2-b369-7fd908252862",
+      "teamId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "name": "Samuel Goleiro",
+      "number": 1,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "cbea1ff1-fe10-4512-8c65-97b27ac59c6e",
+      "teamId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "name": "Igor Pinheiro",
+      "number": 4,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "4ef5b332-5089-48ce-ae5f-4519c53582f6",
+      "teamId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "name": "Flavio Motorzinho Dias",
+      "number": 5,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "32ee105e-228f-46b7-aa18-4b6743aa0638",
+      "teamId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "name": "João Paulo",
+      "number": 7,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "2eac526b-48ab-484b-af37-ba14c4134485",
+      "teamId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "name": "Cesar Augusto",
+      "number": 10,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "f0d69bdb-d2d2-4efe-9f0c-89a6aa2fc66b",
+      "teamId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "name": "Renato Gaúcho",
+      "number": 3,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "a6f6a680-b3e1-4649-bc7f-306a9114d306",
+      "teamId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "name": "Ricardo Kaka Nunes",
+      "number": 9,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "f003dee2-2347-4a45-83f5-27b6017ff43f",
+      "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "name": "Adalberto Santos",
+      "number": 1,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "131855cc-b9c0-4def-bacb-a3177776c3c2",
+      "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "name": "Fabio Junior",
+      "number": 4,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "1459daf1-6b0c-4ede-92c4-1c999f835b33",
+      "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "name": "Willian Turbo Silva",
+      "number": 5,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "b06d540f-8d56-4b7c-87e2-e80a47a37e20",
+      "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "name": "Eduardo Dudu Lima",
+      "number": 7,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "7220b760-560b-4077-9c15-7c534e95f2a2",
+      "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "name": "Murilo Silveira",
+      "number": 10,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "5ddadc4e-a4f8-4a70-9b14-4cfab14dfeb4",
+      "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "name": "Gustavo Tanque",
+      "number": 3,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "05520aea-8a0c-4f58-92ad-b9c8c363e9a7",
+      "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "name": "Enzo Gabriel",
+      "number": 9,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "2d222123-01fd-4435-8d88-395999ba539e",
+      "teamId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "name": "Douglas Vieira",
+      "number": 1,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "0fd9a939-c5d5-4e16-b9d8-f1a10957ab62",
+      "teamId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "name": "Jorge Duro Wagner",
+      "number": 4,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "a730750f-94e1-4e49-b3e6-a059962bef1c",
+      "teamId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "name": "Alan Alegria Patrick",
+      "number": 5,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "f6e78476-ff0a-470a-85b5-33f6ddf91882",
+      "teamId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "name": "Marcelo Grohe",
+      "number": 7,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "160531ef-b20f-40f4-800b-e21bc1e6f3b1",
+      "teamId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "name": "Thiago Neves",
+      "number": 10,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "ad2d1098-0d98-4501-a4d3-dcb9630f5aac",
+      "teamId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "name": "Luan Rei Guilherme",
+      "number": 3,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "3e13abdf-29b1-4a0c-8686-2f2a934cb02b",
+      "teamId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "name": "Paulo Henrique",
+      "number": 9,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "cffc9c22-de63-4193-894b-fa5f512befc0",
+      "teamId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "name": "Cássio Ramos",
+      "number": 1,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "c31cd123-26e5-4533-bb7f-2981de871330",
+      "teamId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "name": "Gilmar Fubá",
+      "number": 4,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "d8d6b022-5350-4935-85ef-286e206f36b8",
+      "teamId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "name": "Edmilson Jr",
+      "number": 5,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "5c94fdcd-0436-4b03-ab54-f326b3b6b77d",
+      "teamId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "name": "Romarinho",
+      "number": 7,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "7e76a997-2987-4da4-bc0e-e43d10739aae",
+      "teamId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "name": "Cicinho",
+      "number": 10,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "61aab980-a45e-44f3-9ed5-06332f8f5981",
+      "teamId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "name": "Neto Craque",
+      "number": 3,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "3b8a0090-ef8c-4703-8c14-c3293748a6ee",
+      "teamId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "name": "Dinei Show",
+      "number": 9,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "0bb30161-1f4c-49d9-9576-617777e80277",
+      "teamId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "name": "Fábio Mãos de Ferro",
+      "number": 1,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "9398407b-196f-4459-b88a-733b3cad09a1",
+      "teamId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "name": "Alexandre Pato Souza",
+      "number": 4,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "d73a5e44-c8a2-4ea2-8361-b6dc92986c46",
+      "teamId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "name": "Everton Ribeiro",
+      "number": 5,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "e189088d-0f3e-4521-9936-150b87989bcd",
+      "teamId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "name": "Dedé Mito",
+      "number": 7,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "1c459cdc-1cfc-4cf1-975e-2b3315c60e73",
+      "teamId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "name": "Maikon Leite",
+      "number": 10,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "d5f5dbdf-eb40-417d-af79-7a4f6e7c554f",
+      "teamId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "name": "Jucilei Trator",
+      "number": 3,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "d761e6b4-43c3-41d7-98c1-92dfd324b92d",
+      "teamId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "name": "Ganso Mestre",
+      "number": 9,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "35abb895-cc5c-4f57-8a16-09a24f8fb6e5",
+      "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "name": "Rogério Ceni",
+      "number": 1,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "b23cdc50-c228-418e-b6ff-d724a1e5d43a",
+      "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "name": "Lugano Dios",
+      "number": 4,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "b12bd613-ac7a-442f-803e-8230d1b30bd7",
+      "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "name": "Hernanes Profeta",
+      "number": 5,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "64706a2b-40ff-4703-be06-ca603cc85629",
+      "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "name": "Luis Fabiano",
+      "number": 7,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "62d521d3-50cc-48f9-af49-5c73205c321f",
+      "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "name": "Miranda Segura",
+      "number": 10,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "3d187c21-0b59-44d2-acea-09c32818fcc1",
+      "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "name": "Jorge Wagner",
+      "number": 3,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    },
+    {
+      "id": "e6dd6381-91f5-4286-96ae-ae4e50099ef9",
+      "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "name": "Aloísio Chulapa",
+      "number": 9,
+      "position": "Importado",
+      "stats": {
+        "goals": 0,
+        "yellowCards": 0,
+        "redCards": 0,
+        "matchesPlayed": 0
+      }
+    }
+  ],
+  "matches": [
+    {
+      "id": "0d2615dd-4abf-439b-8d79-e8f04426e209",
+      "sportId": "futsal",
+      "teamAId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "teamBId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "status": "finished",
+      "scoreA": 1,
+      "scoreB": 0,
+      "events": [
+        {
+          "type": "start",
+          "timestamp": 1771497810022,
+          "matchTime": 0,
+          "observation": "Início do 1º Tempo",
+          "id": "f1f27bc0-d450-487f-b533-4fdbb8286d1e"
+        },
+        {
+          "type": "goal",
+          "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+          "playerId": "1459daf1-6b0c-4ede-92c4-1c999f835b33",
+          "value": 1,
+          "observation": "Gol de Willian Turbo Silva",
+          "matchTime": 0,
+          "timestamp": 1771497826056,
+          "id": "0e2338c7-a017-4454-a8c4-c346204fb258"
+        },
+        {
+          "type": "card_yellow",
+          "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+          "playerId": "1459daf1-6b0c-4ede-92c4-1c999f835b33",
+          "value": 0,
+          "observation": "Cartão Amarelo para Willian Turbo Silva",
+          "matchTime": 0,
+          "timestamp": 1771497845543,
+          "id": "691b57fa-3d8c-4e28-929b-061d19cdae2f"
+        },
+        {
+          "type": "end",
+          "observation": "Fim do 1o Tempo",
+          "id": "90b109f2-2d0b-422d-af67-0332f9aac27b",
+          "timestamp": 1771497859853,
+          "matchTime": 0
+        },
+        {
+          "type": "start",
+          "timestamp": 1771497860665,
+          "matchTime": 20,
+          "observation": "Início do 2º Tempo",
+          "id": "d1cd4282-8a4e-4125-98b7-2010de2fd670"
+        },
+        {
+          "type": "end",
+          "observation": "Fim do 2o Tempo",
+          "id": "8d6156e4-6044-4821-9831-967f792e8811",
+          "timestamp": 1771497870946,
+          "matchTime": 20
+        },
+        {
+          "type": "end",
+          "timestamp": 1771497889739,
+          "matchTime": 20,
+          "observation": "Partida Encerrada",
+          "id": "4e07073c-3215-4ad0-ad44-32daa4597357"
+        },
+        {
+          "type": "end",
+          "timestamp": 1771607000852,
+          "matchTime": 20,
+          "observation": "Partida Encerrada",
+          "id": "f59d9665-26e2-4b5e-8aec-eedb80cdc8b6"
+        }
+      ],
+      "stage": "group",
+      "group": "A",
+      "round": "Fase de Grupos",
+      "venueId": "202dcedb-0ca9-4540-9a97-c3521d358ad7",
+      "scheduledTime": 1774738800000,
+      "period": "full_time",
+      "elapsedSeconds": 1200
+    },
+    {
+      "id": "f4a1428d-27ee-4bb7-9b47-00d14f5891fe",
+      "sportId": "futsal",
+      "teamAId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "teamBId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "status": "finished",
+      "scoreA": 1,
+      "scoreB": 0,
+      "events": [],
+      "stage": "group",
+      "group": "A",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "60f9eb5d-04d3-4031-93e6-fba44108ebcc",
+      "sportId": "futsal",
+      "teamAId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "teamBId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "status": "finished",
+      "scoreA": 1,
+      "scoreB": 1,
+      "events": [],
+      "stage": "group",
+      "group": "A",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "63a82df6-494c-4523-b842-5d950317f790",
+      "sportId": "futsal",
+      "teamAId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "teamBId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "status": "finished",
+      "scoreA": 2,
+      "scoreB": 1,
+      "events": [],
+      "stage": "group",
+      "group": "A",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "a2d65d89-1a7b-474c-8b00-cf70136529e1",
+      "sportId": "futsal",
+      "teamAId": "e62fdde8-415d-4f9e-8465-4bdc6354a0cc",
+      "teamBId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "status": "finished",
+      "scoreA": 1,
+      "scoreB": 4,
+      "events": [],
+      "stage": "group",
+      "group": "A",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "b88fd67a-dd66-44d1-8b98-ca4faf8b2f03",
+      "sportId": "futsal",
+      "teamAId": "98cee4da-32b4-485f-a465-09fb9f9f12a4",
+      "teamBId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "status": "finished",
+      "scoreA": 1,
+      "scoreB": 1,
+      "events": [],
+      "stage": "group",
+      "group": "A",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "05ecda9d-d5cf-469a-853c-48959fbe4878",
+      "sportId": "futsal",
+      "teamAId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "teamBId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "status": "finished",
+      "scoreA": 0,
+      "scoreB": 3,
+      "events": [],
+      "stage": "group",
+      "group": "B",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "44fdea33-b39b-4521-a4aa-98ad5cf06bb5",
+      "sportId": "futsal",
+      "teamAId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "teamBId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "status": "finished",
+      "scoreA": 3,
+      "scoreB": 3,
+      "events": [],
+      "stage": "group",
+      "group": "B",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "187cb023-deec-46c6-86b2-7b9ecbaad7d7",
+      "sportId": "futsal",
+      "teamAId": "5be27905-7924-45a5-a1a1-d6deabbb9358",
+      "teamBId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "status": "finished",
+      "scoreA": 0,
+      "scoreB": 1,
+      "events": [],
+      "stage": "group",
+      "group": "B",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "c34b886e-0b33-4d55-91e3-79cc0d4e4d2c",
+      "sportId": "futsal",
+      "teamAId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "teamBId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "status": "finished",
+      "scoreA": 0,
+      "scoreB": 3,
+      "events": [],
+      "stage": "group",
+      "group": "B",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "416b3ca3-3e06-4fc4-baa0-87c6533d4432",
+      "sportId": "futsal",
+      "teamAId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "teamBId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "status": "finished",
+      "scoreA": 3,
+      "scoreB": 2,
+      "events": [],
+      "stage": "group",
+      "group": "B",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "fd56bda7-6f6e-474d-ac20-30eb9b20d8ca",
+      "sportId": "futsal",
+      "teamAId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "teamBId": "acbe4fb0-6b08-4c2a-8fc4-d42759c1f414",
+      "status": "finished",
+      "scoreA": 0,
+      "scoreB": 0,
+      "events": [],
+      "stage": "group",
+      "group": "B",
+      "round": "Fase de Grupos",
+      "startTime": 1771497930447
+    },
+    {
+      "id": "c1645f46-9e71-4928-952c-388055df52ce",
+      "sportId": "futsal",
+      "teamAId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+      "teamBId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "status": "finished",
+      "scoreA": 0,
+      "scoreB": 0,
+      "events": [
+        {
+          "type": "start",
+          "timestamp": 1771497939599,
+          "matchTime": 0,
+          "observation": "Início do 1º Tempo",
+          "id": "684f1237-cf81-4dcb-bd32-2578b2641ef6"
+        },
+        {
+          "type": "end",
+          "observation": "Fim do 1o Tempo",
+          "id": "fabc8b30-d643-4a01-b3eb-b9ef3ac22112",
+          "timestamp": 1771497941918,
+          "matchTime": 0
+        },
+        {
+          "type": "start",
+          "timestamp": 1771497942792,
+          "matchTime": 20,
+          "observation": "Início do 2º Tempo",
+          "id": "3bd76b72-eef8-4a6a-8f6a-04cb15c443fa"
+        },
+        {
+          "type": "end",
+          "observation": "Fim do 2o Tempo",
+          "id": "39b97c90-1463-43ce-b03d-499aca1bb517",
+          "timestamp": 1771497947607,
+          "matchTime": 20
+        },
+        {
+          "type": "start",
+          "timestamp": 1771497983858,
+          "matchTime": 40,
+          "observation": "Início Prorrogação (1º T)",
+          "id": "63b2e4e0-66b4-47de-b86b-52e3ecfc5b3f"
+        },
+        {
+          "type": "end",
+          "observation": "Fim Prorrogacao (1o T)",
+          "id": "2eb54cea-0127-4081-a27e-77bfa70686f2",
+          "timestamp": 1771498009298,
+          "matchTime": 40
+        },
+        {
+          "type": "start",
+          "timestamp": 1771498010477,
+          "matchTime": 45,
+          "observation": "Início Prorrogação (2º T)",
+          "id": "2524c803-4268-4fc8-a370-e5d0569809a6"
+        },
+        {
+          "type": "end",
+          "observation": "Fim Prorrog (2o T)",
+          "id": "90ba12bc-3960-4fec-8110-42f7fa2b6af2",
+          "timestamp": 1771498012379,
+          "matchTime": 45
+        },
+        {
+          "type": "start",
+          "timestamp": 1771498013045,
+          "matchTime": 45,
+          "observation": "Início dos Pênaltis",
+          "id": "1160ca7b-9570-4016-98db-a8fa2ae64664"
+        },
+        {
+          "type": "penalty_goal",
+          "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+          "value": 0,
+          "timestamp": 1771498018817,
+          "matchTime": 45,
+          "observation": "Pênalti Convertido (União dos Amigos)",
+          "id": "f00f4114-6347-429f-86e6-b14ee581088e"
+        },
+        {
+          "type": "penalty_goal",
+          "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+          "value": 0,
+          "timestamp": 1771498020141,
+          "matchTime": 45,
+          "observation": "Pênalti Convertido (Águias de Fogo)",
+          "id": "06c5f919-f83f-4644-8927-5d67e59ba344"
+        },
+        {
+          "type": "penalty_goal",
+          "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+          "value": 0,
+          "timestamp": 1771498022517,
+          "matchTime": 45,
+          "observation": "Pênalti Convertido (União dos Amigos)",
+          "id": "5c4c4b6d-1883-447c-9646-2387ce00f8b0"
+        },
+        {
+          "type": "penalty_goal",
+          "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+          "value": 0,
+          "timestamp": 1771498023737,
+          "matchTime": 45,
+          "observation": "Pênalti Convertido (Águias de Fogo)",
+          "id": "03715042-285a-4c8f-ac08-3a5d07b8a8fc"
+        },
+        {
+          "type": "penalty_miss",
+          "teamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+          "value": 0,
+          "timestamp": 1771498029364,
+          "matchTime": 45,
+          "observation": "Pênalti Perdido (União dos Amigos)",
+          "id": "c3cd4928-e492-4b0b-99a4-d1c012332f2d"
+        },
+        {
+          "type": "penalty_goal",
+          "teamId": "b706eba8-f0df-4ef0-ae03-295b05bc7d6e",
+          "value": 0,
+          "timestamp": 1771498030310,
+          "matchTime": 45,
+          "observation": "Pênalti Convertido (Águias de Fogo)",
+          "id": "678a774e-c4cb-4736-8078-cacbabed2b5c"
+        },
+        {
+          "type": "end",
+          "timestamp": 1771498032448,
+          "matchTime": 45,
+          "observation": "Partida Encerrada",
+          "id": "1106a797-5e40-42a2-a8c0-5ab7f7d15ad5"
+        }
+      ],
+      "stage": "knockout",
+      "round": "Semi-Final",
+      "observations": "A#1 vs B#2",
+      "period": "penalties",
+      "elapsedSeconds": 2700,
+      "firstPenaltyTeamId": "587f5b11-16e9-4ff5-b66d-0ba68dbafba7",
+      "penaltiesA": 3,
+      "penaltiesB": 2
+    },
+    {
+      "id": "73c73b35-a875-40f8-a2e8-cd3d13afd830",
+      "sportId": "futsal",
+      "teamAId": "e0a28c3d-6bf1-4fa6-847e-4a34653db167",
+      "teamBId": "6d0a66d8-3a63-4c6d-8ddc-04d99dd5a954",
+      "status": "scheduled",
+      "scoreA": 0,
+      "scoreB": 0,
+      "events": [],
+      "stage": "knockout",
+      "round": "Semi-Final",
+      "observations": "B#1 vs A#2"
+    }
+  ],
+  "users": [
+    {
+      "id": "admin",
+      "name": "Administrador",
+      "email": "admin@arena.com",
+      "password": "123",
+      "role": "admin"
+    },
+    {
+      "id": "ref1",
+      "name": "Juiz Exemplo",
+      "email": "juiz@arena.com",
+      "password": "123",
+      "role": "referee"
+    },
+    {
+      "id": "499c6390-80c0-4f53-b0e6-ecd3f4413715",
+      "name": "Raimundo Silva",
+      "email": "raimundo@dragao.com",
+      "password": "123",
+      "role": "delegate"
+    },
+    {
+      "id": "39b060b7-f074-4484-8d19-3ebbc74ecde3",
+      "name": "Marcos Oliveira",
+      "email": "marcos@leao.com",
+      "password": "123",
+      "role": "delegate"
+    },
+    {
+      "id": "96d6cebb-8d52-44b5-8352-c6ecf40c9e65",
+      "name": "André Santos",
+      "email": "andre@recreativo.com",
+      "password": "123",
+      "role": "delegate"
+    },
+    {
+      "id": "969adacd-d6e2-46c8-8847-75c6f4c7475e",
+      "name": "Julio Ferreira",
+      "email": "julio@aguia.com",
+      "password": "123",
+      "role": "delegate"
+    },
+    {
+      "id": "9944852e-353c-4667-9ac3-0b1d7a425fc6",
+      "name": "Ricardo Menezes",
+      "email": "ricardo@lobo.com",
+      "password": "123",
+      "role": "delegate"
+    },
+    {
+      "id": "71a55e43-4eff-4a87-9e4b-bc86481a138f",
+      "name": "Felipe Souza",
+      "email": "felipe@real.com",
+      "password": "123",
+      "role": "delegate"
+    },
+    {
+      "id": "25c3277e-839b-4a32-8f5d-77c167cd21d9",
+      "name": "Tiago Alves",
+      "email": "tiago@guerreiro.com",
+      "password": "123",
+      "role": "delegate"
+    },
+    {
+      "id": "7a6ebee3-657f-476b-940e-a1b0e7343874",
+      "name": "Gustavo Ribeiro",
+      "email": "gustavo@uniao.com",
+      "password": "123",
+      "role": "delegate"
+    },
+    {
+      "id": "e48a88e8-78ea-4e04-a7a2-19bf0a21dc3a",
+      "name": "juca",
+      "email": "juca@arena.com",
+      "password": "123456",
+      "role": "organization_member"
+    },
+    {
+      "id": "b94ac3b9-e965-4c43-8c2c-e58648d95363",
+      "name": "luiz",
+      "email": "luiz@arena.com",
+      "password": "123456",
+      "role": "president"
+    },
+    {
+      "id": "eb26fd9b-8e2e-46e7-8ff8-07534680ed10",
+      "name": "roberval",
+      "email": "roberval@arena.com",
+      "password": "12345678",
+      "role": "admin"
+    }
+  ],
+  "matchSettings": {
+    "duration": 20,
+    "extraTime": 5,
+    "breakTime": 5
+  },
+  "tieBreakers": [
+    "headToHead",
+    "wins",
+    "goalDiff",
+    "goalsFor"
+  ],
+  "format": "hybrid",
+  "structure": {
+    "groupsCount": 2,
+    "teamsPerGroup": 4,
+    "qualifiersPerGroup": 2
+  },
+  "venues": [
+    {
+      "id": "202dcedb-0ca9-4540-9a97-c3521d358ad7",
+      "name": "ribeirao"
+    },
+    {
+      "id": "0bd772be-3c7e-47f1-9edf-b994289956ca",
+      "name": "automassi"
+    }
+  ]
+}

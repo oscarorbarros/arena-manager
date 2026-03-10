@@ -1,0 +1,22 @@
+
+> arena-manager@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 11.4s
+  Running TypeScript ...
+Failed to compile.
+
+./src/app/admin/config/page.tsx:706:26
+Type error: Cannot find name 'ActivityIcon'.
+
+[0m [90m 704 |[39m                 {config[33m.[39mstatus [33m===[39m [32m"active"[39m [33m?[39m (
+ [90m 705 |[39m                      [33m<[39m[33mdiv[39m className[33m=[39m[32m"bg-green-500/10 p-8 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-4 border border-green-500/30"[39m[33m>[39m
+[31m[1m>[22m[39m[90m 706 |[39m                         [33m<[39m[33mActivityIcon[39m [33m/[39m[33m>[39m
+ [90m     |[39m                          [31m[1m^[22m[39m
+ [90m 707 |[39m                      [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 708 |[39m                 ) [33m:[39m (
+ [90m 709 |[39m                     [33m<[39m[33mdiv[39m className[33m=[39m[32m"bg-red-500/10 p-8 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-4 border border-red-500/30"[39m[33m>[39m[0m
+Next.js build worker exited with code: 1 and signal: null

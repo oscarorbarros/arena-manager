@@ -1,0 +1,156 @@
+﻿"use client";
+import React, { useState, useEffect } from "react";
+import { useTournament } from "@/lib/context";
+import { useAuth, canConfigureTournament } from "@/lib/auth-context";
+import { TournamentEngine } from "@/lib/tournament-engine";
+import { Save, Wand2, Dna, Settings, AlertTriangle, Play, CheckCircle, RefreshCw, Trophy, ArrowLeft, Eye } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+export default function ConfigPage() {
+  const { config, setConfig, resetTournament } = useTournament();
+  const { user } = useAuth();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"ai" | "manual">("manual");
+  const [showPreview, setShowPreview] = useState(false);
+  const [manualForm, setManualForm] = useState({
+      name: config.name,
+      sportId: config.sports[0]?.id || "futsal",
+      groupsCount: config.structure?.groupsCount || 4,
+      teamsPerGroup: config.structure?.teamsPerGroup || 4,
+      qualifiersPerGroup: config.structure?.qualifiersPerGroup || 2,
+      wildcards: config.structure?.wildcards || 0,
+      homeAndAway: config.rules?.homeAndAway || false,
+      tiebreakerSecondary: config.rules?.tiebreaker?.secondary || 'goal_difference'
+  });
+
+  // Permission check
+  const hasPermission = canConfigureTournament(user, config);
+
+  useEffect(() => {
+      setManualForm(prev => ({
+          ...prev,
+          name: config.name,
+          sportId: config.sports[0]?.id || "futsal",
+          groupsCount: config.structure?.groupsCount || 4,
+          teamsPerGroup: config.structure?.teamsPerGroup || 4,
+          qualifiersPerGroup: config.structure?.qualifiersPerGroup || 2,
+          wildcards: config.structure?.wildcards || 0,
+          homeAndAway: config.rules?.homeAndAway || false,
+          tiebreakerSecondary: config.rules?.tiebreaker?.secondary || 'goal_difference'
+      }));
+  }, [config]);
+
+  const totalTeams = manualForm.groupsCount * manualForm.teamsPerGroup;
+  const totalQualifiers = (manualForm.groupsCount * manualForm.qualifiersPerGroup) + manualForm.wildcards;
+  
+  const handleManualSave = () => {
+      const sport = config.sports.find(s => s.id === manualForm.sportId) || config.sports[0];
+      
+      setConfig(prev => ({
+          ...prev,
+          name: manualForm.name,
+          status: "setup",
+          sports: [sport],
+          structure: {
+              groupsCount: manualForm.groupsCount,
+              teamsPerGroup: manualForm.teamsPerGroup,
+              qualifiersPerGroup: manualForm.qualifiersPerGroup,
+              wildcards: manualForm.wildcards
+          },
+          rules: {
+              homeAndAway: manualForm.homeAndAway,
+              tiebreaker: {
+                  primary: 'points',
+                  secondary: manualForm.tiebreakerSecondary
+              }
+          }
+      }));
+      alert("Configuração salva com sucesso!");
+  };
+
+  const handleStartTournament = () => {
+      if (config.teams.length < 2) return alert("Adicione times antes de iniciar.");
+      if (config.matches.length === 0) return alert("Gere a tabela de jogos antes de iniciar.");
+      
+      if(confirm("Iniciar o torneio? A configuração será bloqueada.")) {
+          setConfig(prev => ({ ...prev, status: "active" }));
+          router.push("/admin");
+      }
+  };
+
+  const handleEndTournament = () => {
+      if(confirm("Tem certeza que deseja encerrar o torneio atual?")) {
+          setConfig(prev => ({ ...prev, status: "finished" }));
+      }
+  };
+
+  const handleNewTournament = () => {
+      if(confirm("Deseja limpar todos os dados e começar um novo torneio do zero?")) {
+          resetTournament();
+      }
+  };
+
+  const drawGroups = () => {
+    const numGroups = config.structure?.groupsCount || 4;
+    const drawnTeams = TournamentEngine.drawGroups(config.teams, numGroups);
+    setConfig(prev => ({ ...prev, teams: drawnTeams }));
+    alert(`Sorteio realizado! ${config.teams.length} times sorteados.`);
+  };
+
+  const handleGenerateMatches = () => {
+      if (config.teams.length === 0) return alert("Sem times!");
+      let matches = TournamentEngine.generateGroupMatches(config.teams, config.sports[0].id);
+      
+      // Se ida e volta, duplicar partidas
+      if (manualForm.homeAndAway) {
+          const returnMatches = matches.map(m => ({
+              ...m,
+              id: crypto.randomUUID(),
+              teamAId: m.teamBId,
+              teamBId: m.teamAId,
+              round: m.round?.replace("Rodada", "Rodada (Volta)")
+          }));
+          matches = [...matches, ...returnMatches];
+      }
+      
+      setConfig(prev => ({ ...prev, matches }));
+      alert(`Tabela gerada! ${matches.length} partidas criadas.`);
+  };
+
+  const handleGeneratePreview = () => {
+      if (config.teams.length < totalTeams) return alert(`São necessários ${totalTeams} times para esta configuração.`);
+      
+      const drawnTeams = TournamentEngine.drawGroups(config.teams, manualForm.groupsCount);
+      let matches = TournamentEngine.generateGroupMatches(drawnTeams, config.sports[0].id);
+      
+      if (manualForm.homeAndAway) {
+          const returnMatches = matches.map(m => ({
+              ...m,
+              id: crypto.randomUUID(),
+              teamAId: m.teamBId,
+              teamBId: m.teamAId,
+              round: m.round?.replace("Rodada", "Rodada (Volta)")
+          }));
+          matches = [...matches, ...returnMatches];
+      }
+
+      const groupedTeams: Record<string, typeof drawnTeams> = {};
+      drawnTeams.forEach(team => {
+          if (team.group) {
+              if (!groupedTeams[team.group]) groupedTeams[team.group] = [];
+              groupedTeams[team.group].push(team);
+          }
+      });
+
+      setConfig(prev => ({
+          ...prev,
+          preview: {
+              groups: groupedTeams,
+              matches,
+              generatedAt: Date.now()
+          }
+      }));
+      
+      setShowPreview(true);
+  };
