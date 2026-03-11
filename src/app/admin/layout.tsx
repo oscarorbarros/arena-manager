@@ -1,5 +1,6 @@
 "use client";
 import { useAuth } from "@/lib/auth-context";
+import { useTournament } from "@/lib/context";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Settings, Trophy, Users, LogOut, Shield, Newspaper, Menu, X } from "lucide-react";
@@ -8,7 +9,10 @@ import { useState } from "react";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { config } = useTournament();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const realUser = config.users?.find(u => u.id === user?.id) || user;
 
   // Debug Auth
   console.log('=== LAYOUT DEBUG ===');
@@ -81,7 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="mt-4 pt-4 border-t border-white/10">
             <div className="text-sm mb-2">
               <p className="text-white/40 text-[10px] uppercase font-bold tracking-wider">Logado como:</p>
-              <p className="font-black text-white text-lg truncate">{user?.name || "Admin"}</p>
+              <p className="font-black text-white text-lg truncate">{realUser?.name || "Admin"}</p>
             </div>
             <button onClick={() => logout()} className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-red-500/10 text-red-200 rounded-lg border border-red-500/20 hover:bg-red-500/20 transition-all text-[10px] font-bold">
               <LogOut className="w-3 h-3" /> SAIR
@@ -118,7 +122,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="p-4 border-t border-white/10">
               <div className="text-sm mb-3">
                 <p className="text-white/60 text-xs">Logado como:</p>
-                <p className="font-medium">{user?.name || "Admin"}</p>
+                <p className="font-medium">{realUser?.name || "Admin"}</p>
               </div>
               <Link href="/" className="block text-center px-3 py-2 bg-white shadow-premium border border-emerald-200/60 rounded text-sm mb-2">
                 Ver Site

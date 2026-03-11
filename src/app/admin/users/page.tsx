@@ -8,7 +8,7 @@ import { Users, Plus, Trash2, Shield, User as UserIcon, ShieldAlert } from "luci
 
 export default function AdminUsersPage() {
   const { config, setConfig } = useTournament();
-  const { user } = useAuth();
+  const { user: currentUser } = useAuth();
   const { logAction } = useAudit();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -71,18 +71,26 @@ export default function AdminUsersPage() {
 
 
 const handleDelete = (userId: string) => {
+      const userToRemove = config.users?.find(u => u.id === userId);
+      if (!userToRemove) return;
+      
+      if (userId === currentUser?.id) {
+          return alert("Você não pode excluir a sua própria conta!");
+      }
+
+      if (userToRemove.role === "admin" && currentUser?.role !== "admin") {
+          return alert("Apenas outros administradores podem excluir uma conta de Administrador.");
+      }
+
       if (userId === "admin") {
           return alert("O usuário administrador principal não pode ser removido!");
       }
       if (confirm("Tem certeza que deseja remover este usuário?")) {
-          const userToRemove = config.users?.find(u => u.id === userId);
           setConfig(prev => ({
               ...prev,
               users: prev.users.filter(u => u.id !== userId)
           }));
-          if (userToRemove) {
-              logAction("delete_user", `Removeu o usuário: ${userToRemove.email}`);
-          }
+          logAction("delete_user", `Removeu o usuário: ${userToRemove.email}`);
       }
   };
 
@@ -150,28 +158,28 @@ const handleDelete = (userId: string) => {
                 </tr>
             </thead>
             <tbody className="divide-y divide-emerald-100">
-                {(config.users || []).map(user => (
-                    <tr key={user.id} className="hover:bg-emerald-200/40 transition-colors">
+                {(config.users || []).map(sysUser => (
+                    <tr key={sysUser.id} className="hover:bg-emerald-200/40 transition-colors">
                         <td className="p-4 flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-emerald-200/50 flex items-center justify-center">
                                 <UserIcon className="w-4 h-4 text-black" />
                             </div>
-                            <span className="font-medium">{user.name}</span>
+                            <span className="font-medium">{sysUser.name}</span>
                         </td>
-                        <td className="p-4 text-black font-mono text-sm">{user.email}</td>
-                        <td className="p-4">{getRoleBadge(user.role)}</td>
+                        <td className="p-4 text-black font-mono text-sm">{sysUser.email}</td>
+                        <td className="p-4">{getRoleBadge(sysUser.role)}</td>
                         <td className="p-4 text-right">
                                 <div className="flex justify-end gap-2">
                                     <button 
-                                        onClick={() => handleEdit(user)}
+                                        onClick={() => handleEdit(sysUser)}
                                         className="p-2 text-black hover:text-black hover:bg-emerald-100/300/10 rounded-lg transition-colors"
                                         title="Editar Usuário / Trocar Senha"
                                     >
                                         <Users className="w-4 h-4" />
                                     </button>
-                                    {user.id !== "admin" && (
+                                    {sysUser.id !== currentUser?.id && (currentUser?.role === "admin" || sysUser.role !== "admin") && (
                                         <button 
-                                            onClick={() => handleDelete(user.id)}
+                                            onClick={() => handleDelete(sysUser.id)}
                                             className="p-2 text-black hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                             title="Remover Usuário"
                                         >
@@ -239,7 +247,7 @@ const handleDelete = (userId: string) => {
                             value={formData.role || "delegate"}
                             onChange={e => setFormData({...formData, role: e.target.value as UserRole})}
                           >
-                              {user?.role === "admin" && <option value="admin">Administrador (Acesso Total)</option>}
+                              {currentUser?.role === "admin" && <option value="admin">Administrador (Acesso Total)</option>}
                               <option value="organization_member">Membro da Equipe (Juiz/Staff)</option>
                               <option value="delegate">Chefe de Delegação (Times)</option>
                               <option value="president">Presidente do Torneio</option>
