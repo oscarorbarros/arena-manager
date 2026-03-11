@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Match, Team, TournamentConfig } from '@/lib/types';
 import { TournamentBracket } from './TournamentBracket';
 import { ChevronLeft, ChevronRight, Trophy } from 'lucide-react';
@@ -45,8 +45,8 @@ export function GeStyleDashboard({ config }: GeStyleDashboardProps) {
     };
 
     const getRecentMatches = () => {
-        const finished = config.matches.filter(m => m.stage === 'group' && m.status === 'finished').sort((a, b) => b.timestamp - a.timestamp);
-        const scheduled = config.matches.filter(m => m.stage === 'group' && (m.status === 'scheduled' || m.status === 'live')).sort((a, b) => a.timestamp - b.timestamp);
+        const finished = config.matches.filter(m => m.stage === 'group' && m.status === 'finished').sort((a, b) => (b.scheduledTime || 0) - (a.scheduledTime || 0));
+        const scheduled = config.matches.filter(m => m.stage === 'group' && (m.status === 'scheduled' || m.status === 'live')).sort((a, b) => (a.scheduledTime || 0) - (b.scheduledTime || 0));
         return [...scheduled, ...finished].slice(0, 10);
     };
 
@@ -135,8 +135,8 @@ export function GeStyleDashboard({ config }: GeStyleDashboardProps) {
                                 {getRecentMatches().map(match => (
                                     <div key={match.id} className="p-6 hover:bg-emerald-100/30/40 transition-colors group">
                                         <div className="text-[10px] uppercase font-bold text-black mb-3 flex justify-between tracking-wide">
-                                            <span className="truncate max-w-[150px]">{match.venue || "Local a definir"}</span>
-                                            <span>{match.timestamp ? format(match.timestamp, "dd/MM - HH:mm", { locale: ptBR }) : "A definir"}</span>
+                                            <span className="truncate max-w-[150px]">{match.venueId || "Local a definir"}</span>
+                                            <span>{match.scheduledTime ? format(match.scheduledTime, "dd/MM - HH:mm", { locale: ptBR }) : "A definir"}</span>
                                         </div>
                                         
                                         <div className="flex items-center justify-between gap-4">
@@ -205,8 +205,8 @@ export function GeStyleDashboard({ config }: GeStyleDashboardProps) {
                                             {matches.map(m => (
                                                 <div key={m.id} className="p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:bg-emerald-100/30/40 transition-colors group">
                                                     <div className="text-[10px] text-black font-bold uppercase w-full md:w-32 text-center md:text-left leading-relaxed">
-                                                        <span className="text-black block mb-1">{m.venue || "Estadio"}</span>
-                                                        {m.timestamp ? format(m.timestamp, "dd/MM - HH:mm", { locale: ptBR }) : "A definir"}
+                                                        <span className="text-black block mb-1">{m.venueId || "Estadio"}</span>
+                                                        {m.scheduledTime ? format(m.scheduledTime, "dd/MM - HH:mm", { locale: ptBR }) : "A definir"}
                                                     </div>
                                                     
                                                     <div className="flex-1 flex items-center justify-center gap-4 md:gap-12 w-full">
@@ -241,7 +241,7 @@ export function GeStyleDashboard({ config }: GeStyleDashboardProps) {
                                                     </div>
                                                     
                                                     <div className="w-full md:w-32 text-center md:text-right">
-                                                         {m.venue && <div className="md:hidden text-xs text-center text-black mb-2">{m.venue}</div>}
+                                                         {m.venueId && <div className="md:hidden text-xs text-center text-black mb-2">{m.venueId}</div>}
                                                          
                                                          {m.status === 'finished' && <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100/80 px-3 py-1 font-bold rounded-full border border-green-100 uppercase tracking-widest inline-block">Encerrado</span>}
                                                          {m.status === 'live' && <span className="text-[10px] font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100 uppercase animate-pulse tracking-widest inline-block">Em Andamento</span>}

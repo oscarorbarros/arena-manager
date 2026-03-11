@@ -11,8 +11,8 @@ interface TournamentContextType {
   setConfig: React.Dispatch<React.SetStateAction<TournamentConfig>>;
   setNews: React.Dispatch<React.SetStateAction<NewsStory[]>>;
   updateMatch: (matchId: string, updates: Partial<Match>) => void;
-  updateMatchWithEvent: (matchId: string, updates: Partial<Match>, eventData?: Omit<MatchEvent, "id" | "timestamp" | "matchTime">) => void;
-  addMatchEvent: (matchId: string, event: Omit<MatchEvent, "id" | "timestamp" | "matchTime">) => void;
+  updateMatchWithEvent: (matchId: string, updates: Partial<Match>, eventData?: Omit<MatchEvent, "id" | "timestamp" | "matchTime"> & Partial<{timestamp: number, matchTime: number}>) => void;
+  addMatchEvent: (matchId: string, event: Omit<MatchEvent, "id" | "timestamp" | "matchTime"> & Partial<{timestamp: number, matchTime: number}>) => void;
   resetTournament: () => void;
   generateNextStage: () => void;
   deleteNews: (id: string) => void;
@@ -200,7 +200,7 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
       const knockoutMatches = config.matches.filter(m => m.stage === "knockout");
       if (knockoutMatches.length > 0) {
           const uniqueKeys = new Set();
-          const duplicates = [];
+          const duplicates: string[] = [];
 
           knockoutMatches.forEach(m => {
               // Create a unique signature for the match (Stage + Teams)
@@ -286,7 +286,7 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
                         qualifiedList += `\n**Grupo ${group}:**\n`;
                         top.forEach((standing, idx) => {
                             const team = config.teams.find(t => t.id === standing.teamId);
-                            qualifiedList += `${idx + 1}º - ${team?.name || "?"} (${standing.points} pts, ${standing.wins}V ${standing.draws}E ${standing.losses}D, SG: ${standing.goalDifference})\n`;
+                            qualifiedList += `${idx + 1}º - ${team?.name || "?"} (${standing.points} pts, ${standing.won}V ${standing.drawn}E ${standing.lost}D, SG: ${standing.goalDifference})\n`;
                         });
                     });
                     
@@ -455,7 +455,7 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
   };
 
 
-  const updateMatchWithEvent = (matchId: string, updates: Partial<Match>, eventData?: Omit<MatchEvent, "id" | "timestamp" | "matchTime">) => {
+  const updateMatchWithEvent = (matchId: string, updates: Partial<Match>, eventData?: Omit<MatchEvent, "id" | "timestamp" | "matchTime"> & Partial<{timestamp: number, matchTime: number}>) => {
     setConfig(prev => {
         const match = prev.matches.find(m => m.id === matchId);
         if (!match) return prev;
@@ -501,7 +501,7 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
-  const addMatchEvent = (matchId: string, eventData: Omit<MatchEvent, "id" | "timestamp" | "matchTime">) => {
+  const addMatchEvent = (matchId: string, eventData: Omit<MatchEvent, "id" | "timestamp" | "matchTime"> & Partial<{timestamp: number, matchTime: number}>) => {
     setConfig(prev => {
         const match = prev.matches.find(m => m.id === matchId);
         if (!match) return prev;

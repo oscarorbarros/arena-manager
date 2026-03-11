@@ -112,7 +112,7 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                       teamId: team.id,
                       name: playerName,
                       number: parseInt(number) || 0,
-                      position: "Importado",
+                      position: "Meio-Campo",
                       stats: { goals: 0, yellowCards: 0, redCards: 0, matchesPlayed: 0 }
                   });
                   count++;

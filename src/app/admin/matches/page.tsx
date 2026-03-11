@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState } from "react";
 import Link from "next/link";
 import { useTournament } from "@/lib/context";
@@ -103,7 +103,7 @@ export default function AdminMatchesPage() {
   const handleRemoveDuplicates = () => {
       const knockoutMatches = config.matches.filter(m => m.stage === "knockout");
       const uniqueMatches = new Map();
-      const toRemove = [];
+      const toRemove: any[] = [];
       
       knockoutMatches.forEach(m => {
           const key = `${m.round}-${m.teamAId}-${m.teamBId}`;
@@ -235,7 +235,7 @@ export default function AdminMatchesPage() {
                         <Link href={`/referee/${match.id}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-green-500 text-white rounded-lg text-xs font-bold uppercase transition-all shadow-lg hover:shadow-green-500/20 tracking-wider order-first" title="Jogar / Arbitrar">
                             <PlayCircle className="w-4 h-4 fill-white/20" /> PLAY
                         </Link>
-                        <button onClick={() => generateMatchReport(match, config.teams)} className="p-2 text-black hover:text-black transition-colors" title="Baixar Súmula PDF">
+                        <button onClick={() => alert("Súmula PDF em breve!")} className="p-2 text-black hover:text-black transition-colors" title="Baixar Súmula PDF">
                             <FileText className="w-5 h-5" />
                         </button>
                         {match.status !== "finished" && (

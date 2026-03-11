@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React from "react";
 import Link from "next/link";
 import { useTournament } from "@/lib/context";
@@ -20,7 +20,7 @@ export default function AdminDashboard() {
     { label: "Noticias Geradas", value: news.length, icon: Newspaper, color: "text-emerald-700" },
   ];
 
-  const standings = TournamentEngine.calculateStandings(config.teams, config.matches, config.rules?.tieBreakerOrder);
+  const standings = TournamentEngine.calculateStandings(config.teams, config.matches, config.tieBreakers);
   const upcomingMatches = config.matches.filter(m => m.status !== "finished").sort((a,b) => (a.startTime || 0) - (b.startTime || 0));
 
   const handleSeed = () => {

@@ -48,7 +48,7 @@ export function generateTournamentReport(config: TournamentConfig) {
         doc.text("Classificacao Fase de Grupos", 14, yPos);
         yPos += 10;
 
-        const standings = TournamentEngine.calculateStandings(config.teams, config.matches, config.rules?.tieBreakerOrder);
+        const standings = TournamentEngine.calculateStandings(config.teams, config.matches, config.tieBreakers);
         
         Object.entries(standings).forEach(([groupName, stats]) => {
             doc.setFontSize(12);
@@ -88,7 +88,7 @@ export function generateTournamentReport(config: TournamentConfig) {
     doc.text("Todos os Jogos", 14, yPos);
     yPos += 10;
 
-    const allMatches = config.matches.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    const allMatches = config.matches.sort((a, b) => (a.scheduledTime || 0) - (b.scheduledTime || 0));
 
     const matchesData = allMatches.map(m => {
         const teamA = config.teams.find(t => t.id === m.teamAId)?.name || 'Definir';

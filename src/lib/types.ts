@@ -1,10 +1,9 @@
-﻿export type SportType = 'team' | 'individual';
+export type SportType = 'team' | 'individual';
 export type ScoringType = 'goals' | 'points' | 'sets';
 
 export interface SportConfig {
   id: string;
   name: string;
-  type: "hybrid" | "knockout"; // hybrid = Grupos -> Mata-Mata; knockout = Mata-Mata direto
   type: SportType;
   playersOnField?: number;
   scoring: {
@@ -20,7 +19,6 @@ export interface SportConfig {
 export interface Team {
   id: string;
   name: string;
-  type: "hybrid" | "knockout"; // hybrid = Grupos -> Mata-Mata; knockout = Mata-Mata direto
   logo?: string;
   delegationChiefId?: string; // Links to a User with role 'delegate'
   group?: string; // 'A', 'B', etc.
@@ -46,7 +44,6 @@ export interface Venue {
 export interface Player {
   id: string;
   name: string;
-  type: "hybrid" | "knockout"; // hybrid = Grupos -> Mata-Mata; knockout = Mata-Mata direto
   teamId: string;
   number?: number;
   position?: PlayerPosition;
@@ -97,12 +94,11 @@ export interface Match {
 }
 
 // Auth & Users
-export type UserRole = "admin" | "organization_member" | "delegate" | "journalist" | "public" | "president" | null;
+export type UserRole = "admin" | "organization_member" | "delegate" | "journalist" | "public" | "president" | "referee" | null;
 
 export interface User {
     id: string;
     name: string;
-  type: "hybrid" | "knockout"; // hybrid = Grupos -> Mata-Mata; knockout = Mata-Mata direto
     email: string;
     password?: string; // Mock password
     role: UserRole;
@@ -112,6 +108,7 @@ export interface User {
 export interface TournamentConfig {
   name: string;
   type: "hybrid" | "knockout"; // hybrid = Grupos -> Mata-Mata; knockout = Mata-Mata direto
+  format?: "hybrid" | "knockout" | "groups";
   status: 'setup' | 'active' | 'finished';
   sports: SportConfig[];
   teams: Team[];
@@ -119,6 +116,12 @@ export interface TournamentConfig {
   venues: Venue[]; // Central repository of players
   matches: Match[];
   users: User[];
+  matchSettings?: {
+      duration: number;
+      extraTime: number;
+      breakTime: number;
+  };
+  tieBreakers?: string[];
   structure?: {
       groupsCount: number;
       qualifiersPerGroup: number;
@@ -173,6 +176,7 @@ export const DEFAULT_CONFIG: TournamentConfig = {
   ],
   teams: [],
   players: [],
+  venues: [],
   matches: [],
   users: [
       { id: "admin", name: "Administrador", email: "admin@arena.com", password: "123", role: "admin" },

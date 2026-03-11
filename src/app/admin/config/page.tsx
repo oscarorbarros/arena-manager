@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect } from "react";
 import { useTournament } from "@/lib/context";
 import { useAuth, canConfigureTournament } from "@/lib/auth-context";
@@ -216,7 +216,7 @@ function ConfigFormStep({ config, setConfig, onNext, onCancel }: any) {
                     </h3>
                     <div className="bg-white shadow-sm border border-emerald-50 p-4 rounded-xl border border-emerald-200/60 space-y-2">
                         <p className="text-xs text-black mb-2">Arraste ou use as setas para definir a prioridade.</p>
-                        {form.tieBreakers.map((crit, idx) => (
+                        {form.tieBreakers.map((crit: string, idx: number) => (
                             <div key={crit} className="flex items-center justify-between bg-white border border-emerald-200/60 p-2 rounded-lg">
                                 <span className="text-sm font-medium">{TIE_BREAKER_LABELS[crit] || crit}</span>
                                 <div className="flex gap-1">

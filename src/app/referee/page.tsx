@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useRef } from "react";
 import Link from "next/link";
 import { useTournament } from "@/lib/context";
@@ -208,7 +208,7 @@ function MockCreateMatchButton() {
             scoreA: 0,
             scoreB: 0,
             events: []
-        };
+        } as any;
         
         setConfig({
             ...config,

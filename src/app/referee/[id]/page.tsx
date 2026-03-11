@@ -37,7 +37,7 @@ export default function MatchInterface() {
   // Robust Timer Logic
   useEffect(() => {
     if (match && match.status !== "finished") {
-      const h = (e) => { e.preventDefault(); e.returnValue = ""; };
+       const h = (e: any) => { e.preventDefault(); e.returnValue = ""; };
       window.addEventListener("beforeunload", h);
       return () => window.removeEventListener("beforeunload", h);
     }
@@ -624,7 +624,7 @@ export default function MatchInterface() {
                    {/* VISUALIZATION */}
                    <div className="px-4 py-8 bg-black/30 border-b border-gray-800 overflow-x-auto">
                         {(() => {
-                            const shotsConfig = config.rules?.knockout?.penaltiesRegularShots || 5;
+                            const shotsConfig = config.rules?.knockout?.penaltiesInitialCount || 5;
                             const eventsA = match.events.filter(e => e.teamId === match.teamAId && (e.type === "penalty_goal" || e.type === "penalty_miss" || (e.type === "card_red" && e.observation?.includes("Pênalti"))));
                             const eventsB = match.events.filter(e => e.teamId === match.teamBId && (e.type === "penalty_goal" || e.type === "penalty_miss" || (e.type === "card_red" && e.observation?.includes("Pênalti"))));
                             
