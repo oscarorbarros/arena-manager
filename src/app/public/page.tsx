@@ -1,17 +1,42 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTournament } from "@/lib/context";
 import { TournamentEngine } from "@/lib/tournament-engine";
 import { Clock, TrendingUp, Trophy, ChevronRight, Newspaper } from "lucide-react";
 
 export default function PublicPortal() {
-  const { config, news } = useTournament();
+  const { config, news, setConfig, setNews } = useTournament();
   
   // Computed Data
   const matches = config.matches.sort((a,b) => (b.startTime || 0) - (a.startTime || 0));
   const liveMatches = matches.filter(m => m.status === "live");
   const pastMatches = matches.filter(m => m.status === "finished").slice(0, 5);
   const standings = TournamentEngine.calculateStandings(config.teams, config.matches);
+
+  useEffect(() => {
+      // Auto-refresh data every 15 seconds for live matches and news
+      const interval = setInterval(async () => {
+          try {
+              const [configRes, newsRes] = await Promise.all([
+                  fetch('/api/config'),
+                  fetch('/api/news')
+              ]);
+              if (configRes.ok && newsRes.ok) {
+                  const srvConfig = await configRes.json();
+                  const srvNews = await newsRes.json();
+                  if (srvConfig && Object.keys(srvConfig).length > 0) {
+                      // Small performance optimization: we could check if hashes changed, 
+                      // but Next.js/React state handles shallow diffing somewhat.
+                      setConfig(prev => ({...prev, ...srvConfig}));
+                      if (srvNews) setNews(srvNews);
+                  }
+              }
+          } catch (e) {
+              console.warn("Auto-refresh skipped due to network");
+          }
+      }, 15000);
+      return () => clearInterval(interval);
+  }, [setConfig, setNews]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -108,7 +133,8 @@ export default function PublicPortal() {
                                     ))}
                                 </div>
                             </div>
-                            <div className="p-4 md:p-6 flex flex-col justify-between flex-1">
+                            {/* Removed flex-1 that was causing text overlapping/hiding on iOS Safari */}
+                            <div className="p-4 md:p-6 flex flex-col justify-between">
                                 <div>
                                     <div className="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-2 flex items-center gap-1">
                                         <Clock className="w-3 h-3" />
