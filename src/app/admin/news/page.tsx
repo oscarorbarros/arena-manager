@@ -197,13 +197,13 @@ export default function AdminNewsPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-black mb-2">Imagens e Fotos (Drive, Imgur, etc)</label>
+                            <label className="block text-sm font-bold text-black mb-2">Imagens e Fotos (Drive, Imgur, ou do seu computador)</label>
                             
-                            <div className="flex gap-2 mb-3">
+                            <div className="flex gap-2 mb-3 flex-wrap md:flex-nowrap">
                                 <input 
                                     value={newImageUrl} 
                                     onChange={e => setNewImageUrl(e.target.value)} 
-                                    className="flex-1 p-3 bg-white border border-emerald-200 rounded focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-black text-sm" 
+                                    className="flex-[2] p-3 bg-white border border-emerald-200 rounded focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-black text-sm min-w-[200px]" 
                                     placeholder="https://suasite.com/foto.jpg ou link do Google Drive" 
                                     onKeyPress={e => {
                                         if (e.key === "Enter" && newImageUrl.trim()) {
@@ -222,10 +222,32 @@ export default function AdminNewsPage() {
                                             setNewImageUrl("");
                                         }
                                     }}
-                                    className="px-4 py-2 bg-[#059669] text-white rounded font-bold hover:bg-emerald-600 border border-emerald-500 transition-colors flex items-center gap-1"
+                                    className="px-4 py-3 bg-[#059669] text-white rounded font-bold hover:bg-emerald-600 border border-emerald-500 transition-colors flex items-center justify-center gap-1 shrink-0 flex-1 md:flex-none"
                                 >
-                                    <Plus className="w-4 h-4" /> Adicionar
+                                    <Plus className="w-4 h-4" /> Link
                                 </button>
+                                <label className="px-4 py-3 bg-blue-600 text-white rounded font-bold hover:bg-blue-500 border border-blue-500 cursor-pointer transition-colors flex items-center justify-center gap-1 shrink-0 flex-1 md:flex-none">
+                                    <ImageIcon className="w-4 h-4" /> Arquivo
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        multiple 
+                                        className="hidden" 
+                                        onChange={(e) => {
+                                            const files = e.target.files;
+                                            if (!files) return;
+                                            Array.from(files).forEach(file => {
+                                                const reader = new FileReader();
+                                                reader.onload = (event) => {
+                                                    if (event.target?.result) {
+                                                        setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, event.target!.result as string] }));
+                                                    }
+                                                };
+                                                reader.readAsDataURL(file);
+                                            });
+                                        }}
+                                    />
+                                </label>
                             </div>
 
                             {newsForm.imageUrls.length > 0 && (

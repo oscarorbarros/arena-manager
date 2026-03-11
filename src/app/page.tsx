@@ -9,7 +9,7 @@ import { NewsStory } from "@/lib/news-engine";
 import { formatGoogleDriveUrl } from "@/lib/utils";
 import { GeStyleDashboard } from "@/components/GeStyleDashboard";
 import { NewsSlider } from "@/components/NewsSlider";
-import { LogOut, Clock, LayoutDashboard, Newspaper, User as UserIcon, Lock, X, Trash2, Edit, PlusCircle, ChevronRight, Trophy, Plus } from "lucide-react";
+import { LogOut, Clock, LayoutDashboard, Newspaper, User as UserIcon, Lock, X, Trash2, Edit, PlusCircle, ChevronRight, Trophy, Plus, Image as ImageIcon } from "lucide-react";
 
 export default function HomePage() {
     const router = useRouter();
@@ -378,12 +378,12 @@ export default function HomePage() {
                                 <input value={newsForm.tags} onChange={e => setNewsForm({ ...newsForm, tags: e.target.value })} className="w-full p-2 border border-gray-300 rounded focus:border-emerald-300 outline-none text-sm" placeholder="ex: rodada 1, goleada, destaque" />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-black mb-2">Imagens da Notícia</label>
-                                <div className="flex gap-2 mb-3">
+                                <label className="block text-sm font-bold text-black mb-2">Imagens e Fotos (Drive, Imgur, ou do seu computador)</label>
+                                <div className="flex gap-2 mb-3 flex-wrap md:flex-nowrap">
                                     <input 
                                         value={newImageUrl} 
                                         onChange={e => setNewImageUrl(e.target.value)} 
-                                        className="flex-1 p-2 border border-gray-300 rounded focus:border-emerald-300 outline-none text-sm text-black" 
+                                        className="flex-[2] p-2 border border-gray-300 rounded focus:border-emerald-300 outline-none text-sm text-black min-w-[200px]" 
                                         placeholder="https://suasite.com/foto.jpg ou link do Google Drive" 
                                         onKeyPress={e => {
                                             if (e.key === "Enter" && newImageUrl.trim()) {
@@ -402,10 +402,32 @@ export default function HomePage() {
                                                 setNewImageUrl("");
                                             }
                                         }}
-                                        className="px-3 py-2 bg-[#059669] text-white rounded font-bold hover:bg-[#047857] transition-colors flex items-center gap-1"
+                                        className="px-3 py-2 bg-[#059669] text-white rounded font-bold hover:bg-[#047857] transition-colors flex items-center justify-center gap-1 shrink-0 flex-1 md:flex-none"
                                     >
-                                        <Plus className="w-4 h-4" /> Adicionar
+                                        <Plus className="w-4 h-4" /> Link
                                     </button>
+                                    <label className="px-3 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-500 cursor-pointer transition-colors flex flex-1 md:flex-none items-center justify-center gap-1 shrink-0">
+                                        <ImageIcon className="w-4 h-4" /> Arquivo
+                                        <input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            multiple 
+                                            className="hidden" 
+                                            onChange={(e) => {
+                                                const files = e.target.files;
+                                                if (!files) return;
+                                                Array.from(files).forEach(file => {
+                                                    const reader = new FileReader();
+                                                    reader.onload = (event) => {
+                                                        if (event.target?.result) {
+                                                            setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, event.target!.result as string] }));
+                                                        }
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                });
+                                            }}
+                                        />
+                                    </label>
                                 </div>
                                 {newsForm.imageUrls.length > 0 && (
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
