@@ -1,56 +1,100 @@
-﻿const express = require('express');
+require('dotenv').config();
+const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const PORT = 3001;
-const DATA_DIR = path.join(__dirname, 'data');
+const PORT = process.env.PORT || 3001;
+
+// Initialize Supabase. Read from environment variables.
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 
-// Ensure data files exist
-const configPath = path.join(DATA_DIR, 'config.json');
-const newsPath = path.join(DATA_DIR, 'news.json');
-
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
-if (!fs.existsSync(configPath)) fs.writeFileSync(configPath, JSON.stringify({}));
-if (!fs.existsSync(newsPath)) fs.writeFileSync(newsPath, JSON.stringify([]));
-
-app.get('/api/config', (req, res) => {
+app.get('/api/config', async (req, res) => {
     try {
-        const data = fs.readFileSync(configPath, 'utf8');
-        res.json(JSON.parse(data));
+        const { data, error } = await supabase
+            .from('config')
+            .select('data')
+            .eq('id', 1)
+            .single();
+
+        if (error) {
+            console.error('Supabase error reading config:', error);
+            // If table/row not found, return empty object
+            return res.json({});
+        }
+
+        res.json(data ? data.data : {});
     } catch (e) {
+        console.error('Failed to read config:', e);
         res.status(500).json({ error: 'Failed to read config' });
     }
 });
 
-app.post('/api/config', (req, res) => {
+app.post('/api/config', async (req, res) => {
     try {
-        fs.writeFileSync(configPath, JSON.stringify(req.body, null, 2));
+        const { error } = await supabase
+            .from('config')
+            .upsert([{ id: 1, data: req.body }]);
+
+        if (error) {
+            console.error('Supabase error saving config:', error);
+            return res.status(500).json({ error: 'Failed to save config' });
+        }
+
         res.json({ success: true });
     } catch (e) {
+        console.error('Failed to save config:', e);
         res.status(500).json({ error: 'Failed to save config' });
     }
 });
 
-app.get('/api/news', (req, res) => {
+app.get('/api/news', async (req, res) => {
     try {
-        const data = fs.readFileSync(newsPath, 'utf8');
-        res.json(JSON.parse(data));
+        const { data, error } = await supabase
+            .from('news')
+            .select('data')
+            .eq('id', 1)
+            .single();
+
+        if (error) {
+            console.error('Supabase error reading news:', error);
+            // If table/row not found, return empty array
+            return res.json([]);
+        }
+
+        res.json(data ? data.data : []);
     } catch (e) {
+        console.error('Failed to read news:', e);
         res.status(500).json({ error: 'Failed to read news' });
     }
 });
 
-app.post('/api/news', (req, res) => {
+app.post('/api/news', async (req, res) => {
     try {
-        fs.writeFileSync(newsPath, JSON.stringify(req.body, null, 2));
+        const { error } = await supabase
+            .from('news')
+            .upsert([{ id: 1, data: req.body }]);
+
+        if (error) {
+            console.error('Supabase error saving news:', error);
+            return res.status(500).json({ error: 'Failed to save news' });
+        }
+
         res.json({ success: true });
     } catch (e) {
+        console.error('Failed to save news:', e);
         res.status(500).json({ error: 'Failed to save news' });
     }
 });
