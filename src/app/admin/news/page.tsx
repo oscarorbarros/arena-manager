@@ -4,6 +4,7 @@ import { useTournament } from "@/lib/context";
 import { NewsStory } from "@/lib/news-engine";
 import { useAudit } from "@/lib/audit-context";
 import { Newspaper, Plus, Edit, Trash2, X, AlertTriangle, Image as ImageIcon } from "lucide-react";
+import { formatGoogleDriveUrl } from "@/lib/utils";
 
 export default function AdminNewsPage() {
   const { news, setNews, deleteNews, deleteAllNews } = useTournament();
@@ -78,8 +79,8 @@ export default function AdminNewsPage() {
   return (
     <div className="text-black max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-                <Newspaper className="w-8 h-8 text-blue-400" />
+            <h1 className="text-3xl font-bold flex items-center gap-2 text-black">
+                <Newspaper className="w-8 h-8 text-emerald-600" />
                 Gerenciar Noticias
             </h1>
             <div className="flex gap-2">
@@ -136,7 +137,7 @@ export default function AdminNewsPage() {
                         <div className="flex items-center gap-2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button 
                                 onClick={() => handleOpenModal(story)} 
-                                className="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors"
+                                className="p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded transition-colors"
                                 title="Editar"
                             >
                                 <Edit className="w-4 h-4" />
@@ -169,44 +170,45 @@ export default function AdminNewsPage() {
                     </div>
                     <div className="p-6 space-y-4 overflow-y-auto flex-1">
                         <div>
-                            <label className="block text-sm font-bold text-gray-300 mb-1">Manchete</label>
+                            <label className="block text-sm font-bold text-black mb-1">Manchete</label>
                             <input 
                                 value={newsForm.headline} 
                                 onChange={e => setNewsForm({...newsForm, headline: e.target.value})} 
-                                className="w-full p-3 bg-emerald-50/50 border border-emerald-200 rounded focus:border-blue-500 outline-none font-bold text-lg text-white" 
+                                className="w-full p-3 bg-white border border-emerald-200 rounded focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none font-bold text-lg text-black" 
                                 placeholder="Digite um titulo chamativo..." 
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-gray-300 mb-1">Corpo da Noticia</label>
+                            <label className="block text-sm font-bold text-black mb-1">Corpo da Notícia</label>
                             <textarea 
                                 value={newsForm.body} 
                                 onChange={e => setNewsForm({...newsForm, body: e.target.value})} 
-                                className="w-full h-40 p-3 bg-emerald-50/50 border border-emerald-200 rounded focus:border-blue-500 outline-none resize-none text-white" 
+                                className="w-full h-40 p-3 bg-white border border-emerald-200 rounded focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none resize-none text-black" 
                                 placeholder="Escreva o conteudo completo da noticia..." 
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-gray-300 mb-1">Tags (separadas por virgula)</label>
+                            <label className="block text-sm font-bold text-black mb-1">Tags (separadas por vírgula)</label>
                             <input 
                                 value={newsForm.tags} 
                                 onChange={e => setNewsForm({...newsForm, tags: e.target.value})} 
-                                className="w-full p-2 bg-emerald-50/50 border border-emerald-200 rounded focus:border-blue-500 outline-none text-sm text-white" 
+                                className="w-full p-2 bg-white border border-emerald-200 rounded focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm text-black" 
                                 placeholder="ex: rodada 1, goleada, destaque" 
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-gray-300 mb-2">Imagens e Fotos (Adicione múltiplos links)</label>
+                            <label className="block text-sm font-bold text-black mb-2">Imagens e Fotos (Drive, Imgur, etc)</label>
                             
                             <div className="flex gap-2 mb-3">
                                 <input 
                                     value={newImageUrl} 
                                     onChange={e => setNewImageUrl(e.target.value)} 
-                                    className="flex-1 p-3 bg-emerald-50/50 border border-emerald-200 rounded focus:border-blue-500 outline-none text-white text-sm" 
-                                    placeholder="https://suasite.com/foto.jpg" 
+                                    className="flex-1 p-3 bg-white border border-emerald-200 rounded focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-black text-sm" 
+                                    placeholder="https://suasite.com/foto.jpg ou link do Google Drive" 
                                     onKeyPress={e => {
                                         if (e.key === "Enter" && newImageUrl.trim()) {
-                                            setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, newImageUrl.trim()] }));
+                                            const formattedUrl = formatGoogleDriveUrl(newImageUrl.trim());
+                                            setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, formattedUrl] }));
                                             setNewImageUrl("");
                                             e.preventDefault();
                                         }
@@ -215,7 +217,8 @@ export default function AdminNewsPage() {
                                 <button 
                                     onClick={() => {
                                         if (newImageUrl.trim()) {
-                                            setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, newImageUrl.trim()] }));
+                                            const formattedUrl = formatGoogleDriveUrl(newImageUrl.trim());
+                                            setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, formattedUrl] }));
                                             setNewImageUrl("");
                                         }
                                     }}
@@ -244,11 +247,11 @@ export default function AdminNewsPage() {
                             )}
                         </div>
                     </div>
-                    <div className="p-4 border-t border-gray-700 bg-emerald-50/30 flex justify-end p-4 border-t border-emerald-100 rounded-b-2xl gap-2 rounded-b-xl">
-                        <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-400 hover:text-gray-200 transition-colors">
+                    <div className="p-4 border-t border-emerald-100 bg-emerald-50/30 flex justify-end p-4 border-t border-emerald-100 rounded-b-2xl gap-2 rounded-b-xl">
+                        <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-black hover:bg-emerald-100 border border-emerald-500 rounded font-bold transition-colors">
                             Cancelar
                         </button>
-                        <button onClick={handleSave} className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded transition-colors">
+                        <button onClick={handleSave} className="px-6 py-2 bg-[#059669] hover:bg-emerald-800 text-white font-bold rounded transition-colors shadow-lg">
                             {editingNewsId ? 'Atualizar' : 'Publicar'} Noticia
                         </button>
                     </div>

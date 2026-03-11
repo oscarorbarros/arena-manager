@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useAudit } from "@/lib/audit-context";
 import { useTournament } from "@/lib/context";
 import { NewsStory } from "@/lib/news-engine";
+import { formatGoogleDriveUrl } from "@/lib/utils";
 import { GeStyleDashboard } from "@/components/GeStyleDashboard";
 import { NewsSlider } from "@/components/NewsSlider";
 import { LogOut, Clock, LayoutDashboard, Newspaper, User as UserIcon, Lock, X, Trash2, Edit, PlusCircle, ChevronRight, Trophy, Plus } from "lucide-react";
@@ -383,10 +384,11 @@ export default function HomePage() {
                                         value={newImageUrl} 
                                         onChange={e => setNewImageUrl(e.target.value)} 
                                         className="flex-1 p-2 border border-gray-300 rounded focus:border-emerald-300 outline-none text-sm text-black" 
-                                        placeholder="https://suasite.com/foto.jpg" 
+                                        placeholder="https://suasite.com/foto.jpg ou link do Google Drive" 
                                         onKeyPress={e => {
                                             if (e.key === "Enter" && newImageUrl.trim()) {
-                                                setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, newImageUrl.trim()] }));
+                                                const formattedUrl = formatGoogleDriveUrl(newImageUrl.trim());
+                                                setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, formattedUrl] }));
                                                 setNewImageUrl("");
                                                 e.preventDefault();
                                             }
@@ -395,7 +397,8 @@ export default function HomePage() {
                                     <button 
                                         onClick={() => {
                                             if (newImageUrl.trim()) {
-                                                setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, newImageUrl.trim()] }));
+                                                const formattedUrl = formatGoogleDriveUrl(newImageUrl.trim());
+                                                setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, formattedUrl] }));
                                                 setNewImageUrl("");
                                             }
                                         }}
