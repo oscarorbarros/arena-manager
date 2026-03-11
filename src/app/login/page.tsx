@@ -4,24 +4,37 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { Lock, Shield, Users, Briefcase } from "lucide-react";
 import { UserRole } from "@/lib/types";
+import { useTournament } from "@/lib/context";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginWithUser } = useAuth();
+  const { config } = useTournament();
   const router = useRouter();
   const [role, setRole] = useState<UserRole>("public");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState(""); // For Delegate/Public
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(role, password, name)) {
-        if (role === "admin" || role === "organization_member") router.push("/admin");
-        else if (role === "referee") router.push("/referee");
-        else if (role === "delegate") router.push("/delegate");
-        else router.push("/public");
+    setError("");
+
+    if (role as string === "public") {
+       if (login("public")) router.push("/public");
+       return;
+    }
+
+    const foundUser = config.users?.find(u => u.email === email && u.password === password);
+    
+    if (foundUser) {
+        if (loginWithUser(foundUser)) {
+            if (foundUser.role === "admin" || foundUser.role === "organization_member") router.push("/admin");
+            else if (foundUser.role === "referee") router.push("/referee");
+            else if (foundUser.role === "delegate") router.push("/delegate");
+            else router.push("/public");
+        }
     } else {
-        setError("Senha incorreta ou erro no login.");
+        setError("Email ou Senha incorretos.");
     }
   };
 
@@ -79,30 +92,30 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                {role === "admin" && (
-                    <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">Senha de Admin</label>
-                        <input 
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                            placeholder="Senha (123456)"
-                        />
-                    </div>
-                )}
-
-                { (role === "delegate" || role === "organization_member") && (
-                    <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">{role === "delegate" ? "Nome do Responsável" : "Seu Nome Completo"}</label>
-                        <input 
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                            placeholder="Seu nome completo"
-                            required
-                        />
+                {role as string !== "public" && (
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                            <input 
+                                type="text"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                placeholder="Email cadastrado"
+                                required={role as string !== "public"}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">Senha</label>
+                            <input 
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                placeholder="Sua senha"
+                                required={role !== "public"}
+                            />
+                        </div>
                     </div>
                 )}
             </div>

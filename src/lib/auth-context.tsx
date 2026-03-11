@@ -6,6 +6,7 @@ import { User, UserRole, TournamentConfig } from "./types";
 interface AuthContextType {
   user: User | null;
   login: (role: UserRole, password?: string, name?: string) => boolean;
+  loginWithUser: (user: User) => boolean;
   logout: () => void;
 }
 
@@ -94,6 +95,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return true;
   };
 
+  const loginWithUser = (user: User) => {
+    setUser(user);
+    localStorage.setItem("arena_user", JSON.stringify(user));
+    return true;
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("arena_user");
@@ -101,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, loginWithUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -3,11 +3,13 @@ import React, { useState } from "react";
 import { useTournament } from "@/lib/context";
 import { useAuth } from "@/lib/auth-context";
 import { User, UserRole } from "@/lib/types";
+import { useAudit } from "@/lib/audit-context";
 import { Users, Plus, Trash2, Shield, User as UserIcon, ShieldAlert } from "lucide-react";
 
 export default function AdminUsersPage() {
   const { config, setConfig } = useTournament();
   const { user } = useAuth();
+  const { logAction } = useAudit();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,6 +25,9 @@ export default function AdminUsersPage() {
       if (!formData.name || !formData.email || !formData.password) return alert("Preencha todos os campos!");
       
       if (isEditing) {
+          if (formData.id === "admin" && formData.role !== "admin") {
+              return alert("O usuário administrador principal não pode ter sua função alterada.");
+          }
           setConfig(prev => ({
               ...prev,
               users: prev.users.map(u => u.id === formData.id ? { ...u, 
@@ -32,6 +37,7 @@ export default function AdminUsersPage() {
                   role: formData.role 
               } : u)
           }));
+          logAction("edit_user", `Editou o usuário ${formData.email} (Nova Função: ${formData.role})`);
           alert("Usuário atualizado!");
       } else {
           const newUser: User = {
@@ -45,6 +51,7 @@ export default function AdminUsersPage() {
               ...prev,
               users: [...(prev.users || []), newUser]
           }));
+          logAction("create_user", `Criou o usuário ${formData.email} (Função: ${formData.role})`);
           alert("Usuário criado com sucesso!");
       }
       closeModal();
@@ -63,13 +70,19 @@ export default function AdminUsersPage() {
   };
 
 
-  
 const handleDelete = (userId: string) => {
+      if (userId === "admin") {
+          return alert("O usuário administrador principal não pode ser removido!");
+      }
       if (confirm("Tem certeza que deseja remover este usuário?")) {
+          const userToRemove = config.users?.find(u => u.id === userId);
           setConfig(prev => ({
               ...prev,
               users: prev.users.filter(u => u.id !== userId)
           }));
+          if (userToRemove) {
+              logAction("delete_user", `Removeu o usuário: ${userToRemove.email}`);
+          }
       }
   };
 
@@ -80,6 +93,7 @@ const handleDelete = (userId: string) => {
             ...prev,
             users: (prev.users || []).filter(u => u.role !== "delegate")
         }));
+        logAction("clear_users", `Removeu todos os usuários delegados em massa.`);
         alert("Usuários delegados removidos.");
     }
   };
@@ -147,24 +161,24 @@ const handleDelete = (userId: string) => {
                         <td className="p-4 text-black font-mono text-sm">{user.email}</td>
                         <td className="p-4">{getRoleBadge(user.role)}</td>
                         <td className="p-4 text-right">
-                            {user.role !== "admin" && (
                                 <div className="flex justify-end gap-2">
                                     <button 
                                         onClick={() => handleEdit(user)}
                                         className="p-2 text-black hover:text-black hover:bg-emerald-100/300/10 rounded-lg transition-colors"
-                                        title="Editar Usuário"
+                                        title="Editar Usuário / Trocar Senha"
                                     >
                                         <Users className="w-4 h-4" />
                                     </button>
-                                    <button 
-                                        onClick={() => handleDelete(user.id)}
-                                        className="p-2 text-black hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                                        title="Remover Usuário"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
+                                    {user.id !== "admin" && (
+                                        <button 
+                                            onClick={() => handleDelete(user.id)}
+                                            className="p-2 text-black hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                            title="Remover Usuário"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
                                 </div>
-                            )}
                         </td>
                     </tr>
                 ))}

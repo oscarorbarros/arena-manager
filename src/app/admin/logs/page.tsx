@@ -2,9 +2,17 @@
 import React from "react";
 import { useAudit } from "@/lib/audit-context";
 import { Clock } from "lucide-react";
+import { useTournament } from "@/lib/context";
 
 export default function AdminLogsPage() {
     const { logs } = useAudit();
+    const { config } = useTournament();
+
+    const getUserName = (id: string) => {
+        if (id === "anonymous") return "Sistema / Visitante";
+        const u = config.users?.find(user => user.id === id);
+        return u ? `${u.name} (${u.email})` : `ID Desconhecido (${id})`;
+    };
 
     const formatDate = (ts: number) => {
         const d = new Date(ts);
@@ -41,7 +49,7 @@ export default function AdminLogsPage() {
                                     <td className="p-4 text-sm text-gray-600">
                                         {formatDate(log.timestamp)}
                                     </td>
-                                    <td className="p-4 text-sm font-medium">{log.userId}</td>
+                                    <td className="p-4 text-sm font-medium">{getUserName(log.userId)}</td>
                                     <td className="p-4 text-sm font-bold text-emerald-700">{log.action}</td>
                                     <td className="p-4 text-sm text-gray-700">{log.details}</td>
                                 </tr>
