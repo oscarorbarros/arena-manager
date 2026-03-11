@@ -30,18 +30,17 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     
     const loadFromStorage = async () => {
-        // Try to load from server FIRST
+        // Try to load from API server (works both locally and on Render)
         try {
-            const hostname = window.location.hostname;
-            const configRes = await fetch(`http://${hostname}:3001/api/config`);
-            const newsRes = await fetch(`http://${hostname}:3001/api/news`);
+            const configRes = await fetch(`/api/config`);
+            const newsRes = await fetch(`/api/news`);
             
             if (configRes.ok && newsRes.ok) {
                 const srvConfig = await configRes.json();
                 const srvNews = await newsRes.json();
                 
                 if (srvConfig && Object.keys(srvConfig).length > 0) {
-                    console.log("?? Data loaded from Server");
+                    console.log("✅ Data loaded from Server/Supabase");
                     setConfig({...DEFAULT_CONFIG, ...srvConfig});
                     if (srvNews) setNews(srvNews);
                     setIsLoaded(true);
@@ -49,7 +48,7 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
                 }
             }
         } catch (e) {
-            console.warn("?? Server API not available, falling back to LocalStorage", e);
+            console.warn("⚠️ Server API not available, falling back to LocalStorage", e);
         }
 
         // Fallback to LocalStorage
@@ -83,15 +82,15 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem("tournament_config", JSON.stringify(config));
-      fetch(`http://${window.location.hostname}:3001/api/config`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(config) }).catch(() => {});
+      // Save to server (Supabase) using relative path
+      fetch(`/api/config`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(config) }).catch(() => {});
     }
   }, [config, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      console.log("?? Context: Salvando notícias no localStorage. Total:", news.length);
       localStorage.setItem("tournament_news", JSON.stringify(news));
-      fetch(`http://${window.location.hostname}:3001/api/news`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(news) }).catch(() => {});
+      fetch(`/api/news`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(news) }).catch(() => {});
     }
   }, [news, isLoaded]);
 

@@ -21,6 +21,7 @@ export interface Team {
   name: string;
   logo?: string;
   delegationChiefId?: string; // Links to a User with role 'delegate'
+  captainId?: string;          // Player designated as captain by the delegation chief
   group?: string; // 'A', 'B', etc.
   stats?: {
       points: number;

@@ -198,7 +198,55 @@ export default function DelegateDashboard() {
                             </div>
                         </div>
                         
+                        {/* Captain Selection */}
+                        {myPlayers.length > 0 && (
+                            <div className="mb-5 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="text-xl">🏅</span>
+                                    <h4 className="font-bold text-sm text-yellow-800 uppercase tracking-wide">Capitão do Time</h4>
+                                </div>
+                                {myTeam.captainId ? (
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-yellow-500 text-lg">⭐</span>
+                                            <span className="font-bold text-gray-800">
+                                                {myPlayers.find(p => p.id === myTeam.captainId)?.name ?? "Jogador não encontrado"}
+                                            </span>
+                                        </div>
+                                        <button
+                                            onClick={() => setConfig(prev => ({
+                                                ...prev,
+                                                teams: prev.teams.map(t => t.id === myTeam!.id ? { ...t, captainId: undefined } : t)
+                                            }))}
+                                            className="text-xs text-red-500 hover:text-red-700 font-bold"
+                                        >
+                                            Remover capitão
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p className="text-xs text-yellow-700 mb-2">Selecione o capitão:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {myPlayers.map(p => (
+                                                <button
+                                                    key={p.id}
+                                                    onClick={() => setConfig(prev => ({
+                                                        ...prev,
+                                                        teams: prev.teams.map(t => t.id === myTeam!.id ? { ...t, captainId: p.id } : t)
+                                                    }))}
+                                                    className="px-3 py-1.5 bg-white border border-yellow-300 hover:bg-yellow-100 rounded-lg text-xs font-medium text-gray-700 transition-colors"
+                                                >
+                                                    {p.number} — {p.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* Roster List with Starter Toggle */}
+
                         <div className="space-y-2">
                             {myPlayers.length === 0 && <p className="text-gray-400 text-sm italic">Nenhum atleta cadastrado.</p>}
                             
