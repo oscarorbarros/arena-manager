@@ -69,8 +69,14 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
 
 
     const handleStorage = (e: StorageEvent) => {
-        if (e.key === "tournament_config" || e.key === "tournament_news") {
-            loadFromStorage();
+        if (e.key === "tournament_config") {
+            try { 
+                const parsed = JSON.parse(e.newValue || "{}");
+                setConfig({ ...DEFAULT_CONFIG, ...parsed }); 
+            } catch (err) {}
+        }
+        if (e.key === "tournament_news") {
+            try { setNews(JSON.parse(e.newValue || "[]")); } catch (err) {}
         }
     };
 
@@ -82,8 +88,11 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem("tournament_config", JSON.stringify(config));
-      // Save to server (Supabase) using relative path
-      fetch(`/api/config`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(config) }).catch(() => {});
+      // Save to server (Supabase) using relative path, debounced
+      const timeoutId = setTimeout(() => {
+        fetch(`/api/config`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(config) }).catch(() => {});
+      }, 500);
+      return () => clearTimeout(timeoutId);
     }
   }, [config, isLoaded]);
 

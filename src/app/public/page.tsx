@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React from "react";
 import { useTournament } from "@/lib/context";
 import { TournamentEngine } from "@/lib/tournament-engine";
@@ -91,33 +91,40 @@ export default function PublicPortal() {
             ) : (
                 <div className="grid gap-6">
                     {news.map((story, i) => (
-                        <article key={story.id} className={`group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 ${i === 0 ? 'md:grid md:grid-cols-2' : 'flex flex-col'}`}>
-                            <div className={`bg-gray-200 relative overflow-hidden ${i === 0 ? 'h-full min-h-[200px]' : 'h-48'}`}>
-                                {/* Placeholder Image Pattern */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#06aa48]/10 to-blue-500/10" />
-                                <div className="absolute bottom-2 left-2 flex gap-1">
+                        <article key={story.id} className={`group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex flex-col ${i === 0 ? 'md:grid md:grid-cols-2' : ''}`}>
+                            <div className={`bg-gray-200 relative overflow-hidden shrink-0 ${i === 0 ? 'h-56 md:h-full md:min-h-[300px]' : 'h-48'}`}>
+                                {/* GE-style image, using absolute to fill the container */}
+                                {story.imageUrl ? (
+                                    <img src={story.imageUrl} alt={story.headline} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                ) : (
+                                    <div className="absolute inset-0 bg-gradient-to-br from-[#06aa48]/20 to-blue-500/20" />
+                                )}
+                                
+                                <div className="absolute bottom-2 left-2 flex gap-1 z-10">
                                     {story.tags?.map(tag => (
-                                        <span key={tag} className="text-[10px] uppercase font-bold bg-black/80 text-white px-2 py-0.5 rounded backdrop-blur">
+                                        <span key={tag} className="text-[10px] uppercase font-bold bg-[#06aa48] text-white px-2 py-0.5 rounded shadow">
                                             {tag}
                                         </span>
                                     ))}
                                 </div>
                             </div>
-                            <div className="p-6 flex flex-col justify-between">
+                            <div className="p-4 md:p-6 flex flex-col justify-between flex-1">
                                 <div>
-                                    <div className="text-xs text-gray-500 font-bold uppercase mb-2 flex items-center gap-1">
+                                    <div className="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-2 flex items-center gap-1">
                                         <Clock className="w-3 h-3" />
                                         {new Date(story.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                        <span className="mx-1">•</span>
+                                        <span className="text-[#06aa48]">O2R Sports</span>
                                     </div>
-                                    <h3 className={`font-bold text-gray-900 group-hover:text-[#06aa48] transition-colors ${i === 0 ? 'text-2xl md:text-3xl leading-tight' : 'text-xl'}`}>
+                                    <h3 className={`font-bold text-gray-900 group-hover:text-[#06aa48] transition-colors ${i === 0 ? 'text-xl md:text-3xl leading-tight mb-2 md:mb-3' : 'text-lg mb-2'}`}>
                                         {story.headline}
                                     </h3>
-                                    <p className="mt-3 text-gray-600 leading-relaxed text-sm">
+                                    <p className={`text-gray-600 leading-relaxed ${i === 0 ? 'text-sm md:text-base line-clamp-3' : 'text-sm line-clamp-2'}`}>
                                         {story.body}
                                     </p>
                                 </div>
-                                <div className="mt-4 flex items-center text-[#06aa48] font-bold text-sm group/link cursor-pointer">
-                                    Ler matéria completa <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                                <div className="mt-4 flex items-center text-[#06aa48] font-bold text-xs md:text-sm group/link cursor-pointer">
+                                    Leia mais <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
                                 </div>
                             </div>
                         </article>

@@ -50,6 +50,7 @@ export interface Player {
   position?: PlayerPosition;
   photoUrl?: string;
   isStarter?: boolean; // Defined by delegation chief before the match
+  isGoalkeeper?: boolean; // Defined by delegation chief
   stats?: {
       goals: number;
       yellowCards: number;

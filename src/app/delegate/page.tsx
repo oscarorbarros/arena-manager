@@ -297,6 +297,23 @@ export default function DelegateDashboard() {
                                                 setConfig(prev => ({
                                                     ...prev,
                                                     players: (prev.players || []).map(p =>
+                                                        p.id === player.id ? { ...p, isGoalkeeper: !p.isGoalkeeper } : p
+                                                    )
+                                                }));
+                                            }}
+                                            className={`px-3 py-1 text-xs font-bold rounded-lg transition-colors border ${
+                                                player.isGoalkeeper 
+                                                    ? "bg-blue-100 text-blue-700 border-blue-300" 
+                                                    : "bg-white text-gray-500 border-gray-200 hover:bg-blue-50"
+                                            }`}
+                                        >
+                                            {player.isGoalkeeper ? "🧤 Goleiro" : "Goleiro?"}
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setConfig(prev => ({
+                                                    ...prev,
+                                                    players: (prev.players || []).map(p =>
                                                         p.id === player.id ? { ...p, isStarter: !p.isStarter } : p
                                                     )
                                                 }));
@@ -307,7 +324,7 @@ export default function DelegateDashboard() {
                                                     : "bg-green-100 text-green-700 hover:bg-green-200"
                                             }`}
                                         >
-                                            {player.isStarter ? "Remover" : "Escalar"}
+                                            {player.isStarter ? "Remover Titular" : "Escalar"}
                                         </button>
                                         <button
                                             onClick={() => {
