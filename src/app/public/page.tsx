@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTournament } from "@/lib/context";
 import { TournamentEngine } from "@/lib/tournament-engine";
 import { Clock, TrendingUp, Trophy, ChevronRight, Newspaper } from "lucide-react";
@@ -13,20 +13,27 @@ export default function PublicPortal() {
   const pastMatches = matches.filter(m => m.status === "finished").slice(0, 5);
   const standings = TournamentEngine.calculateStandings(config.teams, config.matches);
 
+  const [now, setNow] = useState(Date.now());
+
+  // 1-second update for the real-time scoreboard ticker
   useEffect(() => {
-      // Auto-refresh data every 15 seconds for live matches and news
+    const tick = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(tick);
+  }, []);
+
+  useEffect(() => {
+      // Auto-refresh data every 15 seconds for live matches and news (use ?t=cache_buster)
       const interval = setInterval(async () => {
           try {
+              const cacheBuster = `?t=${Date.now()}`;
               const [configRes, newsRes] = await Promise.all([
-                  fetch('/api/config'),
-                  fetch('/api/news')
+                  fetch('/api/config' + cacheBuster),
+                  fetch('/api/news' + cacheBuster)
               ]);
               if (configRes.ok && newsRes.ok) {
                   const srvConfig = await configRes.json();
                   const srvNews = await newsRes.json();
                   if (srvConfig && Object.keys(srvConfig).length > 0) {
-                      // Small performance optimization: we could check if hashes changed, 
-                      // but Next.js/React state handles shallow diffing somewhat.
                       setConfig(prev => ({...prev, ...srvConfig}));
                       if (srvNews) setNews(srvNews);
                   }
@@ -70,7 +77,7 @@ export default function PublicPortal() {
                   {liveMatches.map(match => {
                        const teamA = config.teams.find(t => t.id === match.teamAId);
                        const teamB = config.teams.find(t => t.id === match.teamBId);
-                       const timer = match.startTime ? Math.floor((Date.now() - match.startTime) / 1000) + (match.elapsedSeconds || 0) : (match.elapsedSeconds || 0);
+                       const timer = match.startTime ? Math.floor((now - match.startTime) / 1000) + (match.elapsedSeconds || 0) : (match.elapsedSeconds || 0);
 
                        return (
                            <div key={match.id} className="flex-shrink-0 w-64 bg-gray-800 rounded-lg p-3 border border-gray-700 relative overflow-hidden group hover:border-[#06aa48] transition-colors cursor-pointer">
@@ -116,8 +123,8 @@ export default function PublicPortal() {
             ) : (
                 <div className="grid gap-6">
                     {news.map((story, i) => (
-                        <article key={story.id} className={`group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex flex-col ${i === 0 ? 'md:grid md:grid-cols-2' : ''}`}>
-                            <div className={`bg-gray-200 relative overflow-hidden shrink-0 ${i === 0 ? 'h-56 md:h-full md:min-h-[300px]' : 'h-48'}`}>
+                        <article key={story.id} className={`group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 ${i === 0 ? 'md:grid md:grid-cols-2 block' : 'block'}`}>
+                            <div className={`bg-gray-200 relative overflow-hidden w-full ${i === 0 ? 'h-56 md:h-full md:min-h-[300px]' : 'h-48'}`}>
                                 {/* GE-style image, using absolute to fill the container */}
                                 {story.imageUrl ? (
                                     <img src={story.imageUrl} alt={story.headline} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -133,8 +140,7 @@ export default function PublicPortal() {
                                     ))}
                                 </div>
                             </div>
-                            {/* Removed flex-1 that was causing text overlapping/hiding on iOS Safari */}
-                            <div className="p-4 md:p-6 flex flex-col justify-between">
+                            <div className="p-4 md:p-6 block">
                                 <div>
                                     <div className="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-2 flex items-center gap-1">
                                         <Clock className="w-3 h-3" />
