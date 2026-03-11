@@ -6,11 +6,11 @@ interface NewsSliderProps {
     images: string[];
 }
 
-export function NewsSlider({ images }: NewsSliderProps) {
+export function NewsSlider({ images = [] }: NewsSliderProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
-        if (images.length <= 1) return;
+        if (!images || images.length <= 1) return;
         const interval = setInterval(() => {
             setCurrentIndex(prev => (prev + 1) % images.length);
         }, 4000); // Change image every 4 seconds

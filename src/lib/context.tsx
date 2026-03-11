@@ -42,7 +42,7 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
                 
                 if (srvConfig && Object.keys(srvConfig).length > 0) {
                     console.log("?? Data loaded from Server");
-                    setConfig(srvConfig);
+                    setConfig({...DEFAULT_CONFIG, ...srvConfig});
                     if (srvNews) setNews(srvNews);
                     setIsLoaded(true);
                     return;
@@ -59,10 +59,7 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
         if (savedConfig) {
             try { 
                 const parsed = JSON.parse(savedConfig);
-                if (!parsed.users) parsed.users = DEFAULT_CONFIG.users;
-                if (!parsed.teams) parsed.teams = [];
-                if (!parsed.matches) parsed.matches = [];
-                setConfig(parsed); 
+                setConfig({ ...DEFAULT_CONFIG, ...parsed }); 
             } catch (e) { console.error(e); }
         }
         if (savedNews) {
