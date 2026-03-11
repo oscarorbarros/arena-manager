@@ -1,14 +1,16 @@
-﻿"use client";
+"use client";
 import React, { useState } from "react";
 import { useTournament } from "@/lib/context";
 import { NewsStory } from "@/lib/news-engine";
-import { Newspaper, Plus, Edit, Trash2, X, AlertTriangle } from "lucide-react";
+import { useAudit } from "@/lib/audit-context";
+import { Newspaper, Plus, Edit, Trash2, X, AlertTriangle, Image as ImageIcon } from "lucide-react";
 
 export default function AdminNewsPage() {
   const { news, setNews, deleteNews, deleteAllNews } = useTournament();
+  const { logAction } = useAudit();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNewsId, setEditingNewsId] = useState<string | null>(null);
-  const [newsForm, setNewsForm] = useState({ headline: "", body: "", tags: "" });
+  const [newsForm, setNewsForm] = useState({ headline: "", body: "", tags: "", imageUrl: "" });
 
   const handleOpenModal = (newsItem?: NewsStory) => {
       if (newsItem) {
@@ -16,11 +18,12 @@ export default function AdminNewsPage() {
           setNewsForm({ 
               headline: newsItem.headline, 
               body: newsItem.body, 
-              tags: newsItem.tags?.join(", ") || "" 
+              tags: newsItem.tags?.join(", ") || "",
+              imageUrl: newsItem.imageUrl || ""
           });
       } else {
           setEditingNewsId(null);
-          setNewsForm({ headline: "", body: "", tags: "" });
+          setNewsForm({ headline: "", body: "", tags: "", imageUrl: "" });
       }
       setIsModalOpen(true);
   };
@@ -36,6 +39,7 @@ export default function AdminNewsPage() {
                   ? { ...n, ...newsForm, tags: tagsArray, timestamp: Date.now() } 
                   : n
           ));
+          logAction("edit_news", `Editou notícia: ${newsForm.headline}`);
           alert("Noticia atualizada!");
       } else {
           const newStory: NewsStory = {
@@ -44,23 +48,27 @@ export default function AdminNewsPage() {
               timestamp: Date.now(),
               headline: newsForm.headline,
               body: newsForm.body,
-              tags: tagsArray
+              tags: tagsArray,
+              imageUrl: newsForm.imageUrl
           };
           setNews(prev => [newStory, ...prev]);
+          logAction("create_news", `Publicou notícia: ${newsForm.headline}`);
           alert("Noticia criada!");
       }
       setIsModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (story: NewsStory) => {
       if(confirm("Apagar esta noticia permanentemente?")) {
-          deleteNews(id);
+          deleteNews(story.id);
+          logAction("delete_news", `Apagou notícia: ${story.headline}`);
       }
   };
 
   const handleDeleteAll = () => {
       if(confirm(`ATENÇÃO: Você está prestes a apagar TODAS as ${news.length} notícias.\n\nEsta ação NÃO pode ser desfeita.\n\nDeseja continuar?`)) {
           deleteAllNews();
+          logAction("clear_news", `Apagou todas as ${news.length} notícias em massa.`);
           alert("Todas as notícias foram apagadas com sucesso.");
       }
   };
@@ -132,7 +140,7 @@ export default function AdminNewsPage() {
                                 <Edit className="w-4 h-4" />
                             </button>
                             <button 
-                                onClick={() => handleDelete(story.id)} 
+                                onClick={() => handleDelete(story)} 
                                 className="p-2 bg-red-600 hover:bg-red-500 text-white rounded transition-colors"
                                 title="Excluir"
                             >
@@ -184,6 +192,24 @@ export default function AdminNewsPage() {
                                 className="w-full p-2 bg-emerald-50/50 border border-emerald-200 rounded focus:border-blue-500 outline-none text-sm text-white" 
                                 placeholder="ex: rodada 1, goleada, destaque" 
                             />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-300 mb-1">URL da Imagem (Opcional)</label>
+                            <div className="flex gap-2">
+                                <div className="bg-emerald-800 p-3 rounded flex items-center justify-center text-emerald-300 border border-emerald-700">
+                                    {newsForm.imageUrl ? (
+                                        <img src={newsForm.imageUrl} className="w-6 h-6 object-cover rounded" alt="Preview"/>
+                                    ) : (
+                                        <ImageIcon className="w-6 h-6" />
+                                    )}
+                                </div>
+                                <input 
+                                    value={newsForm.imageUrl} 
+                                    onChange={e => setNewsForm({...newsForm, imageUrl: e.target.value})} 
+                                    className="flex-1 p-3 bg-emerald-50/50 border border-emerald-200 rounded focus:border-blue-500 outline-none text-white text-sm" 
+                                    placeholder="https://suasite.com/foto.jpg" 
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="p-4 border-t border-gray-700 bg-emerald-50/30 flex justify-end p-4 border-t border-emerald-100 rounded-b-2xl gap-2 rounded-b-xl">

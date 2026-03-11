@@ -71,7 +71,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* EMERGENCY KNOCKOUT GENERATOR */}
-      {config.status === "active" && config.matches.filter(m => m.stage === "knockout").length === 0 && config.matches.filter(m => m.stage === "group" && m.status === "finished").length === config.matches.filter(m => m.stage === "group").length && config.matches.filter(m => m.stage === "group").length > 0 && (
+      {(user?.role === "admin" || user?.role === "organization_member") && config.status === "active" && config.matches.filter(m => m.stage === "knockout").length === 0 && config.matches.filter(m => m.stage === "group" && m.status === "finished").length === config.matches.filter(m => m.stage === "group").length && config.matches.filter(m => m.stage === "group").length > 0 && (
           <button 
               onClick={generateNextStage}
               className="w-full px-6 py-4 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white rounded-xl font-bold text-lg flex items-center justify-center gap-3 shadow-xl shadow-green-900/30 animate-pulse"

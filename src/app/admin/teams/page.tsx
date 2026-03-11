@@ -2,11 +2,13 @@
 import React, { useState } from "react";
 import { useTournament } from "@/lib/context";
 import { Users, Plus, Trash2, ClipboardPaste, UserPlus, Shield } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { User, Team, Player } from "@/lib/types";
+import { useAudit } from "@/lib/audit-context";
+import { useRouter } from "next/navigation";
 
 export default function AdminTeamsPage() {
   const { config, setConfig } = useTournament();
+  const { logAction } = useAudit();
   const router = useRouter();
   
   const [isImportOpen, setIsImportOpen] = useState(false);
@@ -21,6 +23,7 @@ export default function AdminTeamsPage() {
             ...prev,
             users: (prev.users || []).filter(u => u.role !== "delegate")
         }));
+        logAction("clear_users", `Removeu todos os usuários delegados.`);
         alert("Usuários delegados removidos.");
     }
   };
@@ -33,6 +36,7 @@ export default function AdminTeamsPage() {
             players: [],
             matches: [] // Must clear matches as they depend on teams
         }));
+        logAction("clear_teams", "Removeu TODOS os times em massa.");
         alert("Todos os times foram removidos.");
     }
   };
@@ -40,10 +44,12 @@ export default function AdminTeamsPage() {
 const handleDelete = (e: React.MouseEvent, teamId: string) => {
     e.stopPropagation();
     if (confirm("Tem certeza que deseja excluir este time?")) {
+        const teamToRemove = config.teams.find(t => t.id === teamId);
         setConfig(prev => ({
             ...prev,
             teams: prev.teams.filter(t => t.id !== teamId)
         }));
+        if(teamToRemove) logAction("delete_team", `Removeu o time: ${teamToRemove.name}`);
     }
   };
 
@@ -90,6 +96,7 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                   users: [...(prev.users || []), ...newUsers],
                   teams: [...prev.teams, ...newTeams]
               }));
+              logAction("import_teams", `Importou em massa ${count} times e chefes de delegação.`);
               alert(`Importado: ${count} times/delegados.`);
           }
 
@@ -125,6 +132,7 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                   players: [...(prev.players || []), ...newPlayers]
                   // Note: In a real app we would merge carefully, here we just append
               }));
+              logAction("import_players", `Importou em massa ${count} atletas.`);
               alert(`Importado: ${count} atletas.`);
           }
       }
@@ -285,6 +293,7 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                                         stats: { points: 0, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDifference: 0 }
                                     }]
                                 }));
+                                logAction("create_team", `Criou o time manualmente: ${manualTeamName}`);
                                 setManualTeamName("");
                                 setIsManualOpen(false);
                             }}

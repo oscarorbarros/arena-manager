@@ -18,13 +18,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   console.log('=== LAYOUT DEBUG ===');
   console.log('User in Layout:', user);
 
-  if (!user || (user.role !== "admin" && user.role !== "organization_member")) {
+  if (!user || !["admin", "organization_member", "journalist", "delegate"].includes(user.role as string)) {
     return (
       <div className="min-h-screen bg-emerald-50 flex items-center justify-center p-4">
         <div className="text-center bg-white p-8 rounded-xl border border-red-200 shadow-xl">
-          <h1 className="text-2xl font-bold text-red-400 mb-2">Acesso Negado</h1>
-          <p className="text-black mb-4">Apenas administradores e membros da organização podem acessar esta área.</p>
-          <Link href="/login" className="px-6 py-2 bg-[#059669] hover:bg-[#059669] text-white rounded-lg inline-block">
+          <h1 className="text-2xl font-bold text-red-400 mb-2">Acesso Restrito</h1>
+          <p className="text-black mb-4">Seu nível de acesso não permite ver esta página.</p>
+          <Link href="/login" className="px-6 py-2 bg-[#059669] hover:bg-[#065f46] text-white rounded-lg inline-block font-bold">
             Fazer Login
           </Link>
         </div>
@@ -45,7 +45,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const NavLinks = () => (
     <>
-      {links.map((link) => (
+      {links.filter(link => {
+          if (realUser?.role === "admin") return true;
+          if (realUser?.role === "journalist") return ["/admin", "/admin/news"].includes(link.href);
+          if (realUser?.role === "organization_member") return ["/admin", "/admin/matches", "/admin/teams", "/admin/scorers", "/admin/users"].includes(link.href);
+          if (realUser?.role === "delegate") return ["/admin", "/admin/teams", "/admin/scorers"].includes(link.href);
+          return false;
+      }).map((link) => (
         <Link
           key={link.href}
           href={link.href}

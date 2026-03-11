@@ -5,9 +5,11 @@ import { useTournament } from "@/lib/context";
 import { Match, Team, Venue } from "@/lib/types";
 import { generateMatchReport } from "@/lib/news-engine";
 import { Plus, Trash2, Trophy, X, Zap, PlayCircle, FileText, Calendar, MapPin, Clock, RefreshCw } from "lucide-react";
+import { useAudit } from "@/lib/audit-context";
 
 export default function AdminMatchesPage() {
   const { config, setConfig, setNews, generateNextStage, updateMatch } = useTournament();
+  const { logAction } = useAudit();
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Venue States
@@ -44,18 +46,21 @@ export default function AdminMatchesPage() {
           status: "finished" as const, 
           startTime: Date.now() 
       });
-      
+      logAction("simulate_match", `Simulou a partida ${getTeamName(match.teamAId)} x ${getTeamName(match.teamBId)} (${scoreA}x${scoreB})`);
 // News generation handled automatically by updateMatch context
   };
 
   const handleSimulateAll = () => {
-      if (!confirm("Tem certeza? Isso simularÃ¡ TODAS as partidas pendentes.")) return;
+      if (!confirm("Tem certeza? Isso simulará TODAS as partidas pendentes.")) return;
       config.matches.filter(m => m.status !== "finished").forEach(m => handleSimulate(m.id));
+      logAction("simulate_all_matches", "Simulou todas as partidas pendentes.");
   };
 
   const handleDelete = (id: string) => {
       if (!confirm("Excluir partida?")) return;
+      const matchToRemove = config.matches.find(m => m.id === id);
       setConfig(prev => ({ ...prev, matches: prev.matches.filter(m => m.id !== id) }));
+      logAction("delete_match", `Removeu a partida de ID: ${id}`);
   };
 
   // --- Venues Logic ---
@@ -63,12 +68,15 @@ export default function AdminMatchesPage() {
       if (!newVenueName.trim()) return;
       const newVenue: Venue = { id: crypto.randomUUID(), name: newVenueName };
       setConfig(prev => ({ ...prev, venues: [...(prev.venues || []), newVenue] }));
+      logAction("create_venue", `Cadastrou o local de jogo: ${newVenueName}`);
       setNewVenueName("");
   };
 
   const handleDeleteVenue = (id: string) => {
      if (!confirm("Remover local?")) return;
+     const venueToRemove = config.venues?.find(v => v.id === id);
      setConfig(prev => ({ ...prev, venues: (prev.venues || []).filter(v => v.id !== id) }));
+     logAction("delete_venue", `Removeu local de jogo: ${venueToRemove?.name}`);
   };
 
   // --- Scheduling Logic ---
@@ -96,6 +104,7 @@ export default function AdminMatchesPage() {
               scheduledTime 
           } : m)
       }));
+      logAction("schedule_match", `Agendou a partida ${getTeamName(scheduleModalMatch.teamAId)} x ${getTeamName(scheduleModalMatch.teamBId)} para ${scheduleForm.date} às ${scheduleForm.time} no local ${getVenueName(scheduleForm.venueId)}`);
       setScheduleModalMatch(null);
   };
 
@@ -116,11 +125,12 @@ export default function AdminMatchesPage() {
       });
       
       if (toRemove.length > 0) {
-          if (confirm(`Foram encontradas ${toRemove.length} partidas duplicadas. Deseja removÃª-las?`)) {
+          if (confirm(`Foram encontradas ${toRemove.length} partidas duplicadas. Deseja removê-las?`)) {
               setConfig(prev => ({
                   ...prev,
                   matches: prev.matches.filter(m => !toRemove.includes(m.id))
               }));
+              logAction("remove_duplicates", `Removeu ${toRemove.length} partidas duplicadas do sistema.`);
               alert(`${toRemove.length} partidas duplicadas removidas com sucesso!`);
           }
       } else {

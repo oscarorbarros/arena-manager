@@ -58,6 +58,9 @@ export default function AdminUsersPage() {
   };
 
   const handleEdit = (user: User) => {
+      if (currentUser?.role !== "admin" && user.role !== "delegate") {
+          return alert("Você só tem permissão para editar Chefes de Delegação.");
+      }
       setFormData({
           id: user.id,
           name: user.name,
@@ -76,6 +79,10 @@ const handleDelete = (userId: string) => {
       
       if (userId === currentUser?.id) {
           return alert("Você não pode excluir a sua própria conta!");
+      }
+
+      if (userToRemove.role !== "delegate" && currentUser?.role !== "admin") {
+          return alert("Você só tem permissão para excluir Chefes de Delegação.");
       }
 
       if (userToRemove.role === "admin" && currentUser?.role !== "admin") {
@@ -115,7 +122,8 @@ const handleDelete = (userId: string) => {
   const getRoleBadge = (role: UserRole) => {
       switch(role) {
           case "admin": return <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-400/30">ADMIN</span>;
-          case "organization_member": return <span className="px-2 py-0.5 rounded bg-yellow-500/20 text-amber-600 text-xs font-bold border border-yellow-500/30">STAFF / JUIZ</span>;
+          case "organization_member": return <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-500 text-xs font-bold border border-cyan-500/30">STAFF</span>;
+          case "journalist": return <span className="px-2 py-0.5 rounded bg-pink-500/20 text-pink-500 text-xs font-bold border border-pink-500/30">JORNALISTA</span>;
           case "delegate": return <span className="px-2 py-0.5 rounded bg-[#059669] text-white/20 text-white text-xs font-bold border border-emerald-300/30">DELEGADO</span>;
           case "president": return <span className="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-xs font-bold border border-green-500/30">PRESIDENTE</span>;
           default: return <span className="px-2 py-0.5 rounded bg-emerald-200/50 text-black text-xs">PÚBLICO</span>;
@@ -137,13 +145,15 @@ const handleDelete = (userId: string) => {
             <Plus className="w-4 h-4" />
             Novo Usuário
         </button>
-        <button 
-            onClick={handleClearUsers}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-bold transition-colors shadow-lg ml-2"
-        >
-            <Users className="w-4 h-4" />
-            Excluir todos usuários
+        {currentUser?.role === "admin" && (
+            <button 
+                onClick={handleClearUsers}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-bold transition-colors shadow-lg ml-2"
+            >
+                <Users className="w-4 h-4" />
+                Excluir todos usuários
             </button>
+        )}
         </div>
       </div>
 
@@ -169,24 +179,26 @@ const handleDelete = (userId: string) => {
                         <td className="p-4 text-black font-mono text-sm">{sysUser.email}</td>
                         <td className="p-4">{getRoleBadge(sysUser.role)}</td>
                         <td className="p-4 text-right">
-                                <div className="flex justify-end gap-2">
-                                    <button 
-                                        onClick={() => handleEdit(sysUser)}
-                                        className="p-2 text-black hover:text-black hover:bg-emerald-100/300/10 rounded-lg transition-colors"
-                                        title="Editar Usuário / Trocar Senha"
-                                    >
-                                        <Users className="w-4 h-4" />
-                                    </button>
-                                    {sysUser.id !== currentUser?.id && (currentUser?.role === "admin" || sysUser.role !== "admin") && (
-                                        <button 
-                                            onClick={() => handleDelete(sysUser.id)}
-                                            className="p-2 text-black hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                                            title="Remover Usuário"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
+                                    {(currentUser?.role === "admin" || (currentUser?.role === "organization_member" && sysUser.role === "delegate")) && (
+                                      <div className="flex justify-end gap-2">
+                                          <button 
+                                              onClick={() => handleEdit(sysUser)}
+                                              className="p-2 text-black hover:text-black hover:bg-emerald-100/300/10 rounded-lg transition-colors"
+                                              title="Editar Usuário / Trocar Senha"
+                                          >
+                                              <Users className="w-4 h-4" />
+                                          </button>
+                                          {sysUser.id !== currentUser?.id && (currentUser?.role === "admin" || sysUser.role !== "admin") && (
+                                              <button 
+                                                  onClick={() => handleDelete(sysUser.id)}
+                                                  className="p-2 text-black hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                                  title="Remover Usuário"
+                                              >
+                                                  <Trash2 className="w-4 h-4" />
+                                              </button>
+                                          )}
+                                      </div>
                                     )}
-                                </div>
                         </td>
                     </tr>
                 ))}
@@ -247,10 +259,15 @@ const handleDelete = (userId: string) => {
                             value={formData.role || "delegate"}
                             onChange={e => setFormData({...formData, role: e.target.value as UserRole})}
                           >
-                              {currentUser?.role === "admin" && <option value="admin">Administrador (Acesso Total)</option>}
-                              <option value="organization_member">Membro da Equipe (Juiz/Staff)</option>
+                              {currentUser?.role === "admin" && (
+                                  <>
+                                    <option value="admin">Administrador (Acesso Total)</option>
+                                    <option value="organization_member">Staff (Equipe da Organização)</option>
+                                    <option value="journalist">Jornalista (Apenas Notícias)</option>
+                                    <option value="president">Presidente do Torneio</option>
+                                  </>
+                              )}
                               <option value="delegate">Chefe de Delegação (Times)</option>
-                              <option value="president">Presidente do Torneio</option>
                           </select>
                       </div>
 

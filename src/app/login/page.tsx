@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import { Lock, Shield, Users, Briefcase } from "lucide-react";
+import { Lock, Shield, Users, Briefcase, FileText } from "lucide-react";
 import { UserRole } from "@/lib/types";
 import { useTournament } from "@/lib/context";
 
@@ -28,9 +28,9 @@ export default function LoginPage() {
     
     if (foundUser) {
         if (loginWithUser(foundUser)) {
-            if (foundUser.role === "admin" || foundUser.role === "organization_member") router.push("/admin");
-            else if (foundUser.role === "referee") router.push("/referee");
-            else if (foundUser.role === "delegate") router.push("/delegate");
+            if (["admin", "organization_member", "journalist", "delegate"].includes(foundUser.role!)) {
+                router.push("/admin");
+            } else if (foundUser.role === "referee") router.push("/referee");
             else router.push("/public");
         }
     } else {
@@ -87,6 +87,14 @@ export default function LoginPage() {
                     >
                         <Shield className="w-5 h-5" />
                         <span className="text-[10px] uppercase font-bold">Staff</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setRole("journalist")}
+                        className={`p-2 rounded-lg border flex flex-col items-center gap-1 transition-all ${role === "journalist" ? "bg-pink-600/20 border-pink-500 text-pink-400" : "bg-gray-900 border-gray-700 text-gray-500 hover:bg-gray-700"}`}
+                    >
+                        <FileText className="w-5 h-5" />
+                        <span className="text-[10px] uppercase font-bold">Jornalista</span>
                     </button>
                 </div>
             </div>
