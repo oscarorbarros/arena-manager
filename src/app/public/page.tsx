@@ -27,8 +27,8 @@ export default function PublicPortal() {
           try {
               const cacheBuster = `?t=${Date.now()}`;
               const [configRes, newsRes] = await Promise.all([
-                  fetch('/api/config' + cacheBuster),
-                  fetch('/api/news' + cacheBuster)
+                  fetch('/api/config' + cacheBuster, { cache: 'no-store' }),
+                  fetch('/api/news' + cacheBuster, { cache: 'no-store' })
               ]);
               if (configRes.ok && newsRes.ok) {
                   const srvConfig = await configRes.json();
@@ -123,8 +123,8 @@ export default function PublicPortal() {
             ) : (
                 <div className="grid gap-6">
                     {news.map((story, i) => (
-                        <article key={story.id} className={`group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 ${i === 0 ? 'md:grid md:grid-cols-2 block' : 'block'}`}>
-                            <div className={`bg-gray-200 relative overflow-hidden w-full ${i === 0 ? 'h-56 md:h-full md:min-h-[300px]' : 'h-48'}`}>
+                        <article key={story.id} className={`group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex flex-col ${i === 0 ? 'md:flex-row' : ''}`}>
+                            <div className={`bg-gray-200 relative overflow-hidden shrink-0 w-full ${i === 0 ? 'h-56 md:h-auto md:w-1/2 md:min-h-[300px]' : 'h-48'}`}>
                                 {/* GE-style image, using absolute to fill the container */}
                                 {story.imageUrl ? (
                                     <img src={story.imageUrl} alt={story.headline} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -140,7 +140,7 @@ export default function PublicPortal() {
                                     ))}
                                 </div>
                             </div>
-                            <div className="p-4 md:p-6 block">
+                            <div className={`p-4 md:p-6 flex flex-col justify-between flex-1 ${i === 0 ? 'md:w-1/2' : ''}`}>
                                 <div>
                                     <div className="text-[10px] md:text-xs text-gray-500 font-bold uppercase mb-2 flex items-center gap-1">
                                         <Clock className="w-3 h-3" />

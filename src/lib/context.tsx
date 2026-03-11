@@ -32,8 +32,9 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
     const loadFromStorage = async () => {
         // Try to load from API server (works both locally and on Render)
         try {
-            const configRes = await fetch(`/api/config`);
-            const newsRes = await fetch(`/api/news`);
+            const cacheBuster = `?t=${Date.now()}`;
+            const configRes = await fetch(`/api/config${cacheBuster}`, { cache: 'no-store' });
+            const newsRes = await fetch(`/api/news${cacheBuster}`, { cache: 'no-store' });
             
             if (configRes.ok && newsRes.ok) {
                 const srvConfig = await configRes.json();
