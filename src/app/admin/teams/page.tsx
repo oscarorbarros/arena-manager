@@ -63,17 +63,28 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
           let skipped = 0;
 
           lines.forEach(line => {
-             if (line.toUpperCase().includes("FORMATO:")) return; // ignora a linha de ajuda
+             if (line.toUpperCase().includes("FORMATO:")) return;
              const parts = line.split(",").map(s => s.trim());
-             if (parts.length < 3) return;
+             // MUST have exactly 4 fields and email must contain @
+             // This prevents accidentally importing a player CSV as teams
+             if (parts.length < 4) {
+                 console.warn(`Linha ignorada (formato inválido, ${parts.length} campos): ${line}`);
+                 return;
+             }
              
              const [chiefName, email, teamName, group] = parts;
+
+             // Validate email — must contain @
+             if (!email.includes('@')) {
+                 console.warn(`Linha ignorada (email inválido: "${email}"): ${line}`);
+                 return;
+             }
              
              // Check duplicates in Config and also in the lines being processed
              let userId = crypto.randomUUID();
              const existingUser = config.users?.find(u => u.email.toLowerCase() === email.toLowerCase());
              if (existingUser) {
-                 userId = existingUser.id; // Aproveita o usuario delegado existente
+                 userId = existingUser.id;
              } else {
                  newUsers.push({
                      id: userId,
@@ -87,7 +98,7 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
              const existingTeam = config.teams?.find(t => t.name.toLowerCase() === teamName.toLowerCase());
              if (existingTeam) {
                  skipped++;
-                 return; // Esse time ja existe
+                 return;
              }
 
              newTeams.push({
@@ -196,11 +207,23 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
         </button>
 
         {config.teams.length > 0 && <button 
-            onClick={handleClearTeams}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-bold transition-colors shadow-lg ml-2"
+            onClick={() => {
+              if (confirm("ATENÇÃO: Isso excluirá TODOS os times, atletas E usuários delegados cadastrados. Use isto para limpar uma importação errada. Deseja continuar?")) {
+                setConfig(prev => ({
+                    ...prev,
+                    teams: [],
+                    players: [],
+                    users: (prev.users || []).filter(u => u.role !== "delegate"),
+                    matches: prev.matches.filter(m => false) // clear all matches
+                }));
+                logAction("clear_all", "Limpou todos os times, atletas e delegados.");
+                alert("Limpeza completa realizada. Times, atletas e delegados removidos.");
+              }
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg text-sm font-bold transition-colors shadow-lg ml-2"
         >
             <Trash2 className="w-4 h-4" />
-            Excluir Tudo
+            Limpar Tudo
         </button>}
       </div>
 
@@ -271,6 +294,12 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                             ? "FORMATO: NomeChefe, Email, NomeTime, Grupo (Ex: João, joao@email.com, Falcons, A)" 
                             : "FORMATO: NomeTime, NomeAtleta, Numero (Ex: Falcons, Neymar, 10)"}
                       </div>
+                      {importTab === "teams" && (
+                        <div className="mb-2 p-2 bg-red-100 border border-red-300 rounded text-xs text-red-700 font-semibold">
+                          ⚠️ ATENÇÃO: Use esta aba APENAS para importar TIMES. Para importar jogadores, use a aba "Atletas".
+                          O Email do chefe de delegação é obrigatório e deve conter @.
+                        </div>
+                      )}
                       <textarea 
                         className="flex-1 w-full bg-transparent outline-none font-mono text-sm resize-none text-black"
                         placeholder="Cole seus dados aqui..."
