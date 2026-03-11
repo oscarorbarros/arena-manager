@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useRef } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useTournament } from "@/lib/context";
@@ -184,20 +184,86 @@ export default function DelegateDashboard() {
                             </div>
                         </div>
                         
-                        {/* Roster List... */}
-                        <div className="grid gap-2">
-                             {myPlayers.length === 0 && <p className="text-gray-400 text-sm italic">Nenhum atleta cadastrado.</p>}
-                             {myPlayers.map(player => (
-                                 <div key={player.id} className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-100">
-                                     <div className="flex items-center gap-3">
-                                         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center font-bold text-xs text-gray-600">
-                                             {player.number}
-                                         </div>
-                                         <span className="font-medium">{player.name}</span>
-                                     </div>
-                                     <span className="text-xs px-2 py-1 bg-gray-200 rounded-full text-gray-600">{player.position}</span>
-                                 </div>
-                             ))}
+                        {/* Roster List with Starter Toggle */}
+                        <div className="space-y-2">
+                            {myPlayers.length === 0 && <p className="text-gray-400 text-sm italic">Nenhum atleta cadastrado.</p>}
+                            
+                            {myPlayers.length > 0 && (
+                                <div className="flex items-center justify-between mb-3">
+                                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
+                                        Elenco — defina os titulares para a súmula
+                                    </p>
+                                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                                        myPlayers.filter(p => p.isStarter).length === 0 
+                                            ? "bg-gray-100 text-gray-500"
+                                            : myPlayers.filter(p => p.isStarter).length > 5 
+                                                ? "bg-green-100 text-green-700" 
+                                                : "bg-yellow-100 text-yellow-700"
+                                    }`}>
+                                        {myPlayers.filter(p => p.isStarter).length} titular(es)
+                                    </span>
+                                </div>
+                            )}
+
+                            {myPlayers.map(player => (
+                                <div key={player.id} className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                                    player.isStarter 
+                                        ? "bg-green-50 border-green-300" 
+                                        : "bg-gray-50 border-gray-100"
+                                }`}>
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                                            player.isStarter ? "bg-green-200 text-green-800" : "bg-gray-200 text-gray-600"
+                                        }`}>
+                                            {player.number}
+                                        </div>
+                                        <div>
+                                            <span className="font-medium text-sm">{player.name}</span>
+                                            <span className="ml-2 text-xs text-gray-400">{player.position}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                                            player.isStarter 
+                                                ? "bg-green-200 text-green-800" 
+                                                : "bg-gray-200 text-gray-600"
+                                        }`}>
+                                            {player.isStarter ? "✓ Titular" : "Reserva"}
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                setConfig(prev => ({
+                                                    ...prev,
+                                                    players: (prev.players || []).map(p =>
+                                                        p.id === player.id ? { ...p, isStarter: !p.isStarter } : p
+                                                    )
+                                                }));
+                                            }}
+                                            className={`px-3 py-1 text-xs font-bold rounded-lg transition-colors ${
+                                                player.isStarter 
+                                                    ? "bg-red-100 text-red-600 hover:bg-red-200" 
+                                                    : "bg-green-100 text-green-700 hover:bg-green-200"
+                                            }`}
+                                        >
+                                            {player.isStarter ? "Remover" : "Escalar"}
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                if (confirm(`Excluir ${player.name}?`)) {
+                                                    setConfig(prev => ({
+                                                        ...prev,
+                                                        players: (prev.players || []).filter(p => p.id !== player.id)
+                                                    }));
+                                                }
+                                            }}
+                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                            title="Excluir atleta"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}

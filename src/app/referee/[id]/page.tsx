@@ -9,6 +9,7 @@ import {
   CheckCircle, Clock, Hash, Trophy, StopCircle 
 } from "lucide-react";
 import { MatchPeriod, isMatchInInjuryTime } from "@/lib/types";
+import { generateAndPrintSumula } from "@/lib/sumula-pdf";
 
 export default function MatchInterface() {
   const params = useParams();
@@ -20,13 +21,14 @@ export default function MatchInterface() {
   const match = config.matches.find(m => m.id === matchId);
   
   // Local state for modals/forms
-  const [activeModal, setActiveModal] = useState<"goal" | "card" | "sumula" | "penalties" | null>(null);
+  const [activeModal, setActiveModal] = useState<"goal" | "card" | "sumula" | "penalties" | "substitution" | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [selectedCardType, setSelectedCardType] = useState<"yellow" | "red" | null>(null);
   const [sumulaText, setSumulaText] = useState("");
   const [woModalOpen, setWoModalOpen] = useState(false);
   const [annulModal, setAnnulModal] = useState({ isOpen: false, type: "goal" as "goal" | "penalty", teamId: "" });
   const [annulReason, setAnnulReason] = useState("");
+  const [subPlayerOut, setSubPlayerOut] = useState<string | null>(null);
   const [timer, setTimer] = useState(0);
 
   // Sync Sumula text
@@ -190,12 +192,10 @@ export default function MatchInterface() {
 
   const finishMatch = () => {
       if (!confirm("Tem certeza que deseja FINALIZAR a partida?")) return;
-      
-      updateMatch(matchId, { status: "finished", startTime: undefined });
-      addMatchEvent(matchId, { type: "end", timestamp: Date.now(), matchTime: timer, observation: "Partida Encerrada" });
-      
-      if (user?.role === "admin") router.push("/admin");
-      else router.push("/");
+      const responsibleName = user?.name || user?.email || "Árbitro";
+      updateMatch(matchId, { status: "finished", startTime: undefined, closedBy: responsibleName });
+      addMatchEvent(matchId, { type: "end", timestamp: Date.now(), matchTime: timer, observation: `Partida Encerrada por ${responsibleName}` });
+      // Don't redirect immediately so they can download the sumula
   };
 
   
@@ -440,7 +440,7 @@ export default function MatchInterface() {
               )}
 
               {/* End of Regular Time Controls */}
-              {match.period === 'full_time' && (
+              {match.period === 'full_time' && match.status !== 'finished' && (
                   <>
                     {(match.scoreA !== match.scoreB || !isKnockout) && (
                         <button onClick={finishMatch} className="px-6 py-2 bg-red-600 hover:bg-red-500 rounded-lg font-bold flex items-center gap-2 animate-pulse">
@@ -499,6 +499,44 @@ export default function MatchInterface() {
           </div>
       </div>
 
+      {/* === FINISHED MATCH OVERLAY === */}
+      {match.status === 'finished' && (
+          <div className="fixed inset-0 bg-gray-950/95 z-50 flex flex-col items-center justify-center gap-6 backdrop-blur">
+              <div className="text-green-400 text-6xl">🏆</div>
+              <h2 className="text-3xl font-black text-white uppercase tracking-widest">Partida Encerrada</h2>
+              <div className="text-5xl font-black font-mono text-white">
+                  {match.scoreA} <span className="text-gray-500 text-3xl">×</span> {match.scoreB}
+              </div>
+              <div className="text-gray-400 text-sm">{teamA?.name} &nbsp;×&nbsp; {teamB?.name}</div>
+              {match.closedBy && (
+                  <div className="text-gray-500 text-xs mt-1">Encerrada por: <strong className="text-gray-300">{match.closedBy}</strong></div>
+              )}
+              <div className="flex gap-3 mt-4 flex-wrap justify-center">
+                  <button
+                      onClick={() => generateAndPrintSumula({
+                          match,
+                          teamA: teamA!,
+                          teamB: teamB!,
+                          playersA,
+                          playersB,
+                          tournamentName: config.name,
+                          sportName: sport?.name || "Futebol",
+                          closedBy: match.closedBy
+                      })}
+                      className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center gap-2 text-sm shadow-lg shadow-emerald-900/30"
+                  >
+                      📄 Baixar Súmula (PDF)
+                  </button>
+                  <button
+                      onClick={() => router.push(user?.role === "admin" ? "/admin" : "/")}
+                      className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl flex items-center gap-2 text-sm border border-gray-700"
+                  >
+                      ← Voltar ao Painel
+                  </button>
+              </div>
+          </div>
+      )}
+
       <div className="flex-1 overflow-auto p-4 md:p-6 space-y-8">
         
         <div className="flex justify-around items-center">
@@ -528,6 +566,7 @@ export default function MatchInterface() {
                     <button onClick={() => setAnnulModal({ isOpen: true, type: "goal", teamId: match.teamAId })} className="col-span-2 py-2 text-xs font-black bg-red-600/20 text-red-400 border border-red-600/50 rounded-lg hover:bg-red-600/40 uppercase transition-all mb-1">ANULAR ÚLTIMO GOL</button>
                     <button onClick={() => openGoalModal(match.teamAId)} className="p-3 bg-blue-600 rounded-lg hover:bg-blue-500 flex justify-center text-white"><span className="text-2xl leading-none drop-shadow-md filter drop-shadow-lg">⚽</span></button>
                     <button onClick={() => openCardModal(match.teamAId)} className="p-3 bg-gray-800 rounded-lg hover:bg-gray-700 flex justify-center text-yellow-200 border border-gray-700"><AlertTriangle className="w-6 h-6" /></button>
+                    <button onClick={() => { setSelectedTeamId(match.teamAId); setSubPlayerOut(null); setActiveModal("substitution"); }} className="col-span-2 py-2 text-xs font-black bg-cyan-600/20 text-cyan-300 border border-cyan-600/50 rounded-lg hover:bg-cyan-600/40 uppercase transition-all">🔄 Substituição</button>
                 </div>
                 )}
              </div>
@@ -560,6 +599,7 @@ export default function MatchInterface() {
                     <button onClick={() => setAnnulModal({ isOpen: true, type: "goal", teamId: match.teamBId })} className="col-span-2 py-2 text-xs font-black bg-red-600/20 text-red-400 border border-red-600/50 rounded-lg hover:bg-red-600/40 uppercase transition-all mb-1">ANULAR ÚLTIMO GOL</button>
                     <button onClick={() => openGoalModal(match.teamBId)} className="p-3 bg-red-600 rounded-lg hover:bg-red-500 flex justify-center text-white"><span className="text-2xl leading-none drop-shadow-md filter drop-shadow-lg">⚽</span></button>
                     <button onClick={() => openCardModal(match.teamBId)} className="p-3 bg-gray-800 rounded-lg hover:bg-gray-700 flex justify-center text-yellow-200 border border-gray-700"><AlertTriangle className="w-6 h-6" /></button>
+                    <button onClick={() => { setSelectedTeamId(match.teamBId); setSubPlayerOut(null); setActiveModal("substitution"); }} className="col-span-2 py-2 text-xs font-black bg-cyan-600/20 text-cyan-300 border border-cyan-600/50 rounded-lg hover:bg-cyan-600/40 uppercase transition-all">🔄 Substituição</button>
                 </div>
                 )}
              </div>
@@ -585,6 +625,7 @@ export default function MatchInterface() {
                              <div className="flex items-center gap-3">
                                  {event.type === "info" && <div className="p-1.5"><FileText className="w-4 h-4 text-blue-400" /></div>}
                                  {event.type === "goal" && <div className="p-1.5 bg-transparent text-xl leading-none">⚽</div>}
+                                 {event.type === "substitution" && <div className="p-1.5 text-xl leading-none">🔄</div>}
                                  {event.type.includes("card") && <div className={`p-1.5 rounded-full ${event.type === "card_yellow" ? "bg-yellow-500/20 text-yellow-400" : "bg-red-500/20 text-red-500"}`}><ShieldAlert className="w-4 h-4" /></div>}
                                  {event.type === "start" && <Play className="w-4 h-4 text-white" />}
                                  {event.type === "end" && <StopCircle className="w-4 h-4 text-yellow-200" />}
@@ -723,6 +764,75 @@ export default function MatchInterface() {
                       <button onClick={() => handleGoal(undefined)} className="col-span-2 p-3 border border-dashed border-gray-700 text-gray-500 hover:bg-gray-800 rounded-lg text-sm">Não identificado / Gol Contra</button>
                   </div>
                   <button onClick={() => setActiveModal(null)} className="w-full p-4 text-center text-gray-500 hover:text-white border-t border-gray-800">Cancelar</button>
+              </div>
+          </div>
+      )}
+
+      {activeModal === "substitution" && (
+          <div className="fixed inset-0 bg-black/80 z-50 flex items-end md:items-center justify-center p-4">
+              <div className="bg-gray-900 rounded-xl w-full max-w-sm border border-gray-800 animate-in slide-in-from-bottom-10 md:zoom-in-95">
+                  <div className="p-4 border-b border-gray-800">
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                          <span className="text-2xl mr-1">🔄</span>
+                          {!subPlayerOut ? "Quem SAI?" : "Quem ENTRA?"}
+                      </h3>
+                      {subPlayerOut && (
+                          <p className="text-xs text-cyan-400 mt-1">
+                              Saindo: <strong>{(selectedTeamId === teamA?.id ? playersA : playersB).find(p => p.id === subPlayerOut)?.name}</strong>
+                          </p>
+                      )}
+                  </div>
+                  <div className="p-4 grid grid-cols-2 gap-2 max-h-[55vh] overflow-y-auto">
+                      {(selectedTeamId === teamA?.id ? playersA : playersB)
+                          .filter(p => subPlayerOut ? p.id !== subPlayerOut : true)
+                          .map(player => (
+                          <button
+                              key={player.id}
+                              onClick={() => {
+                                  if (!subPlayerOut) {
+                                      setSubPlayerOut(player.id);
+                                  } else {
+                                      // Register substitution: playerOut = subPlayerOut, playerIn = player.id
+                                      const playerOut = (selectedTeamId === teamA?.id ? playersA : playersB).find(p => p.id === subPlayerOut);
+                                      const playerIn = player;
+                                      const obs = `Substituição: ${playerOut?.name ?? "?"} ↔ ${playerIn.name}`;
+                                      addMatchEvent(matchId, {
+                                          type: "substitution",
+                                          teamId: selectedTeamId!,
+                                          playerId: subPlayerOut,       // who went OUT
+                                          playerInId: playerIn.id,      // who came IN
+                                          observation: obs,
+                                          matchTime: timer,
+                                          timestamp: Date.now()
+                                      });
+                                      setSubPlayerOut(null);
+                                      setActiveModal(null);
+                                  }
+                              }}
+                              className={`p-3 rounded-lg text-left flex items-center gap-3 border transition-all ${
+                                  !subPlayerOut && player.isStarter
+                                      ? "bg-green-900/30 border-green-700 hover:bg-green-900/50"
+                                      : "bg-gray-800 border-gray-700 hover:bg-gray-700 hover:border-gray-500"
+                              }`}
+                          >
+                              <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center font-bold text-sm text-gray-400 border border-gray-700 shrink-0">{player.number}</div>
+                              <div className="min-w-0">
+                                  <div className="truncate text-sm font-medium">{player.name}</div>
+                                  {player.isStarter && <div className="text-[10px] text-green-400">Titular</div>}
+                              </div>
+                          </button>
+                      ))}
+                  </div>
+                  <div className="flex border-t border-gray-800">
+                      {subPlayerOut && (
+                          <button onClick={() => setSubPlayerOut(null)} className="flex-1 p-4 text-center text-yellow-400 hover:text-white text-sm font-bold border-r border-gray-800">
+                              ← Voltar
+                          </button>
+                      )}
+                      <button onClick={() => { setActiveModal(null); setSubPlayerOut(null); }} className="flex-1 p-4 text-center text-gray-500 hover:text-white text-sm">
+                          Cancelar
+                      </button>
+                  </div>
               </div>
           </div>
       )}

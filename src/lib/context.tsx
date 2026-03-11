@@ -527,8 +527,22 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
              if (eventData.teamId === match.teamBId) newScoreB += eventData.value;
         }
 
+        // Update player stats from this event
+        let updatedPlayers = prev.players ? [...prev.players] : [];
+        if (eventData.playerId) {
+            updatedPlayers = updatedPlayers.map(p => {
+                if (p.id !== eventData.playerId) return p;
+                const stats = { ...(p.stats || { goals: 0, yellowCards: 0, redCards: 0, matchesPlayed: 0 }) };
+                if (eventData.type === "goal") stats.goals = (stats.goals || 0) + 1;
+                else if (eventData.type === "card_yellow") stats.yellowCards = (stats.yellowCards || 0) + 1;
+                else if (eventData.type === "card_red") stats.redCards = (stats.redCards || 0) + 1;
+                return { ...p, stats };
+            });
+        }
+
         return {
             ...prev,
+            players: updatedPlayers,
             matches: prev.matches.map(m => m.id === matchId ? {
                 ...m,
                 scoreA: Math.max(0, newScoreA),
@@ -538,6 +552,7 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
         };
     });
   };
+
 
   const deleteNews = (id: string) => {
       setNews(prev => {

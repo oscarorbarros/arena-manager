@@ -47,7 +47,8 @@ export interface Player {
   teamId: string;
   number?: number;
   position?: PlayerPosition;
-  photoUrl?: string; // Placeholder for now
+  photoUrl?: string;
+  isStarter?: boolean; // Defined by delegation chief before the match
   stats?: {
       goals: number;
       yellowCards: number;
@@ -58,11 +59,12 @@ export interface Player {
 
 export interface MatchEvent {
   id: string;
-  type: 'goal' | 'point' | 'set' | 'card_yellow' | 'card_red' | 'start' | 'end' | 'half_time' | 'injury' | 'info' | 'penalty_goal' | 'penalty_miss';
+  type: 'goal' | 'point' | 'set' | 'card_yellow' | 'card_red' | 'start' | 'end' | 'half_time' | 'injury' | 'info' | 'penalty_goal' | 'penalty_miss' | 'substitution';
   teamId?: string;
-  playerId?: string;
+  playerId?: string;     // Player who scored / got card / came OUT in substitution
+  playerInId?: string;  // Player who came IN (substitution only)
   timestamp: number;
-  matchTime: number; // Elapsed minutes in the match (e.g. 45)
+  matchTime: number;
   value?: number;
   observation?: string;
 }
@@ -91,6 +93,7 @@ export interface Match {
   round?: string; // "Rodada 1", "Quartas", "Semi"
   group?: string; // "A", "B"
   firstPenaltyTeamId?: string; // ID of the team that kicks first in penalties
+  closedBy?: string; // Name of the user who ended the match (for sumula)
 }
 
 // Auth & Users
