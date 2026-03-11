@@ -28,7 +28,9 @@ export default function LoginPage() {
     
     if (foundUser) {
         if (loginWithUser(foundUser)) {
-            if (["admin", "organization_member", "journalist", "delegate"].includes(foundUser.role!)) {
+            if (foundUser.role === "delegate") {
+                router.push("/delegate");
+            } else if (["admin", "organization_member", "journalist"].includes(foundUser.role!)) {
                 router.push("/admin");
             } else if (foundUser.role === "referee") router.push("/referee");
             else router.push("/public");

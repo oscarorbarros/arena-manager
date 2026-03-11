@@ -2,7 +2,7 @@
 import { useAuth } from "@/lib/auth-context";
 import { useTournament } from "@/lib/context";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Settings, Trophy, Users, LogOut, Shield, Newspaper, Menu, X } from "lucide-react";
 import { useState } from "react";
 
@@ -11,14 +11,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, logout } = useAuth();
   const { config } = useTournament();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
   
   const realUser = config.users?.find(u => u.id === user?.id) || user;
 
-  // Debug Auth
-  console.log('=== LAYOUT DEBUG ===');
-  console.log('User in Layout:', user);
+  // Delegates have their own panel — redirect them out of admin
+  if (user?.role === "delegate") {
+    router.replace("/delegate");
+    return null;
+  }
 
-  if (!user || !["admin", "organization_member", "journalist", "delegate"].includes(user.role as string)) {
+  if (!user || !["admin", "organization_member", "journalist"].includes(user.role as string)) {
     return (
       <div className="min-h-screen bg-emerald-50 flex items-center justify-center p-4">
         <div className="text-center bg-white p-8 rounded-xl border border-red-200 shadow-xl">

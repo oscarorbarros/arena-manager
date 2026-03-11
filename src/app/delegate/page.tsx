@@ -21,9 +21,23 @@ export default function DelegateDashboard() {
       // router.push("/login"); 
   }
   
-  // Find my team
-  const myTeam = config.teams.find(t => t.delegationChiefId === user?.id);
+  // Find my team — multiple strategies to handle ID mismatches
+  // 1. Exact match by delegationChiefId === user.id
+  // 2. Find user in config.users by email, then match by that user's id
+  // 3. Match by name (last resort)
+  const configUser = config.users?.find(u => u.email === user?.email);
+  const effectiveUserId = configUser?.id || user?.id;
+  
+  const myTeam = 
+    config.teams.find(t => t.delegationChiefId === user?.id) ||
+    config.teams.find(t => t.delegationChiefId === effectiveUserId) ||
+    config.teams.find(t => {
+      const chief = config.users?.find(u => u.id === t.delegationChiefId);
+      return chief?.name === user?.name || chief?.email === user?.email;
+    });
+
   const myPlayers = config.players?.filter(p => p.teamId === myTeam?.id) || [];
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
