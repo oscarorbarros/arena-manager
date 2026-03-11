@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -7,7 +7,8 @@ import { useAudit } from "@/lib/audit-context";
 import { useTournament } from "@/lib/context";
 import { NewsStory } from "@/lib/news-engine";
 import { GeStyleDashboard } from "@/components/GeStyleDashboard";
-import { LogOut, Clock, LayoutDashboard, Newspaper, User as UserIcon, Lock, X, Trash2, Edit, PlusCircle, ChevronRight, Trophy } from "lucide-react";
+import { NewsSlider } from "@/components/NewsSlider";
+import { LogOut, Clock, LayoutDashboard, Newspaper, User as UserIcon, Lock, X, Trash2, Edit, PlusCircle, ChevronRight, Trophy, Plus } from "lucide-react";
 
 export default function HomePage() {
     const router = useRouter();
@@ -21,7 +22,11 @@ export default function HomePage() {
     // News Modal State
     const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
     const [editingNewsId, setEditingNewsId] = useState<string | null>(null);
-    const [newsForm, setNewsForm] = useState({ headline: "", body: "", tags: "" });
+    const [newsForm, setNewsForm] = useState({ headline: "", body: "", tags: "", imageUrls: [] as string[] });
+    const [newImageUrl, setNewImageUrl] = useState("");
+
+    // Reading Modal State
+    const [readingNewsItem, setReadingNewsItem] = useState<NewsStory | null>(null);
 
     // TABS: "news" or "championship"
     const [activeTab, setActiveTab] = useState<"news" | "championship">("news");
@@ -68,6 +73,7 @@ export default function HomePage() {
                 login("journalist", "123456", "Jornalista");
                 logAction("LOGIN", `Usuário press@arena.com entrou no sistema`);
                 setIsLoginOpen(false);
+                router.push("/admin");
                 return;
             }
         }
@@ -78,8 +84,7 @@ export default function HomePage() {
             login(userFound.role, loginData.password, userFound.name);
             logAction("LOGIN", `Usuário ${userFound.email} entrou no sistema`);
             setIsLoginOpen(false);
-            if (userFound.role === "admin") router.push("/admin");
-            else if (userFound.role === "organization_member") router.push("/admin");
+            if (["admin", "organization_member", "journalist"].includes(userFound.role || "")) router.push("/admin");
             else if (userFound.role === "delegate") router.push("/delegate");
         } else {
             setError("Credenciais inválidas.");
@@ -91,11 +96,12 @@ export default function HomePage() {
     const handleOpenNewsModal = (newsItem?: NewsStory) => {
         if (newsItem) {
             setEditingNewsId(newsItem.id);
-            setNewsForm({ headline: newsItem.headline, body: newsItem.body, tags: newsItem.tags?.join(", ") || "" });
+            setNewsForm({ headline: newsItem.headline, body: newsItem.body, tags: newsItem.tags?.join(", ") || "", imageUrls: newsItem.imageUrls || (newsItem.imageUrl ? [newsItem.imageUrl] : []) });
         } else {
             setEditingNewsId(null);
-            setNewsForm({ headline: "", body: "", tags: "" });
+            setNewsForm({ headline: "", body: "", tags: "", imageUrls: [] });
         }
+        setNewImageUrl("");
         setIsNewsModalOpen(true);
     };
 
@@ -113,7 +119,8 @@ export default function HomePage() {
                 timestamp: Date.now(),
                 headline: newsForm.headline,
                 body: newsForm.body,
-                tags: tagsArray
+                tags: tagsArray,
+                imageUrls: newsForm.imageUrls
             };
             setNews(prev => [newStory, ...prev]);
         }
@@ -137,7 +144,7 @@ export default function HomePage() {
                         </div>
 
                         <Link
-                            href={authUser.role === "admin" || authUser.role === "organization_member" ? "/admin" : authUser.role === "delegate" ? "/delegate" : "/public"}
+                            href={["admin", "organization_member", "journalist"].includes(authUser.role as string) ? "/admin" : authUser.role === "delegate" ? "/delegate" : "/public"}
                             className="flex items-center gap-2 text-white hover:text-white transition-colors uppercase font-bold tracking-wider hover:bg-[#059669] px-3 py-1 rounded"
                         >
                             <LayoutDashboard className="w-3 h-3" />
@@ -279,8 +286,13 @@ export default function HomePage() {
                                         )}
 
                                         <div className={`bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden ${i === 0 ? "h-full min-h-[250px]" : "h-48"}`}>
-                                            <div className="absolute inset-0 bg-gradient-to-br from-[#06aa48]/10 to-blue-500/10" />
-                                            <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap">
+                                            {(story.imageUrls && story.imageUrls.length > 0) || story.imageUrl ? (
+                                                <NewsSlider images={story.imageUrls || (story.imageUrl ? [story.imageUrl] : [])} />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-gradient-to-br from-[#06aa48]/10 to-blue-500/10" />
+                                            )}
+                                            
+                                            <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap z-30">
                                                 {story.tags?.map(tag => (
                                                     <span key={tag} className="text-[10px] uppercase font-bold bg-emerald-950/40 backdrop-blur-md text-black bg-emerald-900 text-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[9px] border border-white/20">
                                                         {tag}
@@ -301,7 +313,7 @@ export default function HomePage() {
                                                     {story.body}
                                                 </p>
                                             </div>
-                                            <div className="mt-4 flex items-center text-black font-bold text-sm group/link cursor-pointer">
+                                            <div onClick={() => setReadingNewsItem(story)} className="mt-4 flex items-center text-black font-bold text-sm group/link cursor-pointer">
                                                 Ler matéria completa <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
                                             </div>
                                         </div>
@@ -364,10 +376,92 @@ export default function HomePage() {
                                 <label className="block text-sm font-bold text-black mb-1">Tags (separadas por vírgula)</label>
                                 <input value={newsForm.tags} onChange={e => setNewsForm({ ...newsForm, tags: e.target.value })} className="w-full p-2 border border-gray-300 rounded focus:border-emerald-300 outline-none text-sm" placeholder="ex: rodada 1, goleada, destaque" />
                             </div>
+                            <div>
+                                <label className="block text-sm font-bold text-black mb-2">Imagens da Notícia</label>
+                                <div className="flex gap-2 mb-3">
+                                    <input 
+                                        value={newImageUrl} 
+                                        onChange={e => setNewImageUrl(e.target.value)} 
+                                        className="flex-1 p-2 border border-gray-300 rounded focus:border-emerald-300 outline-none text-sm text-black" 
+                                        placeholder="https://suasite.com/foto.jpg" 
+                                        onKeyPress={e => {
+                                            if (e.key === "Enter" && newImageUrl.trim()) {
+                                                setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, newImageUrl.trim()] }));
+                                                setNewImageUrl("");
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                    />
+                                    <button 
+                                        onClick={() => {
+                                            if (newImageUrl.trim()) {
+                                                setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, newImageUrl.trim()] }));
+                                                setNewImageUrl("");
+                                            }
+                                        }}
+                                        className="px-3 py-2 bg-[#059669] text-white rounded font-bold hover:bg-[#047857] transition-colors flex items-center gap-1"
+                                    >
+                                        <Plus className="w-4 h-4" /> Adicionar
+                                    </button>
+                                </div>
+                                {newsForm.imageUrls.length > 0 && (
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                                        {newsForm.imageUrls.map((url, i) => (
+                                            <div key={i} className="relative group rounded-lg overflow-hidden border border-gray-300 aspect-video">
+                                                <img src={url} alt={`Preview ${i}`} className="w-full h-full object-cover" />
+                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <button 
+                                                        onClick={() => setNewsForm(prev => ({ ...prev, imageUrls: prev.imageUrls.filter((_, idx) => idx !== i) }))}
+                                                        className="p-1.5 bg-red-600 rounded-full text-white hover:bg-red-500"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className="p-4 border-t bg-white flex justify-end gap-2">
                             <button onClick={() => setIsNewsModalOpen(false)} className="px-4 py-2 text-black hover:text-black">Cancelar</button>
                             <button onClick={handleSaveNews} className="px-6 py-2 bg-[#059669] hover:bg-[#059669] text-black font-bold rounded">Salvar Notícia</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* READING MODAL */}
+            {readingNewsItem && (
+                <div className="fixed inset-0 bg-emerald-950/60 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl w-full max-w-4xl shadow-2xl animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[90vh]">
+                        <div className="p-4 flex justify-between items-center border-b border-gray-100 bg-emerald-50 text-emerald-900 border-l-4 border-l-emerald-600">
+                            <span className="text-sm font-bold tracking-widest uppercase flex items-center gap-1"><Newspaper className="w-4 h-4"/> Matéria Completa</span>
+                            <button onClick={() => setReadingNewsItem(null)} className="hover:bg-black/10 p-2 rounded-full transition-colors"><X className="w-5 h-5 text-black" /></button>
+                        </div>
+                        <div className="overflow-y-auto w-full custom-scrollbar">
+                            <div className="p-6 md:p-10">
+                                <h1 className="text-3xl md:text-5xl font-black text-black leading-tight tracking-tight mb-4">{readingNewsItem.headline}</h1>
+                                <div className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-8 flex items-center gap-2">
+                                    Publicado em {new Date(readingNewsItem.timestamp).toLocaleDateString([], { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                                </div>
+
+                                <div className="prose prose-lg prose-emerald text-black max-w-none mb-10 whitespace-pre-wrap leading-relaxed">
+                                    {readingNewsItem.body}
+                                </div>
+
+                                {readingNewsItem.imageUrls && readingNewsItem.imageUrls.length > 0 && (
+                                    <div className="mt-8">
+                                        <h3 className="text-lg font-bold text-black border-l-4 border-emerald-500 pl-3 uppercase tracking-wider mb-6">Galeria de Imagens</h3>
+                                        <div className="flex flex-col gap-8">
+                                            {readingNewsItem.imageUrls.map((url, i) => (
+                                                <div key={i} className="rounded-xl overflow-hidden bg-gray-100/50 shadow-inner border border-gray-200">
+                                                    <img src={url} alt={`News pic ${i}`} className="w-full h-auto max-h-[70vh] object-contain shadow-sm" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

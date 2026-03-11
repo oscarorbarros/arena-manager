@@ -7,6 +7,7 @@ export interface NewsStory {
     matchId: string;
     timestamp: number;
     imageUrl?: string;
+    imageUrls?: string[];
     tags?: string[];
 }
 

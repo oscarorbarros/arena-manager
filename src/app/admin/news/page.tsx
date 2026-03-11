@@ -10,7 +10,8 @@ export default function AdminNewsPage() {
   const { logAction } = useAudit();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNewsId, setEditingNewsId] = useState<string | null>(null);
-  const [newsForm, setNewsForm] = useState({ headline: "", body: "", tags: "", imageUrl: "" });
+  const [newsForm, setNewsForm] = useState({ headline: "", body: "", tags: "", imageUrls: [] as string[] });
+  const [newImageUrl, setNewImageUrl] = useState("");
 
   const handleOpenModal = (newsItem?: NewsStory) => {
       if (newsItem) {
@@ -19,12 +20,13 @@ export default function AdminNewsPage() {
               headline: newsItem.headline, 
               body: newsItem.body, 
               tags: newsItem.tags?.join(", ") || "",
-              imageUrl: newsItem.imageUrl || ""
+              imageUrls: newsItem.imageUrls || (newsItem.imageUrl ? [newsItem.imageUrl] : [])
           });
       } else {
           setEditingNewsId(null);
-          setNewsForm({ headline: "", body: "", tags: "", imageUrl: "" });
+          setNewsForm({ headline: "", body: "", tags: "", imageUrls: [] });
       }
+      setNewImageUrl("");
       setIsModalOpen(true);
   };
 
@@ -49,7 +51,7 @@ export default function AdminNewsPage() {
               headline: newsForm.headline,
               body: newsForm.body,
               tags: tagsArray,
-              imageUrl: newsForm.imageUrl
+              imageUrls: newsForm.imageUrls
           };
           setNews(prev => [newStory, ...prev]);
           logAction("create_news", `Publicou notícia: ${newsForm.headline}`);
@@ -194,22 +196,52 @@ export default function AdminNewsPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-gray-300 mb-1">URL da Imagem (Opcional)</label>
-                            <div className="flex gap-2">
-                                <div className="bg-emerald-800 p-3 rounded flex items-center justify-center text-emerald-300 border border-emerald-700">
-                                    {newsForm.imageUrl ? (
-                                        <img src={newsForm.imageUrl} className="w-6 h-6 object-cover rounded" alt="Preview"/>
-                                    ) : (
-                                        <ImageIcon className="w-6 h-6" />
-                                    )}
-                                </div>
+                            <label className="block text-sm font-bold text-gray-300 mb-2">Imagens e Fotos (Adicione múltiplos links)</label>
+                            
+                            <div className="flex gap-2 mb-3">
                                 <input 
-                                    value={newsForm.imageUrl} 
-                                    onChange={e => setNewsForm({...newsForm, imageUrl: e.target.value})} 
+                                    value={newImageUrl} 
+                                    onChange={e => setNewImageUrl(e.target.value)} 
                                     className="flex-1 p-3 bg-emerald-50/50 border border-emerald-200 rounded focus:border-blue-500 outline-none text-white text-sm" 
                                     placeholder="https://suasite.com/foto.jpg" 
+                                    onKeyPress={e => {
+                                        if (e.key === "Enter" && newImageUrl.trim()) {
+                                            setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, newImageUrl.trim()] }));
+                                            setNewImageUrl("");
+                                            e.preventDefault();
+                                        }
+                                    }}
                                 />
+                                <button 
+                                    onClick={() => {
+                                        if (newImageUrl.trim()) {
+                                            setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, newImageUrl.trim()] }));
+                                            setNewImageUrl("");
+                                        }
+                                    }}
+                                    className="px-4 py-2 bg-[#059669] text-white rounded font-bold hover:bg-emerald-600 border border-emerald-500 transition-colors flex items-center gap-1"
+                                >
+                                    <Plus className="w-4 h-4" /> Adicionar
+                                </button>
                             </div>
+
+                            {newsForm.imageUrls.length > 0 && (
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                                    {newsForm.imageUrls.map((url, i) => (
+                                        <div key={i} className="relative group rounded-lg overflow-hidden border border-emerald-700/50 aspect-video">
+                                            <img src={url} alt={`Preview ${i}`} className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <button 
+                                                    onClick={() => setNewsForm(prev => ({ ...prev, imageUrls: prev.imageUrls.filter((_, idx) => idx !== i) }))}
+                                                    className="p-1.5 bg-red-600 rounded-full text-white hover:bg-red-500"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="p-4 border-t border-gray-700 bg-emerald-50/30 flex justify-end p-4 border-t border-emerald-100 rounded-b-2xl gap-2 rounded-b-xl">
