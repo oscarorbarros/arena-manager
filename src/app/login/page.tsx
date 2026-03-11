@@ -30,10 +30,13 @@ export default function LoginPage() {
         if (loginWithUser(foundUser)) {
             if (foundUser.role === "delegate") {
                 router.push("/delegate");
+            } else if (foundUser.role === "referee") {
+                router.push("/referee");
             } else if (["admin", "organization_member", "journalist"].includes(foundUser.role!)) {
-                router.push("/admin");
-            } else if (foundUser.role === "referee") router.push("/referee");
-            else router.push("/public");
+                router.push("/hub"); // Go to module selector first
+            } else {
+                router.push("/public");
+            }
         }
     } else {
         setError("Email ou Senha incorretos.");

@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useTournament } from "@/lib/context";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Settings, Trophy, Users, LogOut, Shield, Newspaper, Menu, X } from "lucide-react";
+import { LayoutDashboard, Settings, Trophy, Users, LogOut, Shield, Newspaper, Menu, X, RefreshCw, Grid3x3 } from "lucide-react";
 import { useState } from "react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -14,6 +14,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   
   const realUser = config.users?.find(u => u.id === user?.id) || user;
+  const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'idle'|'ok'|'err'>('idle');
+
+  const forcSync = async () => {
+    setSyncing(true);
+    try {
+      const [r1, r2] = await Promise.all([
+        fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(config) }),
+        fetch('/api/news', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(JSON.parse(localStorage.getItem('tournament_news') || '[]')) }),
+      ]);
+      setSyncStatus(r1.ok && r2.ok ? 'ok' : 'err');
+    } catch { setSyncStatus('err'); }
+    setSyncing(false);
+    setTimeout(() => setSyncStatus('idle'), 4000);
+  };
 
   // Delegates have their own panel — redirect them out of admin
   if (user?.role === "delegate") {
@@ -106,7 +121,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <NavLinks />
         </nav>
 
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 space-y-2">
+          <button
+            onClick={forcSync}
+            disabled={syncing}
+            className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg border text-[10px] font-bold transition-all ${
+              syncStatus === 'ok' ? 'bg-green-500/20 border-green-500/30 text-green-300' :
+              syncStatus === 'err' ? 'bg-red-500/20 border-red-500/30 text-red-300' :
+              'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+            }`}
+          >
+            <RefreshCw className={`w-3 h-3 ${syncing ? 'animate-spin' : ''}`} />
+            {syncStatus === 'ok' ? '✓ Sincronizado!' : syncStatus === 'err' ? '✗ Erro na sync' : 'Sincronizar Nuvem'}
+          </button>
+          <Link href="/hub" className="block text-center px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-[10px] text-white/60 font-bold transition-all flex items-center justify-center gap-1.5">
+            <Grid3x3 className="w-3 h-3" /> Módulos
+          </Link>
           <Link href="/" className="block text-center px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm text-white font-bold transition-all">
             Ver Site
           </Link>
