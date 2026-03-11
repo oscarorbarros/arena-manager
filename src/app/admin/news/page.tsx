@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { useTournament } from "@/lib/context";
 import { NewsStory } from "@/lib/news-engine";
 import { useAudit } from "@/lib/audit-context";
-import { Newspaper, Plus, Edit, Trash2, X, AlertTriangle, Image as ImageIcon } from "lucide-react";
+import { Newspaper, Plus, Edit, Trash2, X, AlertTriangle, Image as ImageIcon, Loader2 } from "lucide-react";
 import { formatGoogleDriveUrl } from "@/lib/utils";
+import { compressImageFile } from "@/lib/image-utils";
 
 export default function AdminNewsPage() {
   const { news, setNews, deleteNews, deleteAllNews } = useTournament();
@@ -13,6 +14,7 @@ export default function AdminNewsPage() {
   const [editingNewsId, setEditingNewsId] = useState<string | null>(null);
   const [newsForm, setNewsForm] = useState({ headline: "", body: "", tags: "", imageUrls: [] as string[] });
   const [newImageUrl, setNewImageUrl] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const handleOpenModal = (newsItem?: NewsStory) => {
       if (newsItem) {
@@ -197,17 +199,25 @@ export default function AdminNewsPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-black mb-2">Imagens e Fotos (Drive, Imgur, ou do seu computador)</label>
-                            
+                            <label className="block text-sm font-bold text-black mb-2">Imagens e Fotos</label>
+                            <p className="text-xs text-gray-500 mb-2 bg-amber-50 border border-amber-200 rounded p-2">
+                                ⚠️ Use o link de <strong>uma foto específica</strong> do Drive (não o da pasta).<br/>
+                                Clique com o botão direito na foto → <strong>Compartilhar</strong> → copie o link.
+                            </p>
                             <div className="flex gap-2 mb-3 flex-wrap md:flex-nowrap">
                                 <input 
                                     value={newImageUrl} 
                                     onChange={e => setNewImageUrl(e.target.value)} 
                                     className="flex-[2] p-3 bg-white border border-emerald-200 rounded focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-black text-sm min-w-[200px]" 
-                                    placeholder="https://suasite.com/foto.jpg ou link do Google Drive" 
+                                    placeholder="https://drive.google.com/file/d/.../view" 
                                     onKeyPress={e => {
                                         if (e.key === "Enter" && newImageUrl.trim()) {
-                                            const formattedUrl = formatGoogleDriveUrl(newImageUrl.trim());
+                                            const url = newImageUrl.trim();
+                                            if (url.includes('/folders/')) {
+                                                alert('❌ Este é um link de PASTA, não de uma foto.\n\nAbra a pasta, clique com o botão direito na FOTO → Compartilhar → copie esse link.');
+                                                return;
+                                            }
+                                            const formattedUrl = formatGoogleDriveUrl(url);
                                             setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, formattedUrl] }));
                                             setNewImageUrl("");
                                             e.preventDefault();
@@ -216,35 +226,42 @@ export default function AdminNewsPage() {
                                 />
                                 <button 
                                     onClick={() => {
-                                        if (newImageUrl.trim()) {
-                                            const formattedUrl = formatGoogleDriveUrl(newImageUrl.trim());
-                                            setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, formattedUrl] }));
-                                            setNewImageUrl("");
+                                        const url = newImageUrl.trim();
+                                        if (!url) return;
+                                        if (url.includes('/folders/')) {
+                                            alert('❌ Este é um link de PASTA, não de uma foto.\n\nAbra a pasta, clique com o botão direito na FOTO → Compartilhar → copie esse link.');
+                                            return;
                                         }
+                                        const formattedUrl = formatGoogleDriveUrl(url);
+                                        setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, formattedUrl] }));
+                                        setNewImageUrl("");
                                     }}
                                     className="px-4 py-3 bg-[#059669] text-white rounded font-bold hover:bg-emerald-600 border border-emerald-500 transition-colors flex items-center justify-center gap-1 shrink-0 flex-1 md:flex-none"
                                 >
                                     <Plus className="w-4 h-4" /> Link
                                 </button>
-                                <label className="px-4 py-3 bg-blue-600 text-white rounded font-bold hover:bg-blue-500 border border-blue-500 cursor-pointer transition-colors flex items-center justify-center gap-1 shrink-0 flex-1 md:flex-none">
-                                    <ImageIcon className="w-4 h-4" /> Arquivo
+                                <label className={`px-4 py-3 ${isUploadingImage ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 cursor-pointer'} text-white rounded font-bold border border-blue-500 transition-colors flex items-center justify-center gap-1 shrink-0 flex-1 md:flex-none`}>
+                                    {isUploadingImage ? <><Loader2 className="w-4 h-4 animate-spin" /> Carregando...</> : <><ImageIcon className="w-4 h-4" /> Arquivo</>}
                                     <input 
                                         type="file" 
                                         accept="image/*" 
                                         multiple 
                                         className="hidden" 
-                                        onChange={(e) => {
+                                        onChange={async (e) => {
                                             const files = e.target.files;
                                             if (!files) return;
-                                            Array.from(files).forEach(file => {
-                                                const reader = new FileReader();
-                                                reader.onload = (event) => {
-                                                    if (event.target?.result) {
-                                                        setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, event.target!.result as string] }));
-                                                    }
-                                                };
-                                                reader.readAsDataURL(file);
-                                            });
+                                            setIsUploadingImage(true);
+                                            try {
+                                                const compressed = await Promise.all(
+                                                    Array.from(files).map(file => compressImageFile(file))
+                                                );
+                                                setNewsForm(prev => ({ ...prev, imageUrls: [...prev.imageUrls, ...compressed] }));
+                                            } catch (err) {
+                                                alert("Erro ao carregar imagem. Tente outra.");
+                                            } finally {
+                                                setIsUploadingImage(false);
+                                                e.target.value = ""; // allow re-selecting same file
+                                            }
                                         }}
                                     />
                                 </label>

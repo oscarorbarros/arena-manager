@@ -60,31 +60,42 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
       if (importTab === "teams") {
           const newUsers: User[] = [];
           const newTeams: Team[] = [];
+          let skipped = 0;
 
           lines.forEach(line => {
+             if (line.toUpperCase().includes("FORMATO:")) return; // ignora a linha de ajuda
              const parts = line.split(",").map(s => s.trim());
              if (parts.length < 3) return;
              
              const [chiefName, email, teamName, group] = parts;
              
-             // Check duplicates (simple check)
-             if (config.users?.find(u => u.email === email)) return;
+             // Check duplicates in Config and also in the lines being processed
+             let userId = crypto.randomUUID();
+             const existingUser = config.users?.find(u => u.email.toLowerCase() === email.toLowerCase());
+             if (existingUser) {
+                 userId = existingUser.id; // Aproveita o usuario delegado existente
+             } else {
+                 newUsers.push({
+                     id: userId,
+                     name: chiefName,
+                     email: email,
+                     password: "123456",
+                     role: "delegate"
+                 });
+             }
 
-             const newUserId = crypto.randomUUID();
-             newUsers.push({
-                 id: newUserId,
-                 name: chiefName,
-                 email: email,
-                 password: "123456",
-                 role: "delegate"
-             });
+             const existingTeam = config.teams?.find(t => t.name.toLowerCase() === teamName.toLowerCase());
+             if (existingTeam) {
+                 skipped++;
+                 return; // Esse time ja existe
+             }
 
              newTeams.push({
                  id: crypto.randomUUID(),
                  name: teamName,
                  group: group || "A",
-                 delegationChiefId: newUserId,
-                 logo: "🛡️",
+                 delegationChiefId: userId,
+                 logo: teamName.charAt(0).toUpperCase(),
                  stats: { points: 0, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDifference: 0 }
              });
              count++;
@@ -96,15 +107,21 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                   users: [...(prev.users || []), ...newUsers],
                   teams: [...prev.teams, ...newTeams]
               }));
-              logAction("import_teams", `Importou em massa ${count} times e chefes de delegação.`);
-              alert(`Importado: ${count} times/delegados.`);
+              logAction("import_teams", `Importou em massa ${count} times. (${skipped} ignorados)`);
+              alert(`Importado: ${count} novos times. ${skipped > 0 ? `(${skipped} times já existiam e foram ignorados)` : ''}`);
+          } else if (skipped > 0) {
+              alert(`Todos os ${skipped} times copiados já existem no sistema!\n\nNenhum time novo foi processado.`);
+              return;
           }
 
       } else {
           // Import Athletes
           const newPlayers: Player[] = [];
+          let skippedPlayers = 0;
+          let notFoundTeams = 0;
           
           lines.forEach(line => {
+              if (line.toUpperCase().includes("FORMATO:")) return; // ignora a linha de ajuda
               const parts = line.split(",").map(s => s.trim());
               if (parts.length < 2) return;
 
@@ -114,6 +131,13 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
               const team = config.teams.find(t => t.name.toLowerCase() === teamName.toLowerCase());
               
               if (team) {
+                  // Check if player already exists in the team (by name and number)
+                  const existingPlayer = config.players?.find(p => p.teamId === team.id && p.name.toLowerCase() === playerName.toLowerCase());
+                  if (existingPlayer) {
+                      skippedPlayers++;
+                      return;
+                  }
+
                   newPlayers.push({
                       id: crypto.randomUUID(),
                       teamId: team.id,
@@ -123,6 +147,8 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                       stats: { goals: 0, yellowCards: 0, redCards: 0, matchesPlayed: 0 }
                   });
                   count++;
+              } else {
+                  notFoundTeams++;
               }
           });
 
@@ -130,15 +156,18 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
               setConfig(prev => ({
                   ...prev,
                   players: [...(prev.players || []), ...newPlayers]
-                  // Note: In a real app we would merge carefully, here we just append
               }));
               logAction("import_players", `Importou em massa ${count} atletas.`);
-              alert(`Importado: ${count} atletas.`);
+              alert(`Importado: ${count} atletas. ${skippedPlayers > 0 ? `(${skippedPlayers} ignorados pois já existiam)` : ''}`);
+          } else if (skippedPlayers > 0 || notFoundTeams > 0) {
+              alert(`Nenhum atleta novo! ${skippedPlayers} já existiam. ${notFoundTeams > 0 ? `\n\nATENÇÃO: ${notFoundTeams} atletas não puderam ser importados porque seus Times não foram encontrados. (Você já importou os Times?)` : ''}`);
+              return;
           }
       }
 
-      if (count === 0) alert("Nenhum dado válido processado. Verifique o formato.");
-      else {
+      if (count === 0) {
+          alert("Nenhum dado válido processado.\n\nVerifique se o texto colado está no formato correto separado por vírgulas ou se os dados já existem no sistema.");
+      } else {
           setImportText("");
           setIsImportOpen(false);
       }
