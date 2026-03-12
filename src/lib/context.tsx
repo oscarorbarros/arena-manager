@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { TournamentConfig, DEFAULT_CONFIG, Match, MatchEvent } from "./types";
 import { generateMatchReport, NewsStory, generateChampionNews } from "./news-engine";
 import { TournamentEngine } from "./tournament-engine";
+import { useAuth } from "./auth-context";
 
 interface TournamentContextType {
   config: TournamentConfig;
@@ -26,6 +27,7 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
   const [news, setNews] = useState<NewsStory[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const generatingPhase = React.useRef(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     
@@ -89,20 +91,24 @@ export function TournamentProvider({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem("tournament_config", JSON.stringify(config));
-      // Save to server (Supabase) using relative path, debounced
-      const timeoutId = setTimeout(() => {
-        fetch(`/api/config`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(config) }).catch(() => {});
-      }, 500);
-      return () => clearTimeout(timeoutId);
+      // ONLY save to Supabase automatically if user is authenticated (prevents public polling from overwriting)
+      if (user) {
+          const timeoutId = setTimeout(() => {
+            fetch(`/api/config`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(config) }).catch(() => {});
+          }, 500);
+          return () => clearTimeout(timeoutId);
+      }
     }
-  }, [config, isLoaded]);
+  }, [config, isLoaded, user]);
 
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem("tournament_news", JSON.stringify(news));
-      fetch(`/api/news`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(news) }).catch(() => {});
+      if (user) {
+          fetch(`/api/news`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(news) }).catch(() => {});
+      }
     }
-  }, [news, isLoaded]);
+  }, [news, isLoaded, user]);
 
   // Manual Generation & Sanitization
   const generateNextStage = () => {

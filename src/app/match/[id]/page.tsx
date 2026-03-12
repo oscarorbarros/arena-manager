@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTournament } from "@/lib/context";
@@ -135,7 +135,7 @@ export default function PublicMatchPage() {
                                         </div>
                                         {isOvertime && isLive && (
                                             <div className="text-[10px] uppercase font-black tracking-widest text-red-500 bg-amber-900/40 px-2 py-0.5 rounded mt-1 animate-pulse border border-red-500/30">
-                                                Prorrogação
+                                                Acréscimos
                                             </div>
                                         )}
                                     </div>

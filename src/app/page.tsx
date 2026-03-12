@@ -15,7 +15,7 @@ export default function HomePage() {
     const router = useRouter();
     const { user: authUser, login, logout } = useAuth();
     const { logAction } = useAudit();
-    const { config, news, setNews } = useTournament();
+    const { config, news, setNews, setConfig } = useTournament();
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [loginData, setLoginData] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
@@ -35,9 +35,33 @@ export default function HomePage() {
     // Ticker Force Update
     const [, setTick] = useState(0);
     useEffect(() => {
-        const interval = setInterval(() => setTick(t => t + 1), 30000);
+        const interval = setInterval(() => setTick(t => t + 1), 1000);
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        // Auto-refresh data every 15 seconds for live matches and news
+        const interval = setInterval(async () => {
+            try {
+                const cacheBuster = `?t=${Date.now()}`;
+                const [configRes, newsRes] = await Promise.all([
+                    fetch('/api/config' + cacheBuster, { cache: 'no-store' }),
+                    fetch('/api/news' + cacheBuster, { cache: 'no-store' })
+                ]);
+                if (configRes.ok && newsRes.ok) {
+                    const srvConfig = await configRes.json();
+                    const srvNews = await newsRes.json();
+                    if (srvConfig && Object.keys(srvConfig).length > 0) {
+                        setConfig((prev: any) => ({...prev, ...srvConfig}));
+                        if (srvNews) setNews(srvNews);
+                    }
+                }
+            } catch (e) {
+                // ignore
+            }
+        }, 15000);
+        return () => clearInterval(interval);
+    }, [setConfig, setNews]);
 
     const liveMatches = config.matches.filter(m => m.status === "live" || m.status === "paused");
 
@@ -54,8 +78,10 @@ export default function HomePage() {
     };
 
     const formatTime = (seconds: number) => {
+        if (!seconds || isNaN(seconds)) return "00:00";
         const mins = Math.floor(seconds / 60);
-        return `${mins}'`;
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
     const handleLogin = (e: React.FormEvent) => {
@@ -273,7 +299,7 @@ export default function HomePage() {
                         ) : (
                             <div className="grid gap-6">
                                 {news.map((story, i) => (
-                                    <article key={story.id} className={`group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 hover:shadow-xl transition-all border border-emerald-200/60 relative ${i === 0 ? "md:grid md:grid-cols-2" : "flex flex-col"}`}>
+                                <article key={story.id} className={`group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 hover:shadow-xl transition-all border border-emerald-200/60 relative flex flex-col ${i === 0 ? "md:grid md:grid-cols-2" : ""}`}>
 
                                         {canManageNews && (
                                             <div className="absolute top-2 right-2 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -286,7 +312,7 @@ export default function HomePage() {
                                             </div>
                                         )}
 
-                                        <div className={`bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden ${i === 0 ? "h-full min-h-[250px]" : "h-48"}`}>
+                                        <div className={`bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden shrink-0 w-full ${i === 0 ? "h-64 md:h-full md:min-h-[250px]" : "h-48"}`}>
                                             {(story.imageUrls && story.imageUrls.length > 0) || story.imageUrl ? (
                                                 <NewsSlider images={story.imageUrls || (story.imageUrl ? [story.imageUrl] : [])} />
                                             ) : (
