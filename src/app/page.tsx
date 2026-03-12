@@ -59,7 +59,7 @@ export default function HomePage() {
             } catch (e) {
                 // ignore
             }
-        }, 15000);
+        }, 5000);
         return () => clearInterval(interval);
     }, [setConfig, setNews]);
 

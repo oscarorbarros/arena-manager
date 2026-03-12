@@ -41,7 +41,7 @@ export default function PublicPortal() {
           } catch (e) {
               console.warn("Auto-refresh skipped due to network");
           }
-      }, 15000);
+      }, 5000);
       return () => clearInterval(interval);
   }, [setConfig, setNews]);
 

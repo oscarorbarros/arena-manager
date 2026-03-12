@@ -7,7 +7,7 @@ import { ArrowLeft, Clock, Goal, ShieldAlert, MonitorPlay } from "lucide-react";
 export default function PublicMatchPage() {
   const params = useParams();
   const router = useRouter();
-  const { config } = useTournament();
+  const { config, setConfig, setNews } = useTournament();
   
   const matchId = params.id as string;
   const match = config.matches.find(m => m.id === matchId);
@@ -30,6 +30,30 @@ export default function PublicMatchPage() {
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
   }, [match?.status, match?.startTime, match?.elapsedSeconds]);
+
+  useEffect(() => {
+      // Auto-refresh data every 5 seconds for live matches and events
+      const interval = setInterval(async () => {
+          try {
+              const cacheBuster = `?t=${Date.now()}`;
+              const [configRes, newsRes] = await Promise.all([
+                  fetch('/api/config' + cacheBuster, { cache: 'no-store' }),
+                  fetch('/api/news' + cacheBuster, { cache: 'no-store' })
+              ]);
+              if (configRes.ok && newsRes.ok) {
+                  const srvConfig = await configRes.json();
+                  const srvNews = await newsRes.json();
+                  if (srvConfig && Object.keys(srvConfig).length > 0) {
+                      setConfig((prev: any) => ({...prev, ...srvConfig}));
+                      if (srvNews) setNews(srvNews);
+                  }
+              }
+          } catch (e) {
+              // ignore
+          }
+      }, 5000);
+      return () => clearInterval(interval);
+  }, [setConfig, setNews]);
 
   if (!match) return <div className="min-h-screen bg-emerald-50/60 flex items-center justify-center text-white">Partida não encontrada.</div>;
 
