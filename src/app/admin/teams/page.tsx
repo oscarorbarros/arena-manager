@@ -64,7 +64,8 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
 
           lines.forEach(line => {
              if (line.toUpperCase().includes("FORMATO:")) return;
-             const parts = line.split(",").map(s => s.trim());
+             // Handle comma, semicolon, or tab separators (useful for pasting from Excel)
+             const parts = line.split(/[,\t;]/).map(s => s.trim());
              // MUST have exactly 4 fields and email must contain @
              // This prevents accidentally importing a player CSV as teams
              if (parts.length < 3) {
@@ -130,7 +131,8 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
           
           lines.forEach(line => {
               if (line.toUpperCase().includes("FORMATO:")) return; // ignora a linha de ajuda
-              const parts = line.split(",").map(s => s.trim());
+              // Handle comma, semicolon, or tab separators
+              const parts = line.split(/[,\t;]/).map(s => s.trim());
               if (parts.length < 3) return;
 
               const [teamName, playerName, numberStr, matricula] = parts;
@@ -176,7 +178,7 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
       }
 
       if (count === 0) {
-          alert("Nenhum dado válido processado.\n\nVerifique se o texto colado está no formato correto separado por vírgulas ou se os dados já existem no sistema.");
+          alert("Nenhum dado válido processado.\n\nVerifique se o texto colado está no formato correto (separado por vírgulas, ponto-e-vírgula ou colado do Excel) ou se os dados já existem no sistema.");
       } else {
           setImportText("");
           setIsImportOpen(false);
@@ -290,8 +292,8 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                   <div className="flex-1 bg-emerald-50/50 rounded-lg p-4 border border-emerald-200/60 mb-4 flex flex-col">
                       <div className="text-xs text-white mb-2 font-mono bg-emerald-900 shadow-md/5 p-3 rounded leading-relaxed">
                           {importTab === "teams" 
-                            ? "FORMATO: NomeChefe, MatriculaChefe, NomeTime\nExemplo: João, 2024123, Falcons" 
-                            : "FORMATO: NomeTime, NomeAtleta, Numero, Matricula\nExemplo: Falcons, Neymar, 10, 2024456"}
+                            ? "Cole os dados na ordem: NomeChefe, MatriculaChefe, NomeTime\nExemplo: JoãoSilva, 2024123, Falcons" 
+                            : "Cole os dados na ordem: NomeTime, NomeAtleta, Numero, Matricula\nExemplo: Falcons, Neymar, 10, 2024456"}
                       </div>
                       {importTab === "teams" && (
                         <div className="mb-2 p-2 bg-red-100 border border-red-300 rounded text-xs text-red-700 font-semibold">
