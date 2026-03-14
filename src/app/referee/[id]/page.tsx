@@ -424,6 +424,24 @@ export default function MatchInterface() {
   };
 
   const formatTime = (seconds: number) => {
+    let limit = 0;
+    const mDurationSeconds = matchDuration * 60;
+    const eDurationSeconds = extraTimeDuration * 60;
+    
+    if (match.period === 'first_half') limit = mDurationSeconds;
+    else if (match.period === 'second_half') limit = mDurationSeconds * 2;
+    else if (match.period === 'extra_first') limit = (mDurationSeconds * 2) + eDurationSeconds;
+    else if (match.period === 'extra_second') limit = (mDurationSeconds * 2) + (eDurationSeconds * 2);
+
+    if (allowInjuryTime && limit > 0 && seconds > limit) {
+        const baseMins = Math.floor(limit / 60);
+        const baseSecs = limit % 60;
+        const extraSecs = seconds - limit;
+        const eMins = Math.floor(extraSecs / 60);
+        const eSecs = extraSecs % 60;
+        return `${baseMins.toString().padStart(2, "0")}:${baseSecs.toString().padStart(2, "0")} + ${eMins.toString().padStart(2, "0")}:${eSecs.toString().padStart(2, "0")}`;
+    }
+
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
@@ -630,7 +648,7 @@ export default function MatchInterface() {
                            </div>
                       )}
                   </div>
-                {match.status !== "finished" && match.status !== "scheduled" && (
+                {match.status === "live" && (
                 <div className="grid grid-cols-2 gap-2 mt-2">
                     <button onClick={() => setAnnulModal({ isOpen: true, type: "goal", teamId: match.teamAId })} className="col-span-1 py-2 text-xs font-black bg-red-600/20 text-red-400 border border-red-600/50 rounded-lg hover:bg-red-600/40 uppercase transition-all mb-1">ANULAR GOL</button>
                     <button onClick={() => setAnnulModal({ isOpen: true, type: "card", teamId: match.teamAId })} className="col-span-1 py-2 text-[10px] font-black bg-yellow-600/20 text-yellow-400 border border-yellow-600/50 rounded-lg hover:bg-yellow-600/40 uppercase transition-all mb-1 leading-tight">ANULAR<br/>CARTÃO</button>
@@ -664,7 +682,7 @@ export default function MatchInterface() {
                            </div>
                       )}
                   </div>
-                {match.status !== "finished" && match.status !== "scheduled" && (
+                {match.status === "live" && (
                 <div className="grid grid-cols-2 gap-2 mt-2">
                     <button onClick={() => setAnnulModal({ isOpen: true, type: "goal", teamId: match.teamBId })} className="col-span-1 py-2 text-xs font-black bg-red-600/20 text-red-400 border border-red-600/50 rounded-lg hover:bg-red-600/40 uppercase transition-all mb-1">ANULAR GOL</button>
                     <button onClick={() => setAnnulModal({ isOpen: true, type: "card", teamId: match.teamBId })} className="col-span-1 py-2 text-[10px] font-black bg-yellow-600/20 text-yellow-400 border border-yellow-600/50 rounded-lg hover:bg-yellow-600/40 uppercase transition-all mb-1 leading-tight">ANULAR<br/>CARTÃO</button>

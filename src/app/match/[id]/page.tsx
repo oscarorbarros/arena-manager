@@ -63,7 +63,29 @@ export default function PublicMatchPage() {
   const penaltyScoreA = match.events.filter(e => e.teamId === match.teamAId && e.type === "penalty_goal").length;
   const penaltyScoreB = match.events.filter(e => e.teamId === match.teamBId && e.type === "penalty_goal").length;
 
+  const matchDuration = config.matchSettings?.duration || config.rules?.matchDuration || 20;
+  const extraTimeDuration = config.rules?.knockout?.extraTimeDuration || 5;
+  const allowInjuryTime = config.rules?.allowInjuryTime ?? true;
+
   const formatTime = (seconds: number) => {
+    let limit = 0;
+    const mDurationSeconds = matchDuration * 60;
+    const eDurationSeconds = extraTimeDuration * 60;
+    
+    if (match.period === 'first_half') limit = mDurationSeconds;
+    else if (match.period === 'second_half') limit = mDurationSeconds * 2;
+    else if (match.period === 'extra_first') limit = (mDurationSeconds * 2) + eDurationSeconds;
+    else if (match.period === 'extra_second') limit = (mDurationSeconds * 2) + (eDurationSeconds * 2);
+
+    if (allowInjuryTime && limit > 0 && seconds > limit) {
+        const baseMins = Math.floor(limit / 60);
+        const baseSecs = limit % 60;
+        const extraSecs = seconds - limit;
+        const eMins = Math.floor(extraSecs / 60);
+        const eSecs = extraSecs % 60;
+        return `${baseMins.toString().padStart(2, "0")}:${baseSecs.toString().padStart(2, "0")} + ${eMins.toString().padStart(2, "0")}:${eSecs.toString().padStart(2, "0")}`;
+    }
+
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
