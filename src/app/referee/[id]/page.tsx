@@ -73,12 +73,12 @@ export default function MatchInterface() {
     const playersA = config.players?.filter(p => p.teamId === teamA?.id) || [];
     const playersB = config.players?.filter(p => p.teamId === teamB?.id) || [];
 
-    // Config Rules
-    const matchDuration = config.rules?.matchDuration || 20;
+    // Config Rules - Prioritize matchSettings (from Config Page) then rules
+    const matchDuration = config.matchSettings?.duration || config.rules?.matchDuration || 20;
     const allowInjuryTime = config.rules?.allowInjuryTime ?? true;
     const isKnockout = match.stage !== "group";
     const allowExtraTime = config.rules?.knockout?.allowExtraTime ?? true;
-    const extraTimeDuration = config.rules?.knockout?.extraTimeDuration || 5;
+    const extraTimeDuration = config.matchSettings?.extraTime || config.rules?.knockout?.extraTimeDuration || 5;
     const allowPenalties = config.rules?.knockout?.allowPenalties ?? true;
 
     // Injury Time Check
@@ -86,10 +86,14 @@ export default function MatchInterface() {
     let isOvertime = false;
 
     // Logic to detect if we are in injury time based on current period
-    if (match.period === 'first_half') isOvertime = elapsedMinutes >= matchDuration;
-    else if (match.period === 'second_half') isOvertime = elapsedMinutes >= (matchDuration * 2);
-    else if (match.period === 'extra_first') isOvertime = elapsedMinutes >= ((matchDuration * 2) + extraTimeDuration);
-    else if (match.period === 'extra_second') isOvertime = elapsedMinutes >= ((matchDuration * 2) + (extraTimeDuration * 2));
+    // If the user set 1 minute total, then each half is 0.5 mins.
+    // If we assume matchDuration is TOTAL time for both halves:
+    const halfDuration = matchDuration / 2;
+
+    if (match.period === 'first_half') isOvertime = elapsedMinutes >= halfDuration;
+    else if (match.period === 'second_half') isOvertime = elapsedMinutes >= matchDuration;
+    else if (match.period === 'extra_first') isOvertime = elapsedMinutes >= (matchDuration + extraTimeDuration);
+    else if (match.period === 'extra_second') isOvertime = elapsedMinutes >= (matchDuration + (extraTimeDuration * 2));
 
     // Helper to count cards for a player in this match
     const hasPlayedExtraTime = match.events.some(e => e.type === "end" && e.observation && e.observation.includes("Fim Prorrog"));

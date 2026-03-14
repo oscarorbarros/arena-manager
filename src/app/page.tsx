@@ -9,7 +9,7 @@ import { NewsStory } from "@/lib/news-engine";
 import { formatGoogleDriveUrl } from "@/lib/utils";
 import { GeStyleDashboard } from "@/components/GeStyleDashboard";
 import { NewsSlider } from "@/components/NewsSlider";
-import { LogOut, Clock, LayoutDashboard, Newspaper, User as UserIcon, Lock, X, Trash2, Edit, PlusCircle, ChevronRight, Trophy, Plus, Image as ImageIcon } from "lucide-react";
+import { LogOut, Clock, LayoutDashboard, Newspaper, User as UserIcon, Lock, X, Trash2, Edit, PlusCircle, ChevronRight, Trophy, Plus, Image as ImageIcon, Medal } from "lucide-react";
 
 export default function HomePage() {
     const router = useRouter();
@@ -278,76 +278,121 @@ export default function HomePage() {
                 </div>
 
                 {activeTab === "news" ? (
-                    <div className="space-y-6">
-                        <div className="flex justify-between items-center border-l-4 border-emerald-500 pl-3">
-                            <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-black">
-                                <Newspaper className="w-6 h-6" /> Últimas Notícias
-                            </h2>
-                            {canManageNews && (
-                                <button onClick={() => handleOpenNewsModal()} className="px-3 py-1 bg-[#059669] text-black rounded text-sm font-bold flex items-center gap-2 hover:bg-[#059669] text-black">
-                                    <PlusCircle className="w-4 h-4" /> Nova Notícia
-                                </button>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* News Feed */}
+                        <div className="lg:col-span-2 space-y-6">
+                            <div className="flex justify-between items-center border-l-4 border-emerald-500 pl-3">
+                                <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-black">
+                                    <Newspaper className="w-6 h-6" /> Últimas Notícias
+                                </h2>
+                                {canManageNews && (
+                                    <button onClick={() => handleOpenNewsModal()} className="px-3 py-1 bg-[#059669] text-black rounded text-sm font-bold flex items-center gap-2 hover:bg-[#059669] text-black">
+                                        <PlusCircle className="w-4 h-4" /> Nova Notícia
+                                    </button>
+                                )}
+                            </div>
+
+                            {news.length === 0 ? (
+                                <div className="p-12 text-center bg-white rounded-xl border border-emerald-200/60 shadow-sm">
+                                    <Newspaper className="w-12 h-12 mx-auto text-black mb-4" />
+                                    <p className="text-lg text-black">Ainda não há notícias publicadas.</p>
+                                    {canManageNews && <p className="text-sm text-black mt-2 cursor-pointer hover:underline" onClick={() => handleOpenNewsModal()}>Clique para criar a primeira notícia</p>}
+                                </div>
+                            ) : (
+                                <div className="grid gap-6">
+                                    {news.map((story, i) => (
+                                        <article key={story.id} className={`group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 hover:shadow-xl transition-all border border-emerald-200/60 relative flex flex-col ${i === 0 ? "md:grid md:grid-cols-2" : ""}`}>
+                                            {canManageNews && (
+                                                <div className="absolute top-2 right-2 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button onClick={(e) => { e.stopPropagation(); handleOpenNewsModal(story); }} className="p-2 bg-[#059669]/90 text-black rounded-full hover:bg-[#059669] text-black shadow-lg">
+                                                        <Edit className="w-4 h-4" />
+                                                    </button>
+                                                    <button onClick={(e) => handleDeleteNews(story.id, e)} className="p-2 bg-red-600/90 text-black rounded-full hover:bg-red-700 shadow-lg">
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                            <div className={`bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden shrink-0 w-full ${i === 0 ? "h-64 md:h-full md:min-h-[250px]" : "h-48"}`}>
+                                                {(story.imageUrls && story.imageUrls.length > 0) || story.imageUrl ? (
+                                                    <NewsSlider images={story.imageUrls || (story.imageUrl ? [story.imageUrl] : [])} />
+                                                ) : (
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-[#06aa48]/10 to-blue-500/10" />
+                                                )}
+                                                <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap z-30">
+                                                    {story.tags?.map(tag => (
+                                                        <span key={tag} className="text-[10px] uppercase font-bold bg-emerald-950/40 backdrop-blur-md text-black bg-emerald-900 text-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[9px] border border-white/20">
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="p-6 flex flex-col justify-between">
+                                                <div>
+                                                    <div className="text-xs text-black font-bold uppercase mb-2 flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" />
+                                                        {new Date(story.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                                    </div>
+                                                    <h3 className={`font-bold text-black group-hover:text-black transition-colors ${i === 0 ? "text-2xl md:text-3xl leading-tight" : "text-xl"}`}>
+                                                        {story.headline}
+                                                    </h3>
+                                                    <p className="mt-3 text-black leading-relaxed text-sm line-clamp-3 whitespace-pre-wrap">
+                                                        {story.body}
+                                                    </p>
+                                                </div>
+                                                <div onClick={() => setReadingNewsItem(story)} className="mt-4 flex items-center text-black font-bold text-sm group/link cursor-pointer">
+                                                    Ler matéria completa <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                                                </div>
+                                            </div>
+                                        </article>
+                                    ))}
+                                </div>
                             )}
                         </div>
 
-                        {news.length === 0 ? (
-                            <div className="p-12 text-center bg-white rounded-xl border border-emerald-200/60 shadow-sm">
-                                <Newspaper className="w-12 h-12 mx-auto text-black mb-4" />
-                                <p className="text-lg text-black">Ainda não há notícias publicadas.</p>
-                                {canManageNews && <p className="text-sm text-black mt-2 cursor-pointer hover:underline" onClick={() => handleOpenNewsModal()}>Clique para criar a primeira notícia</p>}
-                            </div>
-                        ) : (
-                            <div className="grid gap-6">
-                                {news.map((story, i) => (
-                                    <article key={story.id} className={`group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 hover:shadow-xl transition-all border border-emerald-200/60 relative flex flex-col ${i === 0 ? "md:grid md:grid-cols-2" : ""}`}>
-
-                                        {canManageNews && (
-                                            <div className="absolute top-2 right-2 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={(e) => { e.stopPropagation(); handleOpenNewsModal(story); }} className="p-2 bg-[#059669]/90 text-black rounded-full hover:bg-[#059669] text-black shadow-lg">
-                                                    <Edit className="w-4 h-4" />
-                                                </button>
-                                                <button onClick={(e) => handleDeleteNews(story.id, e)} className="p-2 bg-red-600/90 text-black rounded-full hover:bg-red-700 shadow-lg">
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
+                        {/* Sidebar: Top Scorers */}
+                        <aside className="space-y-6">
+                            <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 overflow-hidden border border-emerald-200/60 p-6">
+                                <h3 className="text-xl font-bold text-black mb-6 flex items-center gap-2 border-b border-emerald-100 pb-3">
+                                    <Trophy className="w-5 h-5 text-yellow-500" /> Ranking de Artilheiros
+                                </h3>
+                                
+                                <div className="space-y-4">
+                                    {([...(config.players || [])]
+                                        .filter(p => (p.stats?.goals || 0) > 0)
+                                        .sort((a, b) => (b.stats?.goals || 0) - (a.stats?.goals || 0))
+                                        .slice(0, 10))
+                                        .length === 0 ? (
+                                            <p className="text-gray-400 text-sm text-center py-4 italic">Nenhum gol marcado ainda.</p>
+                                        ) : (
+                                            ([...(config.players || [])]
+                                                .filter(p => (p.stats?.goals || 0) > 0)
+                                                .sort((a, b) => (b.stats?.goals || 0) - (a.stats?.goals || 0))
+                                                .slice(0, 10))
+                                                .map((player, idx) => {
+                                                    const team = config.teams.find(t => t.id === player.teamId);
+                                                    return (
+                                                        <div key={player.id} className="flex items-center justify-between group hover:bg-emerald-50/50 p-2 rounded-xl transition-colors">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shadow-sm ${
+                                                                    idx === 0 ? "bg-yellow-500 text-white" : 
+                                                                    idx === 1 ? "bg-gray-300 text-gray-700" : 
+                                                                    idx === 2 ? "bg-amber-700 text-white" : "bg-emerald-50 text-emerald-700"
+                                                                }`}>
+                                                                    {idx === 0 ? <Medal className="w-4 h-4" /> : idx + 1}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="text-sm font-bold text-gray-900 leading-tight">{player.name}</div>
+                                                                    <div className="text-[10px] text-emerald-600 font-medium uppercase tracking-wider">{team?.name}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-xl font-black text-emerald-600">{player.stats?.goals || 0}</div>
+                                                        </div>
+                                                    );
+                                                })
                                         )}
-
-                                        <div className={`bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden shrink-0 w-full ${i === 0 ? "h-64 md:h-full md:min-h-[250px]" : "h-48"}`}>
-                                            {(story.imageUrls && story.imageUrls.length > 0) || story.imageUrl ? (
-                                                <NewsSlider images={story.imageUrls || (story.imageUrl ? [story.imageUrl] : [])} />
-                                            ) : (
-                                                <div className="absolute inset-0 bg-gradient-to-br from-[#06aa48]/10 to-blue-500/10" />
-                                            )}
-
-                                            <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap z-30">
-                                                {story.tags?.map(tag => (
-                                                    <span key={tag} className="text-[10px] uppercase font-bold bg-emerald-950/40 backdrop-blur-md text-black bg-emerald-900 text-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[9px] border border-white/20">
-                                                        {tag}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className="p-6 flex flex-col justify-between">
-                                            <div>
-                                                <div className="text-xs text-black font-bold uppercase mb-2 flex items-center gap-1">
-                                                    <Clock className="w-3 h-3" />
-                                                    {new Date(story.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                                                </div>
-                                                <h3 className={`font-bold text-black group-hover:text-black transition-colors ${i === 0 ? "text-2xl md:text-3xl leading-tight" : "text-xl"}`}>
-                                                    {story.headline}
-                                                </h3>
-                                                <p className="mt-3 text-black leading-relaxed text-sm line-clamp-3 whitespace-pre-wrap">
-                                                    {story.body}
-                                                </p>
-                                            </div>
-                                            <div onClick={() => setReadingNewsItem(story)} className="mt-4 flex items-center text-black font-bold text-sm group/link cursor-pointer">
-                                                Ler matéria completa <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-                                            </div>
-                                        </div>
-                                    </article>
-                                ))}
+                                </div>
                             </div>
-                        )}
+                        </aside>
                     </div>
                 ) : (
                     <div className="w-full">

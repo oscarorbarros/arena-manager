@@ -141,15 +141,17 @@ export default function PublicMatchPage() {
                                 </div>
 
                                 {(() => {
-                                    const matchDuration = (config.rules && config.rules.matchDuration) || 20;
-                                    const extraTimeDuration = (config.rules && config.rules.knockout && config.rules.knockout.extraTimeDuration) || 5;
+                                    const matchDuration = config.matchSettings?.duration || config.rules?.matchDuration || 20;
+                                    const extraTimeDuration = config.matchSettings?.extraTime || config.rules?.knockout?.extraTimeDuration || 5;
                                     const elapsedMinutes = Math.floor(timer / 60);
                                     let isOvertime = false;
 
-                                    if (match.period === 'first_half') isOvertime = elapsedMinutes >= matchDuration;
-                                    else if (match.period === 'second_half') isOvertime = elapsedMinutes >= (matchDuration * 2);
-                                    else if (match.period === 'extra_first') isOvertime = elapsedMinutes >= ((matchDuration * 2) + extraTimeDuration);
-                                    else if (match.period === 'extra_second') isOvertime = elapsedMinutes >= ((matchDuration * 2) + (extraTimeDuration * 2));
+                                    const halfDuration = matchDuration / 2;
+
+                                    if (match.period === 'first_half') isOvertime = elapsedMinutes >= halfDuration;
+                                    else if (match.period === 'second_half') isOvertime = elapsedMinutes >= matchDuration;
+                                    else if (match.period === 'extra_first') isOvertime = elapsedMinutes >= (matchDuration + extraTimeDuration);
+                                    else if (match.period === 'extra_second') isOvertime = elapsedMinutes >= (matchDuration + (extraTimeDuration * 2));
 
                                     const isLive = match.status === "live";
 
