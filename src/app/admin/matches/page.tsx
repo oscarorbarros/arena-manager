@@ -6,6 +6,7 @@ import { Match, Team, Venue } from "@/lib/types";
 import { generateMatchReport } from "@/lib/news-engine";
 import { Plus, Trash2, Trophy, X, Zap, PlayCircle, FileText, Calendar, MapPin, Clock, RefreshCw } from "lucide-react";
 import { useAudit } from "@/lib/audit-context";
+import { generateAndPrintSumula } from "@/lib/sumula-pdf";
 
 export default function AdminMatchesPage() {
     const { config, setConfig, setNews, generateNextStage, updateMatch } = useTournament();
@@ -245,7 +246,30 @@ export default function AdminMatchesPage() {
                             <Link href={`/referee/${match.id}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-green-500 text-white rounded-lg text-xs font-bold uppercase transition-all shadow-lg hover:shadow-green-500/20 tracking-wider order-first" title="Jogar / Arbitrar">
                                 <PlayCircle className="w-4 h-4 fill-white/20" /> PLAY
                             </Link>
-                            <button onClick={() => alert("Súmula PDF em breve!")} className="p-2 text-black hover:text-black transition-colors" title="Baixar Súmula PDF">
+                            <button 
+                                onClick={() => {
+                                    const teamA = config.teams.find(t => t.id === match.teamAId);
+                                    const teamB = config.teams.find(t => t.id === match.teamBId);
+                                    if (!teamA || !teamB) return;
+                                    
+                                    const playersA = config.players?.filter(p => p.teamId === teamA.id) || [];
+                                    const playersB = config.players?.filter(p => p.teamId === teamB.id) || [];
+                                    const sport = config.sports.find(s => s.id === match.sportId);
+
+                                    generateAndPrintSumula({
+                                        match,
+                                        teamA,
+                                        teamB,
+                                        playersA,
+                                        playersB,
+                                        tournamentName: config.name,
+                                        sportName: sport?.name || "Esporte",
+                                        closedBy: match.closedBy
+                                    });
+                                }} 
+                                className="p-2 text-black hover:text-[#059669] transition-colors" 
+                                title="Baixar Súmula PDF"
+                            >
                                 <FileText className="w-5 h-5" />
                             </button>
                             {match.status !== "finished" && (
