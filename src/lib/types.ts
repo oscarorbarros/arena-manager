@@ -44,9 +44,10 @@ export interface Venue {
 
 export interface Player {
   id: string;
-  name: string;
   teamId: string;
-  number?: number;
+  name: string;
+  matricula?: string;
+  number: number;
   position?: PlayerPosition;
   photoUrl?: string;
   isStarter?: boolean; // Defined by delegation chief before the match
@@ -105,6 +106,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
+    matricula?: string;
     password?: string; // Mock password
     role: UserRole;
     teamId?: string; // For Delegation Chiefs

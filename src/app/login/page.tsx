@@ -24,7 +24,7 @@ export default function LoginPage() {
        return;
     }
 
-    const foundUser = config.users?.find(u => u.email === email && u.password === password);
+    const foundUser = config.users?.find(u => (u.email === email || u.matricula === email) && u.password === password);
     
     if (foundUser) {
         if (loginWithUser(foundUser)) {
@@ -39,7 +39,7 @@ export default function LoginPage() {
             }
         }
     } else {
-        setError("Email ou Senha incorretos.");
+        setError("Email, Matrícula ou Senha incorretos.");
     }
   };
 
@@ -108,13 +108,13 @@ export default function LoginPage() {
                 {role as string !== "public" && (
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">Login (Email ou Matrícula)</label>
                             <input 
                                 type="text"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                placeholder="Email cadastrado"
+                                placeholder="Seu email ou Matrícula"
                                 required={role as string !== "public"}
                             />
                         </div>

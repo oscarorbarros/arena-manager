@@ -1,235 +1,79 @@
-Time,Funcao,Nome,Camisa
-Alta Floresta,Chefe de Delegação,Chefe - Alta Floresta,
-Alta Floresta,Jogador,Atleta 1 - Alta Floresta,1
-Alta Floresta,Jogador,Atleta 2 - Alta Floresta,2
-Alta Floresta,Jogador,Atleta 3 - Alta Floresta,3
-Alta Floresta,Jogador,Atleta 4 - Alta Floresta,4
-Alta Floresta,Jogador,Atleta 5 - Alta Floresta,5
-Alta Floresta,Jogador,Atleta 6 - Alta Floresta,6
-Alta Floresta,Jogador,Atleta 7 - Alta Floresta,7
-Alta Floresta,Jogador,Atleta 8 - Alta Floresta,8
-Alta Floresta,Jogador,Atleta 9 - Alta Floresta,9
-Alta Floresta,Jogador,Atleta 10 - Alta Floresta,10
-Alta Floresta,Jogador,Atleta 11 - Alta Floresta,11
-Alta Floresta,Jogador,Atleta 12 - Alta Floresta,12
-Barra do Garças,Chefe de Delegação,Chefe - Barra do Garças,
-Barra do Garças,Jogador,Atleta 1 - Barra do Garças,1
-Barra do Garças,Jogador,Atleta 2 - Barra do Garças,2
-Barra do Garças,Jogador,Atleta 3 - Barra do Garças,3
-Barra do Garças,Jogador,Atleta 4 - Barra do Garças,4
-Barra do Garças,Jogador,Atleta 5 - Barra do Garças,5
-Barra do Garças,Jogador,Atleta 6 - Barra do Garças,6
-Barra do Garças,Jogador,Atleta 7 - Barra do Garças,7
-Barra do Garças,Jogador,Atleta 8 - Barra do Garças,8
-Barra do Garças,Jogador,Atleta 9 - Barra do Garças,9
-Barra do Garças,Jogador,Atleta 10 - Barra do Garças,10
-Barra do Garças,Jogador,Atleta 11 - Barra do Garças,11
-Barra do Garças,Jogador,Atleta 12 - Barra do Garças,12
-Cáceres,Chefe de Delegação,Chefe - Cáceres,
-Cáceres,Jogador,Atleta 1 - Cáceres,1
-Cáceres,Jogador,Atleta 2 - Cáceres,2
-Cáceres,Jogador,Atleta 3 - Cáceres,3
-Cáceres,Jogador,Atleta 4 - Cáceres,4
-Cáceres,Jogador,Atleta 5 - Cáceres,5
-Cáceres,Jogador,Atleta 6 - Cáceres,6
-Cáceres,Jogador,Atleta 7 - Cáceres,7
-Cáceres,Jogador,Atleta 8 - Cáceres,8
-Cáceres,Jogador,Atleta 9 - Cáceres,9
-Cáceres,Jogador,Atleta 10 - Cáceres,10
-Cáceres,Jogador,Atleta 11 - Cáceres,11
-Cáceres,Jogador,Atleta 12 - Cáceres,12
-Campo Novo do Parecis,Chefe de Delegação,Chefe - Campo Novo do Parecis,
-Campo Novo do Parecis,Jogador,Atleta 1 - Campo Novo do Parecis,1
-Campo Novo do Parecis,Jogador,Atleta 2 - Campo Novo do Parecis,2
-Campo Novo do Parecis,Jogador,Atleta 3 - Campo Novo do Parecis,3
-Campo Novo do Parecis,Jogador,Atleta 4 - Campo Novo do Parecis,4
-Campo Novo do Parecis,Jogador,Atleta 5 - Campo Novo do Parecis,5
-Campo Novo do Parecis,Jogador,Atleta 6 - Campo Novo do Parecis,6
-Campo Novo do Parecis,Jogador,Atleta 7 - Campo Novo do Parecis,7
-Campo Novo do Parecis,Jogador,Atleta 8 - Campo Novo do Parecis,8
-Campo Novo do Parecis,Jogador,Atleta 9 - Campo Novo do Parecis,9
-Campo Novo do Parecis,Jogador,Atleta 10 - Campo Novo do Parecis,10
-Campo Novo do Parecis,Jogador,Atleta 11 - Campo Novo do Parecis,11
-Campo Novo do Parecis,Jogador,Atleta 12 - Campo Novo do Parecis,12
-Confresa,Chefe de Delegação,Chefe - Confresa,
-Confresa,Jogador,Atleta 1 - Confresa,1
-Confresa,Jogador,Atleta 2 - Confresa,2
-Confresa,Jogador,Atleta 3 - Confresa,3
-Confresa,Jogador,Atleta 4 - Confresa,4
-Confresa,Jogador,Atleta 5 - Confresa,5
-Confresa,Jogador,Atleta 6 - Confresa,6
-Confresa,Jogador,Atleta 7 - Confresa,7
-Confresa,Jogador,Atleta 8 - Confresa,8
-Confresa,Jogador,Atleta 9 - Confresa,9
-Confresa,Jogador,Atleta 10 - Confresa,10
-Confresa,Jogador,Atleta 11 - Confresa,11
-Confresa,Jogador,Atleta 12 - Confresa,12
-Cuiabá - Octayde Jorge da Silva,Chefe de Delegação,Chefe - Cuiabá - Octayde Jorge da Silva,
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 1 - Cuiabá - Octayde Jorge da Silva,1
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 2 - Cuiabá - Octayde Jorge da Silva,2
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 3 - Cuiabá - Octayde Jorge da Silva,3
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 4 - Cuiabá - Octayde Jorge da Silva,4
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 5 - Cuiabá - Octayde Jorge da Silva,5
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 6 - Cuiabá - Octayde Jorge da Silva,6
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 7 - Cuiabá - Octayde Jorge da Silva,7
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 8 - Cuiabá - Octayde Jorge da Silva,8
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 9 - Cuiabá - Octayde Jorge da Silva,9
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 10 - Cuiabá - Octayde Jorge da Silva,10
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 11 - Cuiabá - Octayde Jorge da Silva,11
-Cuiabá - Octayde Jorge da Silva,Jogador,Atleta 12 - Cuiabá - Octayde Jorge da Silva,12
-Cuiabá - Bela Vista,Chefe de Delegação,Chefe - Cuiabá - Bela Vista,
-Cuiabá - Bela Vista,Jogador,Atleta 1 - Cuiabá - Bela Vista,1
-Cuiabá - Bela Vista,Jogador,Atleta 2 - Cuiabá - Bela Vista,2
-Cuiabá - Bela Vista,Jogador,Atleta 3 - Cuiabá - Bela Vista,3
-Cuiabá - Bela Vista,Jogador,Atleta 4 - Cuiabá - Bela Vista,4
-Cuiabá - Bela Vista,Jogador,Atleta 5 - Cuiabá - Bela Vista,5
-Cuiabá - Bela Vista,Jogador,Atleta 6 - Cuiabá - Bela Vista,6
-Cuiabá - Bela Vista,Jogador,Atleta 7 - Cuiabá - Bela Vista,7
-Cuiabá - Bela Vista,Jogador,Atleta 8 - Cuiabá - Bela Vista,8
-Cuiabá - Bela Vista,Jogador,Atleta 9 - Cuiabá - Bela Vista,9
-Cuiabá - Bela Vista,Jogador,Atleta 10 - Cuiabá - Bela Vista,10
-Cuiabá - Bela Vista,Jogador,Atleta 11 - Cuiabá - Bela Vista,11
-Cuiabá - Bela Vista,Jogador,Atleta 12 - Cuiabá - Bela Vista,12
-Juína,Chefe de Delegação,Chefe - Juína,
-Juína,Jogador,Atleta 1 - Juína,1
-Juína,Jogador,Atleta 2 - Juína,2
-Juína,Jogador,Atleta 3 - Juína,3
-Juína,Jogador,Atleta 4 - Juína,4
-Juína,Jogador,Atleta 5 - Juína,5
-Juína,Jogador,Atleta 6 - Juína,6
-Juína,Jogador,Atleta 7 - Juína,7
-Juína,Jogador,Atleta 8 - Juína,8
-Juína,Jogador,Atleta 9 - Juína,9
-Juína,Jogador,Atleta 10 - Juína,10
-Juína,Jogador,Atleta 11 - Juína,11
-Juína,Jogador,Atleta 12 - Juína,12
-Pontes e Lacerda,Chefe de Delegação,Chefe - Pontes e Lacerda,
-Pontes e Lacerda,Jogador,Atleta 1 - Pontes e Lacerda,1
-Pontes e Lacerda,Jogador,Atleta 2 - Pontes e Lacerda,2
-Pontes e Lacerda,Jogador,Atleta 3 - Pontes e Lacerda,3
-Pontes e Lacerda,Jogador,Atleta 4 - Pontes e Lacerda,4
-Pontes e Lacerda,Jogador,Atleta 5 - Pontes e Lacerda,5
-Pontes e Lacerda,Jogador,Atleta 6 - Pontes e Lacerda,6
-Pontes e Lacerda,Jogador,Atleta 7 - Pontes e Lacerda,7
-Pontes e Lacerda,Jogador,Atleta 8 - Pontes e Lacerda,8
-Pontes e Lacerda,Jogador,Atleta 9 - Pontes e Lacerda,9
-Pontes e Lacerda,Jogador,Atleta 10 - Pontes e Lacerda,10
-Pontes e Lacerda,Jogador,Atleta 11 - Pontes e Lacerda,11
-Pontes e Lacerda,Jogador,Atleta 12 - Pontes e Lacerda,12
-Primavera do Leste,Chefe de Delegação,Chefe - Primavera do Leste,
-Primavera do Leste,Jogador,Atleta 1 - Primavera do Leste,1
-Primavera do Leste,Jogador,Atleta 2 - Primavera do Leste,2
-Primavera do Leste,Jogador,Atleta 3 - Primavera do Leste,3
-Primavera do Leste,Jogador,Atleta 4 - Primavera do Leste,4
-Primavera do Leste,Jogador,Atleta 5 - Primavera do Leste,5
-Primavera do Leste,Jogador,Atleta 6 - Primavera do Leste,6
-Primavera do Leste,Jogador,Atleta 7 - Primavera do Leste,7
-Primavera do Leste,Jogador,Atleta 8 - Primavera do Leste,8
-Primavera do Leste,Jogador,Atleta 9 - Primavera do Leste,9
-Primavera do Leste,Jogador,Atleta 10 - Primavera do Leste,10
-Primavera do Leste,Jogador,Atleta 11 - Primavera do Leste,11
-Primavera do Leste,Jogador,Atleta 12 - Primavera do Leste,12
-Rondonópolis,Chefe de Delegação,Chefe - Rondonópolis,
-Rondonópolis,Jogador,Atleta 1 - Rondonópolis,1
-Rondonópolis,Jogador,Atleta 2 - Rondonópolis,2
-Rondonópolis,Jogador,Atleta 3 - Rondonópolis,3
-Rondonópolis,Jogador,Atleta 4 - Rondonópolis,4
-Rondonópolis,Jogador,Atleta 5 - Rondonópolis,5
-Rondonópolis,Jogador,Atleta 6 - Rondonópolis,6
-Rondonópolis,Jogador,Atleta 7 - Rondonópolis,7
-Rondonópolis,Jogador,Atleta 8 - Rondonópolis,8
-Rondonópolis,Jogador,Atleta 9 - Rondonópolis,9
-Rondonópolis,Jogador,Atleta 10 - Rondonópolis,10
-Rondonópolis,Jogador,Atleta 11 - Rondonópolis,11
-Rondonópolis,Jogador,Atleta 12 - Rondonópolis,12
-São Vicente,Chefe de Delegação,Chefe - São Vicente,
-São Vicente,Jogador,Atleta 1 - São Vicente,1
-São Vicente,Jogador,Atleta 2 - São Vicente,2
-São Vicente,Jogador,Atleta 3 - São Vicente,3
-São Vicente,Jogador,Atleta 4 - São Vicente,4
-São Vicente,Jogador,Atleta 5 - São Vicente,5
-São Vicente,Jogador,Atleta 6 - São Vicente,6
-São Vicente,Jogador,Atleta 7 - São Vicente,7
-São Vicente,Jogador,Atleta 8 - São Vicente,8
-São Vicente,Jogador,Atleta 9 - São Vicente,9
-São Vicente,Jogador,Atleta 10 - São Vicente,10
-São Vicente,Jogador,Atleta 11 - São Vicente,11
-São Vicente,Jogador,Atleta 12 - São Vicente,12
-Sorriso,Chefe de Delegação,Chefe - Sorriso,
-Sorriso,Jogador,Atleta 1 - Sorriso,1
-Sorriso,Jogador,Atleta 2 - Sorriso,2
-Sorriso,Jogador,Atleta 3 - Sorriso,3
-Sorriso,Jogador,Atleta 4 - Sorriso,4
-Sorriso,Jogador,Atleta 5 - Sorriso,5
-Sorriso,Jogador,Atleta 6 - Sorriso,6
-Sorriso,Jogador,Atleta 7 - Sorriso,7
-Sorriso,Jogador,Atleta 8 - Sorriso,8
-Sorriso,Jogador,Atleta 9 - Sorriso,9
-Sorriso,Jogador,Atleta 10 - Sorriso,10
-Sorriso,Jogador,Atleta 11 - Sorriso,11
-Sorriso,Jogador,Atleta 12 - Sorriso,12
-Tangará da Serra,Chefe de Delegação,Chefe - Tangará da Serra,
-Tangará da Serra,Jogador,Atleta 1 - Tangará da Serra,1
-Tangará da Serra,Jogador,Atleta 2 - Tangará da Serra,2
-Tangará da Serra,Jogador,Atleta 3 - Tangará da Serra,3
-Tangará da Serra,Jogador,Atleta 4 - Tangará da Serra,4
-Tangará da Serra,Jogador,Atleta 5 - Tangará da Serra,5
-Tangará da Serra,Jogador,Atleta 6 - Tangará da Serra,6
-Tangará da Serra,Jogador,Atleta 7 - Tangará da Serra,7
-Tangará da Serra,Jogador,Atleta 8 - Tangará da Serra,8
-Tangará da Serra,Jogador,Atleta 9 - Tangará da Serra,9
-Tangará da Serra,Jogador,Atleta 10 - Tangará da Serra,10
-Tangará da Serra,Jogador,Atleta 11 - Tangará da Serra,11
-Tangará da Serra,Jogador,Atleta 12 - Tangará da Serra,12
-Várzea Grande,Chefe de Delegação,Chefe - Várzea Grande,
-Várzea Grande,Jogador,Atleta 1 - Várzea Grande,1
-Várzea Grande,Jogador,Atleta 2 - Várzea Grande,2
-Várzea Grande,Jogador,Atleta 3 - Várzea Grande,3
-Várzea Grande,Jogador,Atleta 4 - Várzea Grande,4
-Várzea Grande,Jogador,Atleta 5 - Várzea Grande,5
-Várzea Grande,Jogador,Atleta 6 - Várzea Grande,6
-Várzea Grande,Jogador,Atleta 7 - Várzea Grande,7
-Várzea Grande,Jogador,Atleta 8 - Várzea Grande,8
-Várzea Grande,Jogador,Atleta 9 - Várzea Grande,9
-Várzea Grande,Jogador,Atleta 10 - Várzea Grande,10
-Várzea Grande,Jogador,Atleta 11 - Várzea Grande,11
-Várzea Grande,Jogador,Atleta 12 - Várzea Grande,12
-Campus Avançado de Lucas do Rio Verde,Chefe de Delegação,Chefe - Campus Avançado de Lucas do Rio Verde,
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 1 - Campus Avançado de Lucas do Rio Verde,1
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 2 - Campus Avançado de Lucas do Rio Verde,2
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 3 - Campus Avançado de Lucas do Rio Verde,3
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 4 - Campus Avançado de Lucas do Rio Verde,4
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 5 - Campus Avançado de Lucas do Rio Verde,5
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 6 - Campus Avançado de Lucas do Rio Verde,6
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 7 - Campus Avançado de Lucas do Rio Verde,7
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 8 - Campus Avançado de Lucas do Rio Verde,8
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 9 - Campus Avançado de Lucas do Rio Verde,9
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 10 - Campus Avançado de Lucas do Rio Verde,10
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 11 - Campus Avançado de Lucas do Rio Verde,11
-Campus Avançado de Lucas do Rio Verde,Jogador,Atleta 12 - Campus Avançado de Lucas do Rio Verde,12
-Campus Avançado de Sinop,Chefe de Delegação,Chefe - Campus Avançado de Sinop,
-Campus Avançado de Sinop,Jogador,Atleta 1 - Campus Avançado de Sinop,1
-Campus Avançado de Sinop,Jogador,Atleta 2 - Campus Avançado de Sinop,2
-Campus Avançado de Sinop,Jogador,Atleta 3 - Campus Avançado de Sinop,3
-Campus Avançado de Sinop,Jogador,Atleta 4 - Campus Avançado de Sinop,4
-Campus Avançado de Sinop,Jogador,Atleta 5 - Campus Avançado de Sinop,5
-Campus Avançado de Sinop,Jogador,Atleta 6 - Campus Avançado de Sinop,6
-Campus Avançado de Sinop,Jogador,Atleta 7 - Campus Avançado de Sinop,7
-Campus Avançado de Sinop,Jogador,Atleta 8 - Campus Avançado de Sinop,8
-Campus Avançado de Sinop,Jogador,Atleta 9 - Campus Avançado de Sinop,9
-Campus Avançado de Sinop,Jogador,Atleta 10 - Campus Avançado de Sinop,10
-Campus Avançado de Sinop,Jogador,Atleta 11 - Campus Avançado de Sinop,11
-Campus Avançado de Sinop,Jogador,Atleta 12 - Campus Avançado de Sinop,12
-Guarantã do Norte,Chefe de Delegação,Chefe - Guarantã do Norte,
-Guarantã do Norte,Jogador,Atleta 1 - Guarantã do Norte,1
-Guarantã do Norte,Jogador,Atleta 2 - Guarantã do Norte,2
-Guarantã do Norte,Jogador,Atleta 3 - Guarantã do Norte,3
-Guarantã do Norte,Jogador,Atleta 4 - Guarantã do Norte,4
-Guarantã do Norte,Jogador,Atleta 5 - Guarantã do Norte,5
-Guarantã do Norte,Jogador,Atleta 6 - Guarantã do Norte,6
-Guarantã do Norte,Jogador,Atleta 7 - Guarantã do Norte,7
-Guarantã do Norte,Jogador,Atleta 8 - Guarantã do Norte,8
-Guarantã do Norte,Jogador,Atleta 9 - Guarantã do Norte,9
-Guarantã do Norte,Jogador,Atleta 10 - Guarantã do Norte,10
-Guarantã do Norte,Jogador,Atleta 11 - Guarantã do Norte,11
-Guarantã do Norte,Jogador,Atleta 12 - Guarantã do Norte,12
+Time,Funcao,Nome,Camisa,Matricula
+Alta Floresta,Chefe de Delegação,Marcos Almeida,,202997862
+Alta Floresta,Jogador,Leonardo Oliveira,1,202424843
+Alta Floresta,Jogador,Pedro Martins,2,202953910
+Alta Floresta,Jogador,Renan Silva,3,202595835
+Alta Floresta,Jogador,Pedro Souza,4,202787190
+Alta Floresta,Jogador,Eduardo Alves,5,202786713
+Alta Floresta,Jogador,Rafael Silva,6,202129061
+Alta Floresta,Jogador,Marcos Ribeiro,7,202414576
+Alta Floresta,Jogador,Vitor Costa,8,202893945
+Alta Floresta,Jogador,Rodrigo Ferreira,9,202466978
+Alta Floresta,Jogador,Rafael Gomes,10,202745675
+Alta Floresta,Jogador,Renan Costa,11,202440501
+Alta Floresta,Jogador,Marcos Silva,12,202275181
+Barra do Garças,Chefe de Delegação,Rodrigo Oliveira,,202210851
+Barra do Garças,Jogador,Enzo Pereira,1,202830498
+Barra do Garças,Jogador,Carlos Rodrigues,2,202655707
+Barra do Garças,Jogador,Carlos Oliveira,3,202721789
+Barra do Garças,Jogador,Vitor Santos,4,202542543
+Barra do Garças,Jogador,Breno Gomes,5,202221521
+Barra do Garças,Jogador,Diego Martins,6,202529771
+Barra do Garças,Jogador,Leonardo Martins,7,202247563
+Barra do Garças,Jogador,João Ribeiro,8,202841743
+Barra do Garças,Jogador,Rodrigo Ferreira,9,202502445
+Barra do Garças,Jogador,Matheus Silva,10,202810512
+Barra do Garças,Jogador,Guilherme Rodrigues,11,202790540
+Barra do Garças,Jogador,Diego Alves,12,202811806
+Cáceres,Chefe de Delegação,Eduardo Ribeiro,,202105044
+Cáceres,Jogador,João Pereira,1,202468555
+Cáceres,Jogador,Leonardo Ferreira,2,202497497
+Cáceres,Jogador,Felipe Lima,3,202572497
+Cáceres,Jogador,Victor Oliveira,4,202154710
+Cáceres,Jogador,Renan Oliveira,5,202501767
+Cáceres,Jogador,Diego Ferreira,6,202200475
+Cáceres,Jogador,Rodrigo Martins,7,202995578
+Cáceres,Jogador,Caio Silva,8,202551679
+Cáceres,Jogador,Victor Santos,9,202858044
+Cáceres,Jogador,Vitor Pereira,10,202997589
+Cáceres,Jogador,Igor Carvalho,11,202773843
+Cáceres,Jogador,Felipe Silva,12,202870579
+Campo Novo do Parecis,Chefe de Delegação,Pedro Almeida,,202254869
+Campo Novo do Parecis,Jogador,Lucas Martins,1,202253591
+Campo Novo do Parecis,Jogador,Pedro Almeida,2,202156235
+Campo Novo do Parecis,Jogador,Felipe Santos,3,202307043
+Campo Novo do Parecis,Jogador,Daniel Martins,4,202417311
+Campo Novo do Parecis,Jogador,Breno Lima,5,202942617
+Campo Novo do Parecis,Jogador,Enzo Gomes,6,202704777
+Campo Novo do Parecis,Jogador,Renan Carvalho,7,202911882
+Campo Novo do Parecis,Jogador,Leonardo Souza,8,202877649
+Campo Novo do Parecis,Jogador,Marcelo Rodrigues,9,202610301
+Campo Novo do Parecis,Jogador,Marcos Costa,10,202680510
+Campo Novo do Parecis,Jogador,Marcos Almeida,11,202944014
+Campo Novo do Parecis,Jogador,Leonardo Gomes,12,202164277
+Confresa,Chefe de Delegação,Victor Martins,,202196468
+Confresa,Jogador,Marcos Gomes,1,202440868
+Confresa,Jogador,Eduardo Silva,2,202319110
+Confresa,Jogador,Leonardo Ribeiro,3,202820023
+Confresa,Jogador,Carlos Pereira,4,202871039
+Confresa,Jogador,Lucas Lima,5,202887037
+Confresa,Jogador,Eduardo Santos,6,202840826
+Confresa,Jogador,Rodrigo Ribeiro,7,202416141
+Confresa,Jogador,Eduardo Martins,8,202173571
+Confresa,Jogador,João Ferreira,9,202942142
+Confresa,Jogador,Pedro Santos,10,202299134
+Confresa,Jogador,Enzo Pereira,11,202960561
+Confresa,Jogador,Marcelo Lima,12,202563080
+Cuiabá - Octayde Jorge da Silva,Chefe de Delegação,Victor Carvalho,,202166783
+Cuiabá - Octayde Jorge da Silva,Jogador,Renan Rodrigues,1,202869880
+Cuiabá - Octayde Jorge da Silva,Jogador,Pedro Ribeiro,2,202383313
+Cuiabá - Octayde Jorge da Silva,Jogador,Rodrigo Pereira,3,202743478
+Cuiabá - Octayde Jorge da Silva,Jogador,Vitor Pereira,4,202684591
+Cuiabá - Octayde Jorge da Silva,Jogador,Thiago Costa,5,202237107
+Cuiabá - Octayde Jorge da Silva,Jogador,Thiago Ribeiro,6,202585837
+Cuiabá - Octayde Jorge da Silva,Jogador,Marcos Pereira,7,202877582
+Cuiabá - Octayde Jorge da Silva,Jogador,Matheus Ferreira,8,202217561
+Cuiabá - Octayde Jorge da Silva,Jogador,Arthur Pereira,9,202863233
+Cuiabá - Octayde Jorge da Silva,Jogador,João Souza,10,202904865
+Cuiabá - Octayde Jorge da Silva,Jogador,Enzo Martins,11,202333974
+Cuiabá - Octayde Jorge da Silva,Jogador,Renan Santos,12,202335205

@@ -67,22 +67,18 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
              const parts = line.split(",").map(s => s.trim());
              // MUST have exactly 4 fields and email must contain @
              // This prevents accidentally importing a player CSV as teams
-             if (parts.length < 4) {
+             if (parts.length < 3) {
                  console.warn(`Linha ignorada (formato inválido, ${parts.length} campos): ${line}`);
                  return;
              }
              
-             const [chiefName, email, teamName, group] = parts;
+             const [chiefName, matricula, teamName] = parts;
 
-             // Validate email — must contain @
-             if (!email.includes('@')) {
-                 console.warn(`Linha ignorada (email inválido: "${email}"): ${line}`);
-                 return;
-             }
+             // Simulate an email for internal Auth purposes
+             const email = `chefe.${matricula}@ifmt.edu.br`;
              
-             // Check duplicates in Config and also in the lines being processed
              let userId = crypto.randomUUID();
-             const existingUser = config.users?.find(u => u.email.toLowerCase() === email.toLowerCase());
+             const existingUser = config.users?.find(u => u.matricula === matricula || u.email.toLowerCase() === email.toLowerCase());
              if (existingUser) {
                  userId = existingUser.id;
              } else {
@@ -90,7 +86,8 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                      id: userId,
                      name: chiefName,
                      email: email,
-                     password: "123456",
+                     matricula: matricula,
+                     password: matricula, // Password is the matricula
                      role: "delegate"
                  });
              }
@@ -104,7 +101,7 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
              newTeams.push({
                  id: crypto.randomUUID(),
                  name: teamName,
-                 group: group || "A",
+                 group: "A", // Placeholder since we don't have group info anymore
                  delegationChiefId: userId,
                  logo: teamName.charAt(0).toUpperCase(),
                  stats: { points: 0, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, goalDifference: 0 }
@@ -134,9 +131,10 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
           lines.forEach(line => {
               if (line.toUpperCase().includes("FORMATO:")) return; // ignora a linha de ajuda
               const parts = line.split(",").map(s => s.trim());
-              if (parts.length < 2) return;
+              if (parts.length < 3) return;
 
-              const [teamName, playerName, number] = parts;
+              const [teamName, playerName, numberStr, matricula] = parts;
+              const number = parseInt(numberStr) || 0;
               
               // Find Team Case-Insensitive
               const team = config.teams.find(t => t.name.toLowerCase() === teamName.toLowerCase());
@@ -153,7 +151,8 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                       id: crypto.randomUUID(),
                       teamId: team.id,
                       name: playerName,
-                      number: parseInt(number) || 0,
+                      matricula: matricula || "",
+                      number: number,
                       position: "Meio-Campo",
                       stats: { goals: 0, yellowCards: 0, redCards: 0, matchesPlayed: 0 }
                   });
@@ -289,15 +288,15 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                   </div>
 
                   <div className="flex-1 bg-emerald-50/50 rounded-lg p-4 border border-emerald-200/60 mb-4 flex flex-col">
-                      <div className="text-xs text-white mb-2 font-mono bg-emerald-900 text-white shadow-md/5 p-2 rounded">
+                      <div className="text-xs text-white mb-2 font-mono bg-emerald-900 shadow-md/5 p-3 rounded leading-relaxed">
                           {importTab === "teams" 
-                            ? "FORMATO: NomeChefe, Email, NomeTime, Grupo (Ex: João, joao@email.com, Falcons, A)" 
-                            : "FORMATO: NomeTime, NomeAtleta, Numero (Ex: Falcons, Neymar, 10)"}
+                            ? "FORMATO: NomeChefe, MatriculaChefe, NomeTime\nExemplo: João, 2024123, Falcons" 
+                            : "FORMATO: NomeTime, NomeAtleta, Numero, Matricula\nExemplo: Falcons, Neymar, 10, 2024456"}
                       </div>
                       {importTab === "teams" && (
                         <div className="mb-2 p-2 bg-red-100 border border-red-300 rounded text-xs text-red-700 font-semibold">
                           ⚠️ ATENÇÃO: Use esta aba APENAS para importar TIMES. Para importar jogadores, use a aba "Atletas".
-                          O Email do chefe de delegação é obrigatório e deve conter @.
+                          A senha do Chefe será a própria matrícula.
                         </div>
                       )}
                       <textarea 

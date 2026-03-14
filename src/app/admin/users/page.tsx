@@ -16,6 +16,7 @@ export default function AdminUsersPage() {
       id: "",
       name: "",
       email: "",
+      matricula: "",
       password: "",
       role: "delegate" as UserRole
   });
@@ -33,6 +34,7 @@ export default function AdminUsersPage() {
               users: prev.users.map(u => u.id === formData.id ? { ...u, 
                   name: formData.name, 
                   email: formData.email, 
+                  matricula: formData.matricula,
                   password: formData.password, 
                   role: formData.role 
               } : u)
@@ -44,6 +46,7 @@ export default function AdminUsersPage() {
               id: crypto.randomUUID(),
               name: formData.name,
               email: formData.email,
+              matricula: formData.matricula,
               password: formData.password,
               role: formData.role
           };
@@ -65,6 +68,7 @@ export default function AdminUsersPage() {
           id: user.id,
           name: user.name,
           email: user.email,
+          matricula: user.matricula || "",
           password: user.password || "",
           role: user.role
       });
@@ -116,7 +120,7 @@ const handleDelete = (userId: string) => {
   const closeModal = () => {
       setIsModalOpen(false);
       setIsEditing(false);
-      setFormData({ id: "", name: "", email: "", password: "", role: "delegate" });
+      setFormData({ id: "", name: "", email: "", matricula: "", password: "", role: "delegate" });
   };
 
   const getRoleBadge = (role: UserRole) => {
@@ -176,7 +180,7 @@ const handleDelete = (userId: string) => {
                             </div>
                             <span className="font-medium">{sysUser.name}</span>
                         </td>
-                        <td className="p-4 text-black font-mono text-sm">{sysUser.email}</td>
+                        <td className="p-4 text-black font-mono text-sm">{sysUser.matricula || sysUser.email}</td>
                         <td className="p-4">{getRoleBadge(sysUser.role)}</td>
                         <td className="p-4 text-right">
                                     {(currentUser?.role === "admin" || (currentUser?.role === "organization_member" && sysUser.role === "delegate")) && (
@@ -233,13 +237,23 @@ const handleDelete = (userId: string) => {
                           />
                       </div>
                       <div>
-                          <label className="block text-sm font-medium text-black mb-1">Email (Login)</label>
+                          <label className="block text-sm font-medium text-black mb-1">Email</label>
                           <input 
                             type="email" 
                             className="w-full bg-emerald-50/50 border border-emerald-200 rounded-lg p-3 focus:ring-2 focus:ring-purple-500 outline-none text-black"
                             placeholder="Ex: joao@arena.com"
                             value={formData.email}
                             onChange={e => setFormData({...formData, email: e.target.value})}
+                          />
+                      </div>
+                      <div>
+                          <label className="block text-sm font-medium text-black mb-1">Matrícula (Login Principal)</label>
+                          <input 
+                            type="text" 
+                            className="w-full bg-emerald-50/50 border border-emerald-200 rounded-lg p-3 focus:ring-2 focus:ring-purple-500 outline-none text-black"
+                            placeholder="Ex: 202412345"
+                            value={formData.matricula}
+                            onChange={e => setFormData({...formData, matricula: e.target.value})}
                           />
                       </div>
                        <div>

@@ -52,7 +52,7 @@ export default function HomePage() {
                     const srvConfig = await configRes.json();
                     const srvNews = await newsRes.json();
                     if (srvConfig && Object.keys(srvConfig).length > 0) {
-                        setConfig((prev: any) => ({...prev, ...srvConfig}));
+                        setConfig((prev: any) => ({ ...prev, ...srvConfig }));
                         if (srvNews) setNews(srvNews);
                     }
                 }
@@ -64,32 +64,6 @@ export default function HomePage() {
     }, [setConfig, setNews]);
 
     const liveMatches = config.matches.filter(m => m.status === "live" || m.status === "paused");
-
-    const getTopScorers = () => {
-        const goalCounts: Record<string, number> = {};
-        config.matches.forEach(m => {
-            m.events.forEach(e => {
-                if (e.type === 'goal' && e.playerId) {
-                    // avoid counting annulled goals and own goals if marked as negative value (not standard here, just in case)
-                    goalCounts[e.playerId] = (goalCounts[e.playerId] || 0) + 1;
-                }
-            });
-        });
-
-        if (!config.players) return [];
-
-        return config.players
-            .filter(p => goalCounts[p.id] > 0)
-            .map(p => ({
-                ...p,
-                goalsScored: goalCounts[p.id],
-                teamName: config.teams.find(t => t.id === p.teamId)?.name || "Sem Time"
-            }))
-            .sort((a, b) => b.goalsScored - a.goalsScored)
-            .slice(0, 10);
-    };
-
-    const topScorers = getTopScorers();
 
     const getMatchStatus = (m: any) => {
         switch (m.period) {
@@ -131,11 +105,11 @@ export default function HomePage() {
             }
         }
 
-        const userFound = config.users?.find(u => u.email === loginData.email && u.password === loginData.password);
+        const userFound = config.users?.find(u => (u.email === loginData.email || u.matricula === loginData.email) && u.password === loginData.password);
 
         if (userFound) {
             login(userFound.role, loginData.password, userFound.name);
-            logAction("LOGIN", `Usuário ${userFound.email} entrou no sistema`);
+            logAction("LOGIN", `Usuário ${userFound.matricula || userFound.email} entrou no sistema`);
             setIsLoginOpen(false);
             if (["admin", "organization_member", "journalist"].includes(userFound.role || "")) router.push("/admin");
             else if (userFound.role === "delegate") router.push("/delegate");
@@ -304,8 +278,7 @@ export default function HomePage() {
                 </div>
 
                 {activeTab === "news" ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-6">
+                    <div className="space-y-6">
                         <div className="flex justify-between items-center border-l-4 border-emerald-500 pl-3">
                             <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-black">
                                 <Newspaper className="w-6 h-6" /> Últimas Notícias
@@ -326,7 +299,7 @@ export default function HomePage() {
                         ) : (
                             <div className="grid gap-6">
                                 {news.map((story, i) => (
-                                <article key={story.id} className={`group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 hover:shadow-xl transition-all border border-emerald-200/60 relative flex flex-col ${i === 0 ? "md:grid md:grid-cols-2" : ""}`}>
+                                    <article key={story.id} className={`group bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 hover:shadow-xl transition-all border border-emerald-200/60 relative flex flex-col ${i === 0 ? "md:grid md:grid-cols-2" : ""}`}>
 
                                         {canManageNews && (
                                             <div className="absolute top-2 right-2 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -345,7 +318,7 @@ export default function HomePage() {
                                             ) : (
                                                 <div className="absolute inset-0 bg-gradient-to-br from-[#06aa48]/10 to-blue-500/10" />
                                             )}
-                                            
+
                                             <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap z-30">
                                                 {story.tags?.map(tag => (
                                                     <span key={tag} className="text-[10px] uppercase font-bold bg-emerald-950/40 backdrop-blur-md text-black bg-emerald-900 text-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[9px] border border-white/20">
@@ -375,38 +348,6 @@ export default function HomePage() {
                                 ))}
                             </div>
                         )}
-                        </div>
-                        <div className="lg:col-span-1 space-y-6">
-                            <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-black border-l-4 border-emerald-500 pl-3">
-                                <Trophy className="w-6 h-6 text-yellow-500" /> Artilharia
-                            </h2>
-                            <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 p-6 overfow-hidden border border-emerald-200/60">
-                                {topScorers.length === 0 ? (
-                                    <div className="text-center text-gray-500 py-6 text-sm">
-                                        Nenhum gol registrado no campeonato ainda.
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {topScorers.map((scorer, idx) => (
-                                            <div key={scorer.id} className="flex items-center justify-between border-b border-gray-100 last:border-0 pb-3 last:pb-0">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-100 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-800' : 'bg-emerald-50 text-emerald-700'}`}>
-                                                        {idx + 1}º
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-bold text-black text-sm capitalize">{scorer.name.toLowerCase()}</div>
-                                                        <div className="text-xs text-gray-500 uppercase tracking-widest leading-none mt-1">{scorer.teamName}</div>
-                                                    </div>
-                                                </div>
-                                                <div className="text-2xl font-black text-emerald-600 tracking-tighter">
-                                                    {scorer.goalsScored}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
                     </div>
                 ) : (
                     <div className="w-full">
@@ -428,8 +369,8 @@ export default function HomePage() {
                         <form onSubmit={handleLogin} className="p-6 space-y-4">
                             {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2"><Lock className="w-4 h-4" /> {error}</div>}
                             <div>
-                                <label className="block text-xs font-bold text-black uppercase mb-1">Email</label>
-                                <input type="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#06aa48] outline-none" placeholder="press@arena.com" value={loginData.email} onChange={e => setLoginData({ ...loginData, email: e.target.value })} />
+                                <label className="block text-xs font-bold text-black uppercase mb-1">Email / Matrícula</label>
+                                <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#06aa48] outline-none" placeholder="matrícula ou email" value={loginData.email} onChange={e => setLoginData({ ...loginData, email: e.target.value })} />
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-black uppercase mb-1">Senha</label>
@@ -465,11 +406,11 @@ export default function HomePage() {
                             <div>
                                 <label className="block text-sm font-bold text-black mb-2">Imagens e Fotos (Drive, Imgur, ou do seu computador)</label>
                                 <div className="flex gap-2 mb-3 flex-wrap md:flex-nowrap">
-                                    <input 
-                                        value={newImageUrl} 
-                                        onChange={e => setNewImageUrl(e.target.value)} 
-                                        className="flex-[2] p-2 border border-gray-300 rounded focus:border-emerald-300 outline-none text-sm text-black min-w-[200px]" 
-                                        placeholder="https://suasite.com/foto.jpg ou link do Google Drive" 
+                                    <input
+                                        value={newImageUrl}
+                                        onChange={e => setNewImageUrl(e.target.value)}
+                                        className="flex-[2] p-2 border border-gray-300 rounded focus:border-emerald-300 outline-none text-sm text-black min-w-[200px]"
+                                        placeholder="https://suasite.com/foto.jpg ou link do Google Drive"
                                         onKeyPress={e => {
                                             if (e.key === "Enter" && newImageUrl.trim()) {
                                                 const formattedUrl = formatGoogleDriveUrl(newImageUrl.trim());
@@ -479,7 +420,7 @@ export default function HomePage() {
                                             }
                                         }}
                                     />
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             if (newImageUrl.trim()) {
                                                 const formattedUrl = formatGoogleDriveUrl(newImageUrl.trim());
@@ -493,11 +434,11 @@ export default function HomePage() {
                                     </button>
                                     <label className="px-3 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-500 cursor-pointer transition-colors flex flex-1 md:flex-none items-center justify-center gap-1 shrink-0">
                                         <ImageIcon className="w-4 h-4" /> Arquivo
-                                        <input 
-                                            type="file" 
-                                            accept="image/*" 
-                                            multiple 
-                                            className="hidden" 
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            className="hidden"
                                             onChange={(e) => {
                                                 const files = e.target.files;
                                                 if (!files) return;
@@ -520,7 +461,7 @@ export default function HomePage() {
                                             <div key={i} className="relative group rounded-lg overflow-hidden border border-gray-300 aspect-video">
                                                 <img src={url} alt={`Preview ${i}`} className="w-full h-full object-cover" />
                                                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <button 
+                                                    <button
                                                         onClick={() => setNewsForm(prev => ({ ...prev, imageUrls: prev.imageUrls.filter((_, idx) => idx !== i) }))}
                                                         className="p-1.5 bg-red-600 rounded-full text-white hover:bg-red-500"
                                                     >
@@ -545,7 +486,7 @@ export default function HomePage() {
                 <div className="fixed inset-0 bg-emerald-950/60 backdrop-blur-md z-[60] flex items-center justify-center p-4">
                     <div className="bg-white rounded-xl w-full max-w-4xl shadow-2xl animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[90vh]">
                         <div className="p-4 flex justify-between items-center border-b border-gray-100 bg-emerald-50 text-emerald-900 border-l-4 border-l-emerald-600">
-                            <span className="text-sm font-bold tracking-widest uppercase flex items-center gap-1"><Newspaper className="w-4 h-4"/> Matéria Completa</span>
+                            <span className="text-sm font-bold tracking-widest uppercase flex items-center gap-1"><Newspaper className="w-4 h-4" /> Matéria Completa</span>
                             <button onClick={() => setReadingNewsItem(null)} className="hover:bg-black/10 p-2 rounded-full transition-colors"><X className="w-5 h-5 text-black" /></button>
                         </div>
                         <div className="overflow-y-auto w-full custom-scrollbar">
