@@ -12,6 +12,41 @@ interface SumulaData {
   closedBy?: string;
 }
 
+function penaltiesHtml(match: Match, allPlayers: Player[], teamA: Team, teamB: Team): string {
+  if (match.penaltiesA === undefined && match.penaltiesB === undefined) return "";
+  
+  const penEventsA = match.events.filter(e => e.teamId === teamA.id && (e.type === "penalty_goal" || e.type === "penalty_miss"));
+  const penEventsB = match.events.filter(e => e.teamId === teamB.id && (e.type === "penalty_goal" || e.type === "penalty_miss"));
+  
+  if (penEventsA.length === 0 && penEventsB.length === 0) return "";
+
+  const renderSide = (events: any[], team: Team) => {
+    return `
+      <div style="flex:1;">
+        <div style="font-size:10px;font-weight:bold;margin-bottom:4px;border-bottom:1px solid #ccc;padding-bottom:2px;">${team.name}</div>
+        <ul style="list-style-type:none;padding:0;margin:0;">
+          ${events.map((e, i) => {
+            const player = allPlayers.find(p => p.id === e.playerId);
+            const playerName = player ? player.name : "Não identificado";
+            const icon = e.type === "penalty_goal" ? "✅ Gol" : "❌ Perdeu";
+            return `<li style="font-size:10px;margin-bottom:2px;">${i+1}º Cobrança - ${icon} (${playerName})</li>`;
+          }).join('')}
+        </ul>
+      </div>
+    `;
+  };
+
+  return `
+    <div style="border:1px solid #000; padding:6px; margin-top:10px; background:#f9f9f9;">
+      <div style="font-weight:bold;text-align:center;font-size:11px;margin-bottom:6px;background:#ddd;padding:2px;border-bottom:1px solid #ccc;">DISPUTA DE PÊNALTIS</div>
+      <div style="display:flex;gap:16px;">
+        ${renderSide(penEventsA, teamA)}
+        ${renderSide(penEventsB, teamB)}
+      </div>
+    </div>
+  `;
+}
+
 function getPlayerGoals(player: Player, match: Match, half: 1 | 2): number {
   const events = match.events.filter(e => e.playerId === player.id && e.type === "goal");
   const halfTimeEvent = match.events.find(e => e.type === "end" && e.observation?.includes("1o Tempo"));
@@ -134,6 +169,18 @@ export function generateAndPrintSumula(data: SumulaData): void {
 
   const observations = match.observations || "(Sem ocorrências registradas)";
   const subsHtml = substitutionsList(match, allPlayers);
+  const penHtml = penaltiesHtml(match, allPlayers, teamA, teamB);
+
+  const hasPenalties = match.penaltiesA !== undefined || match.events.some(e => e.type.startsWith('penalty'));
+  const hasExtraTime = match.period?.includes('extra') || match.events.some(e => e.observation?.toLowerCase().includes("prorroga"));
+  let periodInfo = "Tempo Regulamentar";
+  if (hasPenalties) periodInfo = "Decidido nos Pênaltis";
+  else if (hasExtraTime) periodInfo = "Decidido na Prorrogação";
+
+  let finalResultBox = `${teamA.name} &nbsp; ${match.scoreA} × ${match.scoreB} &nbsp; ${teamB.name}`;
+  if (hasPenalties) {
+      finalResultBox += `<br/><span style="font-size:10px;color:#333;font-weight:normal;">(Pênaltis: ${teamA.name} ${match.penaltiesA || 0} x ${match.penaltiesB || 0} ${teamB.name})</span>`;
+  }
 
   const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -160,7 +207,7 @@ export function generateAndPrintSumula(data: SumulaData): void {
 </head>
 <body>
   <h1>ARENA MANAGER – SÚMULA DE ${sportName.toUpperCase()}</h1>
-  <div class="subtitle">Campeonato: <strong>${tournamentName}</strong> &nbsp;|&nbsp; Fase: <strong>${match.round || "Fase de Grupos"}</strong> &nbsp;|&nbsp; Grupo: <strong>${match.group || "–"}</strong></div>
+  <div class="subtitle">Campeonato: <strong>${tournamentName}</strong> &nbsp;|&nbsp; Fase: <strong>${match.round || "Fase de Grupos"}</strong> &nbsp;|&nbsp; Grupo: <strong>${match.group || "–"}</strong><br/><span style="font-size:10px;color:#444;">Formato Final: <strong>${periodInfo}</strong></span></div>
 
   <div class="teams-grid">
     ${teamTable(teamA, playersA, match)}
@@ -168,9 +215,10 @@ export function generateAndPrintSumula(data: SumulaData): void {
   </div>
 
   ${subsHtml}
+  ${penHtml}
 
   <div class="result-label" style="margin-top:10px;">Resultado Final</div>
-  <div class="result-box">${teamA.name} &nbsp; ${match.scoreA} × ${match.scoreB} &nbsp; ${teamB.name}</div>
+  <div class="result-box">${finalResultBox}</div>
 
   <div class="sig-row">
     <div class="sig-item">Capitão (${teamA.name})</div>
