@@ -253,16 +253,16 @@ export default function DelegateDashboard() {
                             {myPlayers.length > 0 && (
                                 <div className="flex items-center justify-between mb-3">
                                     <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
-                                        Elenco — defina os titulares para a súmula
+                                        Elenco — Limite máximo de 7 titulares
                                     </p>
                                     <span className={`text-xs font-bold px-2 py-1 rounded-full ${
                                         myPlayers.filter(p => p.isStarter).length === 0 
                                             ? "bg-gray-100 text-gray-500"
-                                            : myPlayers.filter(p => p.isStarter).length > 5 
+                                            : myPlayers.filter(p => p.isStarter).length === 7 
                                                 ? "bg-green-100 text-green-700" 
                                                 : "bg-yellow-100 text-yellow-700"
                                     }`}>
-                                        {myPlayers.filter(p => p.isStarter).length} titular(es)
+                                        {myPlayers.filter(p => p.isStarter).length} / 7 titular(es)
                                     </span>
                                 </div>
                             )}
@@ -311,6 +311,13 @@ export default function DelegateDashboard() {
                                         </button>
                                         <button
                                             onClick={() => {
+                                                if (!player.isStarter) {
+                                                    const currentStarters = myPlayers.filter(p => p.isStarter).length;
+                                                    if (currentStarters >= 7) {
+                                                        alert("O limite oficial é de 7 titulares (6 na linha + 1 goleiro). Remova um titular atual antes de escalar mais alguém.");
+                                                        return;
+                                                    }
+                                                }
                                                 setConfig(prev => ({
                                                     ...prev,
                                                     players: (prev.players || []).map(p =>
