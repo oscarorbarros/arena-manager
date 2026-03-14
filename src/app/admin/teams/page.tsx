@@ -63,7 +63,8 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
           let skipped = 0;
 
           lines.forEach(line => {
-             if (line.toUpperCase().includes("FORMATO:")) return;
+             // Ignore headers and instructions
+             if (line.toUpperCase().includes("FORMATO") || line.toUpperCase().includes("NOMECHEFE") || line.toUpperCase().includes("COLE OS DADOS")) return;
              // Handle comma, semicolon, or tab separators (useful for pasting from Excel)
              const parts = line.split(/[,\t;]/).map(s => s.trim());
              // MUST have exactly 4 fields and email must contain @
@@ -130,7 +131,8 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
           let notFoundTeams = 0;
           
           lines.forEach(line => {
-              if (line.toUpperCase().includes("FORMATO:")) return; // ignora a linha de ajuda
+              // Ignore headers and instructions
+              if (line.toUpperCase().includes("FORMATO") || line.toUpperCase().includes("NOMETIME") || line.toUpperCase().includes("COLE OS DADOS")) return;
               // Handle comma, semicolon, or tab separators
               const parts = line.split(/[,\t;]/).map(s => s.trim());
               if (parts.length < 3) return;
