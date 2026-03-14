@@ -146,8 +146,10 @@ export default function PublicMatchPage() {
                                 const elapsedMinutes = Math.floor(timer / 60);
                                 let isOvertime = false;
                                 
-                                if (match.period === 'first_half' || match.period === 'second_half') isOvertime = elapsedMinutes >= matchDuration;
-                                else if (match.period === 'extra_first' || match.period === 'extra_second') isOvertime = elapsedMinutes >= extraTimeDuration;
+                                 if (match.period === 'first_half') isOvertime = elapsedMinutes >= matchDuration;
+                                 else if (match.period === 'second_half') isOvertime = elapsedMinutes >= (matchDuration * 2);
+                                 else if (match.period === 'extra_first') isOvertime = elapsedMinutes >= ((matchDuration * 2) + extraTimeDuration);
+                                 else if (match.period === 'extra_second') isOvertime = elapsedMinutes >= ((matchDuration * 2) + (extraTimeDuration * 2));
                                 
                                 const isLive = match.status === "live";
                                 

@@ -6,7 +6,7 @@ import { useTournament } from "@/lib/context";
 import { useAuth } from "@/lib/auth-context";
 import { 
   ArrowLeft, Play, Pause, Goal, AlertTriangle, ShieldAlert, FileText, 
-  CheckCircle, Clock, Hash, Trophy, StopCircle 
+  CheckCircle, Clock, Hash, Trophy, StopCircle, Download
 } from "lucide-react";
 import { MatchPeriod, isMatchInInjuryTime } from "@/lib/types";
 import { generateAndPrintSumula } from "@/lib/sumula-pdf";
@@ -26,7 +26,7 @@ export default function MatchInterface() {
   const [selectedCardType, setSelectedCardType] = useState<"yellow" | "red" | null>(null);
   const [sumulaText, setSumulaText] = useState("");
   const [woModalOpen, setWoModalOpen] = useState(false);
-  const [annulModal, setAnnulModal] = useState({ isOpen: false, type: "goal" as "goal" | "penalty", teamId: "" });
+  const [annulModal, setAnnulModal] = useState({ isOpen: false, type: "goal" as "goal" | "penalty" | "card", teamId: "" });
   const [annulReason, setAnnulReason] = useState("");
   const [subPlayerOut, setSubPlayerOut] = useState<string | null>(null);
   const [timer, setTimer] = useState(0);
@@ -198,6 +198,26 @@ export default function MatchInterface() {
       // Don't redirect immediately so they can download the sumula
   };
 
+  const exportMatchOffline = () => {
+      if (!match) return;
+      
+      const matchData = {
+          ...match,
+          exportedAt: new Date().toISOString(),
+          isOfflineBackup: true
+      };
+      
+      const blob = new Blob([JSON.stringify(matchData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ArenaManager_BKP_${teamA?.name}_vs_${teamB?.name}.json`.replace(/\s+/g, '_');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+  };
+
   
   const handleWO = (winnerId: string) => {
       if (!confirm("Confirmar W.O.? O placar será definido como 3x0 e a partida encerrada.")) return;
@@ -292,6 +312,38 @@ export default function MatchInterface() {
     setAnnulModal({ ...annulModal, isOpen: false });
     setAnnulReason("");
   };
+  const handleAnnulCard = () => {
+    if (!annulReason) { alert("Informe o motivo!"); return; }
+    
+    // Find the last card event for this team
+    const cardEvents = match.events.filter(e => e.teamId === annulModal.teamId && (e.type === "card_yellow" || e.type === "card_red"));
+    if (cardEvents.length === 0) {
+        alert("Não há cartões para anular neste time.");
+        return;
+    }
+    
+    const lastCard = cardEvents[cardEvents.length - 1];
+
+    // Remove the card event
+    const newEvents = match.events.filter(e => e.id !== lastCard.id);
+    
+    // Add the info event
+    const cardType = lastCard.type === "card_yellow" ? "AMARELO" : "VERMELHO";
+    const newInfoEvent = {
+        id: crypto.randomUUID(),
+        type: "info" as const,
+        teamId: annulModal.teamId,
+        playerId: lastCard.playerId,
+        observation: `CARTÃO ${cardType} ANULADO: ${annulReason}`,
+        matchTime: timer,
+        timestamp: Date.now()
+    };
+    
+    updateMatch(matchId, { events: [...newEvents, newInfoEvent] });
+    setAnnulModal({ ...annulModal, isOpen: false });
+    setAnnulReason("");
+  };
+
   const openGoalModal = (teamId: string) => {
       setSelectedTeamId(teamId);
       setActiveModal("goal");
@@ -397,7 +449,9 @@ export default function MatchInterface() {
                 </button>
         </div>
         <div className="flex gap-2">
-            
+            <button title="Baixar Backup Offline" onClick={exportMatchOffline} className="p-2 bg-gray-800 hover:bg-gray-700 rounded-full text-gray-400 hover:text-emerald-400 transition-colors">
+                <Download className="w-5 h-5" />
+            </button>
         </div>
       </header>
       
@@ -563,7 +617,8 @@ export default function MatchInterface() {
                   </div>
                 {match.status !== "finished" && match.status !== "scheduled" && (
                 <div className="grid grid-cols-2 gap-2 mt-2">
-                    <button onClick={() => setAnnulModal({ isOpen: true, type: "goal", teamId: match.teamAId })} className="col-span-2 py-2 text-xs font-black bg-red-600/20 text-red-400 border border-red-600/50 rounded-lg hover:bg-red-600/40 uppercase transition-all mb-1">ANULAR ÚLTIMO GOL</button>
+                    <button onClick={() => setAnnulModal({ isOpen: true, type: "goal", teamId: match.teamAId })} className="col-span-1 py-2 text-xs font-black bg-red-600/20 text-red-400 border border-red-600/50 rounded-lg hover:bg-red-600/40 uppercase transition-all mb-1">ANULAR GOL</button>
+                    <button onClick={() => setAnnulModal({ isOpen: true, type: "card", teamId: match.teamAId })} className="col-span-1 py-2 text-[10px] font-black bg-yellow-600/20 text-yellow-400 border border-yellow-600/50 rounded-lg hover:bg-yellow-600/40 uppercase transition-all mb-1 leading-tight">ANULAR<br/>CARTÃO</button>
                     <button onClick={() => openGoalModal(match.teamAId)} className="p-3 bg-blue-600 rounded-lg hover:bg-blue-500 flex justify-center text-white"><span className="text-2xl leading-none drop-shadow-md filter drop-shadow-lg">⚽</span></button>
                     <button onClick={() => openCardModal(match.teamAId)} className="p-3 bg-gray-800 rounded-lg hover:bg-gray-700 flex justify-center text-yellow-200 border border-gray-700"><AlertTriangle className="w-6 h-6" /></button>
                     <button onClick={() => { setSelectedTeamId(match.teamAId); setSubPlayerOut(null); setActiveModal("substitution"); }} className="col-span-2 py-2 text-xs font-black bg-cyan-600/20 text-cyan-300 border border-cyan-600/50 rounded-lg hover:bg-cyan-600/40 uppercase transition-all">🔄 Substituição</button>
@@ -596,7 +651,8 @@ export default function MatchInterface() {
                   </div>
                 {match.status !== "finished" && match.status !== "scheduled" && (
                 <div className="grid grid-cols-2 gap-2 mt-2">
-                    <button onClick={() => setAnnulModal({ isOpen: true, type: "goal", teamId: match.teamBId })} className="col-span-2 py-2 text-xs font-black bg-red-600/20 text-red-400 border border-red-600/50 rounded-lg hover:bg-red-600/40 uppercase transition-all mb-1">ANULAR ÚLTIMO GOL</button>
+                    <button onClick={() => setAnnulModal({ isOpen: true, type: "goal", teamId: match.teamBId })} className="col-span-1 py-2 text-xs font-black bg-red-600/20 text-red-400 border border-red-600/50 rounded-lg hover:bg-red-600/40 uppercase transition-all mb-1">ANULAR GOL</button>
+                    <button onClick={() => setAnnulModal({ isOpen: true, type: "card", teamId: match.teamBId })} className="col-span-1 py-2 text-[10px] font-black bg-yellow-600/20 text-yellow-400 border border-yellow-600/50 rounded-lg hover:bg-yellow-600/40 uppercase transition-all mb-1 leading-tight">ANULAR<br/>CARTÃO</button>
                     <button onClick={() => openGoalModal(match.teamBId)} className="p-3 bg-red-600 rounded-lg hover:bg-red-500 flex justify-center text-white"><span className="text-2xl leading-none drop-shadow-md filter drop-shadow-lg">⚽</span></button>
                     <button onClick={() => openCardModal(match.teamBId)} className="p-3 bg-gray-800 rounded-lg hover:bg-gray-700 flex justify-center text-yellow-200 border border-gray-700"><AlertTriangle className="w-6 h-6" /></button>
                     <button onClick={() => { setSelectedTeamId(match.teamBId); setSubPlayerOut(null); setActiveModal("substitution"); }} className="col-span-2 py-2 text-xs font-black bg-cyan-600/20 text-cyan-300 border border-cyan-600/50 rounded-lg hover:bg-cyan-600/40 uppercase transition-all">🔄 Substituição</button>
@@ -931,12 +987,12 @@ export default function MatchInterface() {
                       <ShieldAlert className="text-red-500" /> JUSTIFICAR ANULACAO
                   </h3>
                   <p className="text-gray-400 text-sm mb-4 text-center">
-                      Diga o motivo da anulacao do {annulModal.type === "goal" ? "gol" : "penalti"}:
+                      Diga o motivo da anulacao do {annulModal.type === "goal" ? "gol" : annulModal.type === "penalty" ? "penalti" : "cartão"}:
                   </p>
-                  <textarea value={annulReason} onChange={e => setAnnulReason(e.target.value)} className="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-white mb-4 h-32 focus:ring-2 focus:ring-red-500 outline-none resize-none" placeholder="Ex: Impedimento, falta, erro na cobranca..." />
+                  <textarea value={annulReason} onChange={e => setAnnulReason(e.target.value)} className="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-white mb-4 h-32 focus:ring-2 focus:ring-red-500 outline-none resize-none" placeholder="Ex: Erro de identificação, cancelamento do juiz..." />
                   <div className="flex gap-3">
                       <button onClick={() => { setAnnulModal({ ...annulModal, isOpen: false }); setAnnulReason(""); }} className="flex-1 py-3 text-gray-500 font-bold hover:text-white transition-colors">VOLTAR</button>
-                      <button onClick={annulModal.type === "goal" ? handleAnnulGoal : handleAnnulPenalty} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-xl shadow-lg shadow-red-900/20 transition-all uppercase">CONFIRMAR</button>
+                      <button onClick={annulModal.type === "goal" ? handleAnnulGoal : annulModal.type === "penalty" ? handleAnnulPenalty : handleAnnulCard} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-black rounded-xl shadow-lg shadow-red-900/20 transition-all uppercase">CONFIRMAR</button>
                   </div>
               </div>
           </div>

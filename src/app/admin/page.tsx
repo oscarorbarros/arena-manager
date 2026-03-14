@@ -48,6 +48,10 @@ export default function AdminDashboard() {
             <p className="text-black">Visao geral do torneio e atalhos rapidos</p>
         </div>
         <div className="flex gap-2">
+            <Link href="/admin/sync" className="flex items-center gap-2 px-4 py-2 bg-yellow-600/10 border border-yellow-600/30 text-yellow-600 hover:bg-yellow-600 hover:text-white rounded-lg text-sm font-bold transition-all shadow-sm">
+                <Database className="w-4 h-4" />
+                Sincronizar Offline
+            </Link>
             <Link href="/" target="_blank" className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white hover:bg-green-500 rounded-lg text-sm font-bold transition-colors shadow-lg">
                 <Newspaper className="w-4 h-4" />
                 Ver Site Público

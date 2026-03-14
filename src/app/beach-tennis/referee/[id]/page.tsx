@@ -4,7 +4,7 @@ import { useBT } from "@/lib/bt-context";
 import { useAuth } from "@/lib/auth-context";
 import { useParams, useRouter } from "next/navigation";
 import { CATEGORY_LABELS, PHASE_LABELS } from "@/lib/bt-types";
-import { Play, StopCircle, ArrowLeft } from "lucide-react";
+import { Play, StopCircle, ArrowLeft, Download } from "lucide-react";
 
 export default function BTRefereePage() {
   const { id } = useParams<{ id: string }>();
@@ -80,6 +80,21 @@ export default function BTRefereePage() {
   };
 
   // Finished overlay
+  
+  const exportMatchOffline = () => {
+    if (!match) return;
+    const matchData = { ...match, exportedAt: new Date().toISOString(), isOfflineBackup: true };
+    const blob = new Blob([JSON.stringify(matchData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ArenaManager_BKP_BT_${getPairName(match.pairAId, true)}_vs_${getPairName(match.pairBId, true)}.json`.replace(/[\s\/]+/g, '_');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   if (match.status === 'finished') {
     return (
       <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center gap-6 text-white p-6">
@@ -116,10 +131,13 @@ export default function BTRefereePage() {
           <div className="text-xs text-gray-500 uppercase tracking-wide">🎾 Beach Tennis — Arbitragem</div>
           <div className="text-xs text-orange-400 font-bold">{CATEGORY_LABELS[match.category]} · {PHASE_LABELS[match.phase]}</div>
         </div>
-        <div className="text-right">
+        <div className="text-right flex items-center justify-end gap-3">
           {match.status === 'in_progress' && (
             <div className="font-mono text-green-400 text-sm font-bold">{formatTime(timer)}</div>
           )}
+          <button title="Baixar Backup Offline" onClick={exportMatchOffline} className="p-1.5 bg-gray-800 hover:bg-gray-700 rounded-full text-gray-400 hover:text-emerald-400 transition-colors">
+            <Download className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
