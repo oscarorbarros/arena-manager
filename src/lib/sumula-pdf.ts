@@ -107,6 +107,48 @@ function teamTable(team: Team, players: Player[], match: Match): string {
     </table>`;
 }
 
+function matchTimeline(match: Match, allPlayers: Player[], teamA: Team, teamB: Team): string {
+  const significantEvents = match.events.filter(e => 
+    ["goal", "card_yellow", "card_red", "penalty_goal", "penalty_miss", "start", "end"].includes(e.type)
+  );
+  
+  if (significantEvents.length === 0) return "";
+
+  const rows = significantEvents.map(e => {
+    const player = e.playerId ? allPlayers.find(p => p.id === e.playerId) : null;
+    const team = e.teamId ? (e.teamId === teamA.id ? teamA : teamB) : null;
+    
+    let icon = "•";
+    let detail = "";
+    
+    if (e.type === "goal") { icon = "⚽"; detail = `GOL - ${player?.name || "Atleta"}`; }
+    else if (e.type === "card_yellow") { icon = "🟨"; detail = `CARTÃO AMARELO - ${player?.name || "Atleta"}`; }
+    else if (e.type === "card_red") { icon = "🟥"; detail = `CARTÃO VERMELHO - ${player?.name || "Atleta"}`; }
+    else if (e.type === "penalty_goal") { icon = "🎯"; detail = `PÊNALTI CONVERTIDO - ${player?.name || "Atleta"}`; }
+    else if (e.type === "penalty_miss") { icon = "❌"; detail = `PÊNALTI PERDIDO - ${player?.name || "Atleta"}`; }
+    else if (e.type === "start" || e.type === "end") { icon = "⏱️"; detail = e.observation || ""; }
+
+    const teamTag = team ? `<span style="font-size:8px;color:#666;margin-left:4px;">(${team.name})</span>` : "";
+
+    return `
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding:3px;text-align:center;width:40px;font-weight:bold;">${e.matchTime}'</td>
+        <td style="padding:3px;width:30px;text-align:center;">${icon}</td>
+        <td style="padding:3px;">${detail}${teamTag}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <div style="margin-top:14px;">
+      <div style="font-weight:bold;text-align:center;border:1px solid #000;padding:4px;background:#ddd;font-size:10px;">LINHA DO TEMPO DA PARTIDA</div>
+      <table style="width:100%;border-collapse:collapse;font-size:9px;border:1px solid #000;">
+        <tbody style="background:#fff;">${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
 function substitutionsList(match: Match, allPlayers: Player[]): string {
   const subEvents = match.events.filter(e => e.type === "substitution");
   if (subEvents.length === 0) return "";
@@ -168,6 +210,7 @@ export function generateAndPrintSumula(data: SumulaData): void {
   </div>
 
   ${subsHtml}
+  ${matchTimeline(match, allPlayers, teamA, teamB)}
 
   <div class="result-label" style="margin-top:10px;">Resultado Final</div>
   <div class="result-box">${teamA.name} &nbsp; ${match.scoreA} × ${match.scoreB} &nbsp; ${teamB.name}</div>
