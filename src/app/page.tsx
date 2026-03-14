@@ -65,6 +65,32 @@ export default function HomePage() {
 
     const liveMatches = config.matches.filter(m => m.status === "live" || m.status === "paused");
 
+    const getTopScorers = () => {
+        const goalCounts: Record<string, number> = {};
+        config.matches.forEach(m => {
+            m.events.forEach(e => {
+                if (e.type === 'goal' && e.playerId) {
+                    // avoid counting annulled goals and own goals if marked as negative value (not standard here, just in case)
+                    goalCounts[e.playerId] = (goalCounts[e.playerId] || 0) + 1;
+                }
+            });
+        });
+
+        if (!config.players) return [];
+
+        return config.players
+            .filter(p => goalCounts[p.id] > 0)
+            .map(p => ({
+                ...p,
+                goalsScored: goalCounts[p.id],
+                teamName: config.teams.find(t => t.id === p.teamId)?.name || "Sem Time"
+            }))
+            .sort((a, b) => b.goalsScored - a.goalsScored)
+            .slice(0, 10);
+    };
+
+    const topScorers = getTopScorers();
+
     const getMatchStatus = (m: any) => {
         switch (m.period) {
             case "half_time": return "INTERVALO";
@@ -278,7 +304,8 @@ export default function HomePage() {
                 </div>
 
                 {activeTab === "news" ? (
-                    <div className="space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2 space-y-6">
                         <div className="flex justify-between items-center border-l-4 border-emerald-500 pl-3">
                             <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-black">
                                 <Newspaper className="w-6 h-6" /> Últimas Notícias
@@ -348,6 +375,38 @@ export default function HomePage() {
                                 ))}
                             </div>
                         )}
+                        </div>
+                        <div className="lg:col-span-1 space-y-6">
+                            <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-black border-l-4 border-emerald-500 pl-3">
+                                <Trophy className="w-6 h-6 text-yellow-500" /> Artilharia
+                            </h2>
+                            <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 p-6 overfow-hidden border border-emerald-200/60">
+                                {topScorers.length === 0 ? (
+                                    <div className="text-center text-gray-500 py-6 text-sm">
+                                        Nenhum gol registrado no campeonato ainda.
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {topScorers.map((scorer, idx) => (
+                                            <div key={scorer.id} className="flex items-center justify-between border-b border-gray-100 last:border-0 pb-3 last:pb-0">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${idx === 0 ? 'bg-yellow-100 text-yellow-700' : idx === 1 ? 'bg-gray-100 text-gray-600' : idx === 2 ? 'bg-orange-100 text-orange-800' : 'bg-emerald-50 text-emerald-700'}`}>
+                                                        {idx + 1}º
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-black text-sm capitalize">{scorer.name.toLowerCase()}</div>
+                                                        <div className="text-xs text-gray-500 uppercase tracking-widest leading-none mt-1">{scorer.teamName}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="text-2xl font-black text-emerald-600 tracking-tighter">
+                                                    {scorer.goalsScored}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 ) : (
                     <div className="w-full">
