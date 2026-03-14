@@ -34,6 +34,42 @@ export function generateAndPrintTournamentReport(config: TournamentConfig): void
 
   const dateStr = new Date().toLocaleDateString("pt-BR");
   
+  const finalMatch = finishedMatches.find(m => m.round === "Final");
+  let championName = "";
+  if (finalMatch) {
+      if ((finalMatch.scoreA || 0) > (finalMatch.scoreB || 0)) {
+          championName = teams.find(t => t.id === finalMatch.teamAId)?.name || "Desconhecido";
+      } else if ((finalMatch.scoreB || 0) > (finalMatch.scoreA || 0)) {
+          championName = teams.find(t => t.id === finalMatch.teamBId)?.name || "Desconhecido";
+      } else {
+           if ((finalMatch.penaltiesA || 0) > (finalMatch.penaltiesB || 0)) {
+               championName = teams.find(t => t.id === finalMatch.teamAId)?.name || "Desconhecido";
+           } else if ((finalMatch.penaltiesB || 0) > (finalMatch.penaltiesA || 0)) {
+               championName = teams.find(t => t.id === finalMatch.teamBId)?.name || "Desconhecido";
+           } else {
+               championName = "Definido por W.O. ou Sorteio"; // rare fallback
+           }
+      }
+  }
+
+  const renderMatch = (m: any) => {
+      const teamA = teams.find(t => t.id === m.teamAId)?.name || "A";
+      const teamB = teams.find(t => t.id === m.teamBId)?.name || "B";
+      let penStatus = "";
+      if (m.penaltiesA !== undefined || m.penaltiesB !== undefined) {
+         penStatus = `<br/><span style="font-size:9px; color:#666;">(Pênaltis: ${m.penaltiesA || 0}x${m.penaltiesB || 0})</span>`;
+      }
+      return `<tr>
+        <td width="35%" style="text-align: right; font-weight: bold;">${teamA}</td>
+        <td width="15%" style="text-align: center; font-size: 14px; font-weight: bold; background: #f0fdf4;">${m.scoreA} x ${m.scoreB}${penStatus}</td>
+        <td width="35%" style="text-align: left; font-weight: bold;">${teamB}</td>
+        <td width="15%" style="text-align: center; color: #555; font-size: 10px;">${m.stage === "group" ? "Grupo " + m.group : m.round}</td>
+      </tr>`;
+  };
+
+  const groupMatches = finishedMatches.filter(m => m.stage === "group");
+  const knockoutMatches = finishedMatches.filter(m => m.stage === "knockout");
+  
   const html = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -115,6 +151,37 @@ export function generateAndPrintTournamentReport(config: TournamentConfig): void
     </table>
     ` : `<p style="font-size: 12px; color: #777;">Nenhum gol registrado com autoria identificada.</p>`}
   </div>
+
+  ${championName ? `
+  <div class="section" style="page-break-inside: avoid;">
+    <div style="text-align: center; border: 2px solid #059669; padding: 20px; border-radius: 8px; background: #e6fcf5;">
+       <div style="font-size: 16px; color: #059669; font-weight: bold; text-transform: uppercase;">🏆 Campeão</div>
+       <div style="font-size: 32px; font-weight: 900; color: #047857; margin-top: 10px; text-transform: uppercase;">${championName}</div>
+    </div>
+  </div>
+  ` : ''}
+
+  ${knockoutMatches.length > 0 ? `
+  <div class="section">
+    <div class="section-title">Resultados do Mata-Mata</div>
+    <table>
+      <tbody>
+        ${knockoutMatches.map(renderMatch).join('')}
+      </tbody>
+    </table>
+  </div>
+  ` : ''}
+
+  ${groupMatches.length > 0 ? `
+  <div class="section">
+    <div class="section-title">Resultados da Fase de Grupos</div>
+    <table>
+      <tbody>
+        ${groupMatches.map(renderMatch).join('')}
+      </tbody>
+    </table>
+  </div>
+  ` : ''}
 
   <div class="footer">
     Documento gerado pelo sistema Arena Manager.<br/>
