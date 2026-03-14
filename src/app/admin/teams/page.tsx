@@ -74,7 +74,23 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
                  return;
              }
              
-             const [chiefName, matricula, teamName] = parts;
+             let chiefName = "", matricula = "", teamName = "";
+
+             // Smart parsing to handle both formats
+             if (parts.length >= 5 && parts[1].toUpperCase().includes("CHEFE")) {
+                 // Format: Time, Funcao, Nome, Camisa, Matricula
+                 teamName = parts[0];
+                 chiefName = parts[2];
+                 matricula = parts[4];
+             } else if (parts.length >= 5 && parts[1].toUpperCase().includes("JOGADOR")) {
+                 // Skip jogadores in the teams tab safely
+                 return;
+             } else {
+                 // Default format: NomeChefe, MatriculaChefe, NomeTime
+                 chiefName = parts[0];
+                 matricula = parts[1];
+                 teamName = parts[2];
+             }
 
              // Simulate an email for internal Auth purposes
              const email = `chefe.${matricula}@ifmt.edu.br`;
@@ -137,7 +153,26 @@ const handleDelete = (e: React.MouseEvent, teamId: string) => {
               const parts = line.split(/[,\t;]/).map(s => s.trim());
               if (parts.length < 3) return;
 
-              const [teamName, playerName, numberStr, matricula] = parts;
+              let teamName = "", playerName = "", numberStr = "", matricula = "";
+
+              // Smart parsing for Both CSV formats
+              if (parts.length >= 5 && parts[1].toUpperCase().includes("JOGADOR")) {
+                  // Format: Time, Funcao, Nome, Camisa, Matricula
+                  teamName = parts[0];
+                  playerName = parts[2];
+                  numberStr = parts[3];
+                  matricula = parts[4];
+              } else if (parts.length >= 5 && parts[1].toUpperCase().includes("CHEFE")) {
+                  // Skip chefes da delegação on Athletes tab safely
+                  return;
+              } else {
+                  // Default Format: NomeTime, NomeAtleta, Numero, Matricula
+                  teamName = parts[0];
+                  playerName = parts[1];
+                  numberStr = parts[2];
+                  matricula = parts[3];
+              }
+
               const number = parseInt(numberStr) || 0;
               
               // Find Team Case-Insensitive
