@@ -7,10 +7,11 @@ import {
   Save, Wand2, Settings, AlertTriangle, Play, CheckCircle, 
   RefreshCw, Trophy, ArrowLeft, Eye, ChevronRight, ChevronLeft, 
   Users, Calendar, CheckSquare, XCircle, FileText, Info, Trash2, Plus, ArrowRight,
-  Clock, ListOrdered, Shield, ArrowUp, ArrowDown
+  Clock, ListOrdered, Shield, ArrowUp, ArrowDown, Printer
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { generateAndPrintTournamentReport } from "@/lib/tournament-report-pdf";
 
 const MOCK_TEAMS_LIST = [
   "Flamengo", "Vasco", "Botafogo", "Fluminense", "Corinthians", "Palmeiras", "São Paulo", "Santos",
@@ -402,7 +403,14 @@ function ActiveTournamentView({ config, setConfig, resetTournament, router }: an
                 <div className="flex gap-4 justify-center">
                     <Link href="/admin" className="px-6 py-3 bg-white shadow-premium border border-emerald-200/50 hover:bg-emerald-200/50 rounded-lg font-bold">Voltar</Link>
                     {config.status === "active" && <button onClick={handleEnd} className="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-lg font-bold">Encerrar</button>}
-                    {config.status === "finished" && <button onClick={() => setShowModal(true)} className="px-6 py-3 bg-green-600 text-white hover:bg-green-500 rounded-lg font-bold">Novo Torneio</button>}
+                    {config.status === "finished" && (
+                        <>
+                            <button onClick={() => generateAndPrintTournamentReport(config)} className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold flex flex-col items-center justify-center gap-1">
+                                <div><Printer className="w-4 h-4 inline-block mr-1"/>Imprimir Relatório</div>
+                            </button>
+                            <button onClick={() => setShowModal(true)} className="px-6 py-3 bg-green-600 text-white hover:bg-green-500 rounded-lg font-bold">Novo Torneio</button>
+                        </>
+                    )}
                 </div>
                 {showModal && (
                     <div className="fixed inset-0 bg-emerald-950/40 backdrop-blur-md flex items-center justify-center z-50">

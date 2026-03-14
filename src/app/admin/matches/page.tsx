@@ -6,6 +6,7 @@ import { Match, Team, Venue } from "@/lib/types";
 import { generateMatchReport } from "@/lib/news-engine";
 import { Plus, Trash2, Trophy, X, Zap, PlayCircle, FileText, Calendar, MapPin, Clock, RefreshCw } from "lucide-react";
 import { useAudit } from "@/lib/audit-context";
+import { generateAndPrintSumula } from "@/lib/sumula-pdf";
 
 export default function AdminMatchesPage() {
   const { config, setConfig, setNews, generateNextStage, updateMatch } = useTournament();
@@ -58,9 +59,33 @@ export default function AdminMatchesPage() {
 
   const handleDelete = (id: string) => {
       if (!confirm("Excluir partida?")) return;
-      const matchToRemove = config.matches.find(m => m.id === id);
       setConfig(prev => ({ ...prev, matches: prev.matches.filter(m => m.id !== id) }));
       logAction("delete_match", `Removeu a partida de ID: ${id}`);
+  };
+
+  const handleDownloadSumula = (match: Match) => {
+      const sport = config.sports.find(s => s.id === match.sportId);
+      const teamA = config.teams.find(t => t.id === match.teamAId);
+      const teamB = config.teams.find(t => t.id === match.teamBId);
+      
+      const playersA = config.players?.filter(p => p.teamId === teamA?.id) || [];
+      const playersB = config.players?.filter(p => p.teamId === teamB?.id) || [];
+
+      if (!teamA || !teamB) {
+          alert("Eror: Equipes não encontradas para gerar a súmula.");
+          return;
+      }
+
+      generateAndPrintSumula({
+          match,
+          teamA,
+          teamB,
+          playersA,
+          playersB,
+          tournamentName: config.name,
+          sportName: sport?.name || "Futebol",
+          closedBy: match.closedBy
+      });
   };
 
   // --- Venues Logic ---
@@ -245,7 +270,7 @@ export default function AdminMatchesPage() {
                         <Link href={`/referee/${match.id}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-green-500 text-white rounded-lg text-xs font-bold uppercase transition-all shadow-lg hover:shadow-green-500/20 tracking-wider order-first" title="Jogar / Arbitrar">
                             <PlayCircle className="w-4 h-4 fill-white/20" /> PLAY
                         </Link>
-                        <button onClick={() => alert("Súmula PDF em breve!")} className="p-2 text-black hover:text-black transition-colors" title="Baixar Súmula PDF">
+                        <button onClick={() => handleDownloadSumula(match)} className="p-2 text-black hover:text-black transition-colors" title="Baixar Súmula PDF">
                             <FileText className="w-5 h-5" />
                         </button>
                         {match.status !== "finished" && (
