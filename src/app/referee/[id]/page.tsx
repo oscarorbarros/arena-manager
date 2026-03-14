@@ -21,7 +21,7 @@ export default function MatchInterface() {
   const match = config.matches.find(m => m.id === matchId);
   
   // Local state for modals/forms
-  const [activeModal, setActiveModal] = useState<"goal" | "card" | "sumula" | "penalties" | "substitution" | null>(null);
+  const [activeModal, setActiveModal] = useState<"goal" | "card" | "sumula" | "penalties" | "substitution" | "penalty_scorer" | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [selectedCardType, setSelectedCardType] = useState<"yellow" | "red" | null>(null);
   const [sumulaText, setSumulaText] = useState("");
@@ -30,6 +30,7 @@ export default function MatchInterface() {
   const [annulReason, setAnnulReason] = useState("");
   const [subPlayerOut, setSubPlayerOut] = useState<string | null>(null);
   const [timer, setTimer] = useState(0);
+  const [penaltyTarget, setPenaltyTarget] = useState<{ teamId: string, scored: boolean } | null>(null);
 
   // Sync Sumula text
   useEffect(() => {
@@ -250,24 +251,35 @@ export default function MatchInterface() {
       if (!match.firstPenaltyTeamId) { alert('Escolha quem começa primeiro!'); return; }
       const expectedTeamId = shotsCount % 2 === 0 ? match.firstPenaltyTeamId : (match.firstPenaltyTeamId === teamA?.id ? teamB?.id : teamA?.id);
       if (teamId !== expectedTeamId) { alert('Vez do outro time!'); return; }
-      const isTeamA = teamId === teamA?.id;
-      const currentA = match.penaltiesA || 0;
-      const currentB = match.penaltiesB || 0;
       
-      let newScoreA = currentA;
-      let newScoreB = currentB;
+      setPenaltyTarget({ teamId, scored });
+      setSelectedTeamId(teamId);
+      setActiveModal("penalty_scorer");
+  };
+
+  const confirmPenaltyPlayer = (playerId?: string) => {
+      if (!penaltyTarget) return;
+      const { teamId, scored } = penaltyTarget;
+      const isTeamA = teamId === teamA?.id;
+      
+      let newScoreA = match.penaltiesA || 0;
+      let newScoreB = match.penaltiesB || 0;
 
       if (scored) {
           if (isTeamA) newScoreA++;
           else newScoreB++;
       }
       
+      const player = config.players?.find(p => p.id === playerId);
+      const playerName = player ? player.name : "Não identificado";
+      
       const eventType = scored ? "penalty_goal" : "penalty_miss";
-      const obs = `Pênalti ${scored ? "Convertido" : "Perdido"} (${isTeamA ? (teamA?.name || "Time A") : (teamB?.name || "Time B")})`;
+      const obs = `Pênalti ${scored ? "Convertido" : "Perdido"} por ${playerName} (${isTeamA ? (teamA?.name || "Time A") : (teamB?.name || "Time B")})`;
 
       addMatchEvent(matchId, { 
           type: eventType, 
           teamId, 
+          playerId,
           value: 0, 
           timestamp: Date.now(), 
           matchTime: timer, 
@@ -277,6 +289,9 @@ export default function MatchInterface() {
       if (scored) {
           updateMatch(matchId, { penaltiesA: newScoreA, penaltiesB: newScoreB });
       }
+      
+      setPenaltyTarget(null);
+      setActiveModal("penalties"); // Volta para a tela de penaltis principal
   };
 
     const handleAnnulGoal = () => {
@@ -797,7 +812,7 @@ export default function MatchInterface() {
                    <div className="p-4 bg-gray-950 flex justify-center border-t border-gray-800 rounded-b-xl">
                         <div className="flex gap-4 w-full px-4">
                             <button onClick={() => setAnnulModal({ isOpen: true, type: "penalty", teamId: "" })} className="flex-1 py-3 text-red-500 text-xs font-bold uppercase tracking-widest border border-red-500/20 rounded-lg hover:bg-red-500/10 transition-all flex items-center justify-center gap-2"><ShieldAlert className="w-4 h-4" /> Anular Cobranca</button>
-                            <button onClick={() => { finishMatch(); if(match.period === "penalties") updateMatch(matchId, { status: "finished" }); }} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold uppercase tracking-widest rounded-lg shadow-lg hover:shadow-red-900/30 flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02]">
+                            <button onClick={() => { setActiveModal(null); finishMatch(); if(match.period === "penalties") updateMatch(matchId, { status: "finished" }); }} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold uppercase tracking-widest rounded-lg shadow-lg hover:shadow-red-900/30 flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02]">
                                 <CheckCircle className="w-4 h-4" /> Encerrar Disputa
                             </button>
                         </div>
@@ -805,6 +820,24 @@ export default function MatchInterface() {
                </div>
            </div>
        )}
+
+{activeModal === "penalty_scorer" && (
+          <div className="fixed inset-0 bg-black/90 z-[60] flex items-end md:items-center justify-center p-4">
+              <div className="bg-gray-900 rounded-xl w-full max-w-sm border border-gray-800 animate-in slide-in-from-bottom-10 md:zoom-in-95">
+                  <div className="p-4 border-b border-gray-800"><h3 className="text-lg font-bold text-white flex items-center gap-2"><span className="text-2xl mr-2">{penaltyTarget?.scored ? '⚽ ' : '❌ '}</span> Quem foi o cobrador?</h3></div>
+                  <div className="p-4 grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto">
+                      {(selectedTeamId === teamA?.id ? playersA : playersB).map(player => (
+                          <button key={player.id} onClick={() => confirmPenaltyPlayer(player.id)} className="p-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-left flex items-center gap-3 border border-gray-700 hover:border-gray-500 transition-all">
+                              <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center font-bold text-sm text-gray-400 border border-gray-700">{player.number}</div>
+                              <div className="truncate text-sm font-medium">{player.name}</div>
+                          </button>
+                      ))}
+                      <button onClick={() => confirmPenaltyPlayer(undefined)} className="col-span-2 p-3 border border-dashed border-gray-700 text-gray-500 hover:bg-gray-800 rounded-lg text-sm">Não identificado</button>
+                  </div>
+                  <button onClick={() => { setActiveModal("penalties"); setPenaltyTarget(null); }} className="w-full p-4 text-center text-gray-500 hover:text-white border-t border-gray-800">Cancelar e Voltar</button>
+              </div>
+          </div>
+)}
        
 {activeModal === "goal" && (
           <div className="fixed inset-0 bg-black/80 z-50 flex items-end md:items-center justify-center p-4">
