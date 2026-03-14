@@ -349,20 +349,29 @@ export default function HomePage() {
                             )}
                         </div>
 
-                        {/* Sidebar: Top Scorers */}
+                        {/* Sidebar: Top Scorers (G1 Style) */}
                         <aside className="space-y-6">
-                            <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100 overflow-hidden border border-emerald-200/60 p-6">
-                                <h3 className="text-xl font-bold text-black mb-6 flex items-center gap-2 border-b border-emerald-100 pb-3">
-                                    <Trophy className="w-5 h-5 text-yellow-500" /> Ranking de Artilheiros
-                                </h3>
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-tighter flex items-center gap-2">
+                                        ARTILHARIA
+                                    </h3>
+                                </div>
                                 
-                                <div className="space-y-4">
+                                {/* Headers */}
+                                <div className="grid grid-cols-12 px-4 py-2 border-b border-gray-100 bg-gray-50/30 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                                    <div className="col-span-2 text-center">RANKING</div>
+                                    <div className="col-span-8 px-2">ATLETA</div>
+                                    <div className="col-span-2 text-center">GOLS</div>
+                                </div>
+
+                                <div className="divide-y divide-gray-100">
                                     {([...(config.players || [])]
                                         .filter(p => (p.stats?.goals || 0) > 0)
                                         .sort((a, b) => (b.stats?.goals || 0) - (a.stats?.goals || 0))
                                         .slice(0, 10))
                                         .length === 0 ? (
-                                            <p className="text-gray-400 text-sm text-center py-4 italic">Nenhum gol marcado ainda.</p>
+                                            <div className="p-8 text-center text-gray-400 text-xs italic">Nenhum gol registrado até o momento.</div>
                                         ) : (
                                             ([...(config.players || [])]
                                                 .filter(p => (p.stats?.goals || 0) > 0)
@@ -371,25 +380,51 @@ export default function HomePage() {
                                                 .map((player, idx) => {
                                                     const team = config.teams.find(t => t.id === player.teamId);
                                                     return (
-                                                        <div key={player.id} className="flex items-center justify-between group hover:bg-emerald-50/50 p-2 rounded-xl transition-colors">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shadow-sm ${
-                                                                    idx === 0 ? "bg-yellow-500 text-white" : 
-                                                                    idx === 1 ? "bg-gray-300 text-gray-700" : 
-                                                                    idx === 2 ? "bg-amber-700 text-white" : "bg-emerald-50 text-emerald-700"
-                                                                }`}>
-                                                                    {idx === 0 ? <Medal className="w-4 h-4" /> : idx + 1}
+                                                        <div key={player.id} className="grid grid-cols-12 items-center px-4 py-4 hover:bg-gray-50 transition-colors group cursor-default">
+                                                            {/* Rank Number */}
+                                                            <div className="col-span-2 flex justify-center">
+                                                                <span className="text-2xl font-light text-gray-400 tabular-nums">{idx + 1}</span>
+                                                            </div>
+                                                            
+                                                            {/* Athlete Info */}
+                                                            <div className="col-span-8 flex items-center gap-3 px-2">
+                                                                <div className="relative">
+                                                                    {/* Player Avatar */}
+                                                                    <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center shrink-0">
+                                                                        {player.photoUrl ? (
+                                                                            <img src={player.photoUrl} alt={player.name} className="w-full h-full object-cover" />
+                                                                        ) : (
+                                                                            <UserIcon className="w-6 h-6 text-gray-300" />
+                                                                        )}
+                                                                    </div>
+                                                                    {/* Team Logo Overlay (G1 Style) */}
+                                                                    <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden">
+                                                                        {team?.logo ? (
+                                                                            <span className="text-[10px] font-bold">{team.logo}</span>
+                                                                        ) : (
+                                                                            <Trophy className="w-3 h-3 text-gray-300" />
+                                                                        )}
+                                                                    </div>
                                                                 </div>
-                                                                <div>
-                                                                    <div className="text-sm font-bold text-gray-900 leading-tight">{player.name}</div>
-                                                                    <div className="text-[10px] text-emerald-600 font-medium uppercase tracking-wider">{team?.name}</div>
+                                                                <div className="min-w-0">
+                                                                    <div className="text-sm font-bold text-gray-900 truncate leading-tight group-hover:text-emerald-700 transition-colors">{player.name}</div>
+                                                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{player.position || "Atleta"}</div>
                                                                 </div>
                                                             </div>
-                                                            <div className="text-xl font-black text-emerald-600">{player.stats?.goals || 0}</div>
+
+                                                            {/* Goal Count */}
+                                                            <div className="col-span-2 flex justify-center">
+                                                                <span className="text-xl font-black text-gray-900 tabular-nums">{player.stats?.goals || 0}</span>
+                                                            </div>
                                                         </div>
                                                     );
                                                 })
                                         )}
+                                </div>
+                                <div className="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                                    <button onClick={() => {}} className="text-[10px] font-black text-emerald-700 uppercase tracking-widest hover:text-emerald-800 transition-colors">
+                                        VER ARTILHARIA COMPLETA
+                                    </button>
                                 </div>
                             </div>
                         </aside>
