@@ -844,7 +844,9 @@ export default function MatchInterface() {
               <div className="bg-gray-900 rounded-xl w-full max-w-sm border border-gray-800 animate-in slide-in-from-bottom-10 md:zoom-in-95">
                   <div className="p-4 border-b border-gray-800"><h3 className="text-lg font-bold text-white flex items-center gap-2"><span className="text-2xl mr-2">{penaltyTarget?.scored ? '⚽ ' : '❌ '}</span> Quem foi o cobrador?</h3></div>
                   <div className="p-4 grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto">
-                      {(selectedTeamId === teamA?.id ? playersA : playersB).map(player => (
+                      {(selectedTeamId === teamA?.id ? playersA : playersB)
+                          .filter(p => !getPlayerCardStatus(p.id).isExpelled)
+                          .map(player => (
                           <button key={player.id} onClick={() => confirmPenaltyPlayer(player.id)} className="p-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-left flex items-center gap-3 border border-gray-700 hover:border-gray-500 transition-all">
                               <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center font-bold text-sm text-gray-400 border border-gray-700">{player.number}</div>
                               <div className="truncate text-sm font-medium">{player.name}</div>
@@ -862,7 +864,9 @@ export default function MatchInterface() {
               <div className="bg-gray-900 rounded-xl w-full max-w-sm border border-gray-800 animate-in slide-in-from-bottom-10 md:zoom-in-95">
                   <div className="p-4 border-b border-gray-800"><h3 className="text-lg font-bold text-white flex items-center gap-2"><span className="text-2xl mr-2">⚽</span> Quem fez o gol?</h3></div>
                   <div className="p-4 grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto">
-                      {(selectedTeamId === teamA?.id ? playersA : playersB).map(player => (
+                      {(selectedTeamId === teamA?.id ? playersA : playersB)
+                          .filter(p => !getPlayerCardStatus(p.id).isExpelled)
+                          .map(player => (
                           <button key={player.id} onClick={() => handleGoal(player.id)} className="p-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-left flex items-center gap-3 border border-gray-700 hover:border-gray-500 transition-all">
                               <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center font-bold text-sm text-gray-400 border border-gray-700">{player.number}</div>
                               <div className="truncate text-sm font-medium">{player.name}</div>
@@ -891,6 +895,7 @@ export default function MatchInterface() {
                   </div>
                   <div className="p-4 grid grid-cols-2 gap-2 max-h-[55vh] overflow-y-auto">
                       {(selectedTeamId === teamA?.id ? playersA : playersB)
+                          .filter(p => !getPlayerCardStatus(p.id).isExpelled)
                           .filter(p => subPlayerOut ? p.id !== subPlayerOut : true)
                           .map(player => (
                           <button
