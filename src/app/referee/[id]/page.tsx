@@ -6,7 +6,7 @@ import { useTournament } from "@/lib/context";
 import { useAuth } from "@/lib/auth-context";
 import {
     ArrowLeft, Play, Pause, Goal, AlertTriangle, ShieldAlert, FileText,
-    CheckCircle, Clock, Hash, Trophy, StopCircle
+    CheckCircle, Clock, Hash, Trophy, StopCircle, X
 } from "lucide-react";
 import { MatchPeriod, isMatchInInjuryTime } from "@/lib/types";
 import { generateAndPrintSumula } from "@/lib/sumula-pdf";
@@ -29,6 +29,7 @@ export default function MatchInterface() {
     const [annulModal, setAnnulModal] = useState({ isOpen: false, type: "goal" as "goal" | "penalty", teamId: "" });
     const [annulReason, setAnnulReason] = useState("");
     const [subPlayerOut, setSubPlayerOut] = useState<string | null>(null);
+    const [penaltyCapture, setPenaltyCapture] = useState<{ teamId: string, scored: boolean } | null>(null);
     const [timer, setTimer] = useState(0);
 
     // Sync Sumula text
@@ -228,12 +229,11 @@ export default function MatchInterface() {
         router.push("/admin");
     };
     // Penalty Logic
-    const handlePenaltyScore = (teamId: string, scored: boolean) => {
+    const handlePenaltyScore = (teamId: string, scored: boolean, playerId?: string) => {
         const penaltyEvents = match.events.filter(e => e.type === 'penalty_goal' || e.type === 'penalty_miss');
         const shotsCount = penaltyEvents.length;
         if (!match.firstPenaltyTeamId) { alert('Escolha quem começa primeiro!'); return; }
-        const expectedTeamId = shotsCount % 2 === 0 ? match.firstPenaltyTeamId : (match.firstPenaltyTeamId === teamA?.id ? teamB?.id : teamA?.id);
-        if (teamId !== expectedTeamId) { alert('Vez do outro time!'); return; }
+        
         const isTeamA = teamId === teamA?.id;
         const currentA = match.penaltiesA || 0;
         const currentB = match.penaltiesB || 0;
@@ -246,12 +246,15 @@ export default function MatchInterface() {
             else newScoreB++;
         }
 
+        const player = config.players?.find(p => p.id === playerId);
         const eventType = scored ? "penalty_goal" : "penalty_miss";
-        const obs = `Pênalti ${scored ? "Convertido" : "Perdido"} (${isTeamA ? (teamA?.name || "Time A") : (teamB?.name || "Time B")})`;
+        const playerSuffix = player ? ` (${player.name})` : "";
+        const obs = `Pênalti ${scored ? "Convertido" : "Perdido"}${playerSuffix} - ${isTeamA ? (teamA?.name || "Time A") : (teamB?.name || "Time B")}`;
 
         addMatchEvent(matchId, {
             type: eventType,
             teamId,
+            playerId,
             value: 0,
             timestamp: Date.now(),
             matchTime: timer,
@@ -261,6 +264,7 @@ export default function MatchInterface() {
         if (scored) {
             updateMatch(matchId, { penaltiesA: newScoreA, penaltiesB: newScoreB });
         }
+        setPenaltyCapture(null);
     };
 
     const handleAnnulGoal = () => {
@@ -297,7 +301,7 @@ export default function MatchInterface() {
         setAnnulReason("");
     };
     const openGoalModal = (teamId: string) => {
-        if (match.status !== "live") {
+        if (match.status !== "live" && match.period !== "penalties") {
             alert("A partida precisa estar em andamento (AO VIVO) para registrar gols.");
             return;
         }
@@ -743,23 +747,46 @@ export default function MatchInterface() {
                             <div className="p-8 grid grid-cols-2 gap-8 bg-gray-900">
                                 <div className="space-y-3 p-4 bg-gray-950/30 rounded-xl border border-gray-800/50">
                                     <div className="text-center text-xs font-bold mb-2 text-gray-400 uppercase tracking-widest">{teamA?.name}</div>
-                                    <button disabled={!!match.firstPenaltyTeamId && (match.events.filter(e => e.type === 'penalty_goal' || e.type === 'penalty_miss').length % 2 === 0 ? match.firstPenaltyTeamId !== teamA?.id : match.firstPenaltyTeamId === teamA?.id)} onClick={() => handlePenaltyScore(match.teamAId, true)} className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 disabled:opacity-20 disabled:grayscale transition-all hover:from-green-500 hover:to-emerald-500 hover:shadow-lg hover:translate-y-[-2px] active:translate-y-[1px] transition-all rounded-xl text-white font-black text-lg shadow-green-900/20">
+                                    <button disabled={!!match.firstPenaltyTeamId && (match.events.filter(e => e.type === 'penalty_goal' || e.type === 'penalty_miss').length % 2 === 0 ? match.firstPenaltyTeamId !== teamA?.id : match.firstPenaltyTeamId === teamA?.id)} onClick={() => setPenaltyCapture({ teamId: match.teamAId, scored: true })} className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 disabled:opacity-20 disabled:grayscale transition-all hover:from-green-500 hover:to-emerald-500 hover:shadow-lg hover:translate-y-[-2px] active:translate-y-[1px] transition-all rounded-xl text-white font-black text-lg shadow-green-900/20">
                                         GOL
                                     </button>
-                                    <button disabled={!!match.firstPenaltyTeamId && (match.events.filter(e => e.type === 'penalty_goal' || e.type === 'penalty_miss').length % 2 === 0 ? match.firstPenaltyTeamId !== teamA?.id : match.firstPenaltyTeamId === teamA?.id)} onClick={() => handlePenaltyScore(match.teamAId, false)} className="w-full py-4 bg-gradient-to-r from-red-600 to-rose-600 disabled:opacity-20 disabled:grayscale transition-all hover:from-red-500 hover:to-rose-500 hover:shadow-lg hover:translate-y-[-2px] active:translate-y-[1px] transition-all rounded-xl text-white font-black text-lg shadow-red-900/20 opacity-90">
+                                    <button disabled={!!match.firstPenaltyTeamId && (match.events.filter(e => e.type === 'penalty_goal' || e.type === 'penalty_miss').length % 2 === 0 ? match.firstPenaltyTeamId !== teamA?.id : match.firstPenaltyTeamId === teamA?.id)} onClick={() => setPenaltyCapture({ teamId: match.teamAId, scored: false })} className="w-full py-4 bg-gradient-to-r from-red-600 to-rose-600 disabled:opacity-20 disabled:grayscale transition-all hover:from-red-500 hover:to-rose-500 hover:shadow-lg hover:translate-y-[-2px] active:translate-y-[1px] transition-all rounded-xl text-white font-black text-lg shadow-red-900/20 opacity-90">
                                         PERDEU (X)
                                     </button>
                                 </div>
                                 <div className="space-y-3 p-4 bg-gray-950/30 rounded-xl border border-gray-800/50">
                                     <div className="text-center text-xs font-bold mb-2 text-gray-400 uppercase tracking-widest">{teamB?.name}</div>
-                                    <button disabled={!!match.firstPenaltyTeamId && (match.events.filter(e => e.type === 'penalty_goal' || e.type === 'penalty_miss').length % 2 === 0 ? match.firstPenaltyTeamId !== teamB?.id : match.firstPenaltyTeamId === teamB?.id)} onClick={() => handlePenaltyScore(match.teamBId, true)} className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 disabled:opacity-20 disabled:grayscale transition-all hover:from-green-500 hover:to-emerald-500 hover:shadow-lg hover:translate-y-[-2px] active:translate-y-[1px] transition-all rounded-xl text-white font-black text-lg shadow-green-900/20">
+                                    <button disabled={!!match.firstPenaltyTeamId && (match.events.filter(e => e.type === 'penalty_goal' || e.type === 'penalty_miss').length % 2 === 0 ? match.firstPenaltyTeamId !== teamB?.id : match.firstPenaltyTeamId === teamB?.id)} onClick={() => setPenaltyCapture({ teamId: match.teamBId, scored: true })} className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 disabled:opacity-20 disabled:grayscale transition-all hover:from-green-500 hover:to-emerald-500 hover:shadow-lg hover:translate-y-[-2px] active:translate-y-[1px] transition-all rounded-xl text-white font-black text-lg shadow-green-900/20">
                                         GOL
                                     </button>
-                                    <button disabled={!!match.firstPenaltyTeamId && (match.events.filter(e => e.type === 'penalty_goal' || e.type === 'penalty_miss').length % 2 === 0 ? match.firstPenaltyTeamId !== teamB?.id : match.firstPenaltyTeamId === teamB?.id)} onClick={() => handlePenaltyScore(match.teamBId, false)} className="w-full py-4 bg-gradient-to-r from-red-600 to-rose-600 disabled:opacity-20 disabled:grayscale transition-all hover:from-red-500 hover:to-rose-500 hover:shadow-lg hover:translate-y-[-2px] active:translate-y-[1px] transition-all rounded-xl text-white font-black text-lg shadow-red-900/20 opacity-90">
+                                    <button disabled={!!match.firstPenaltyTeamId && (match.events.filter(e => e.type === 'penalty_goal' || e.type === 'penalty_miss').length % 2 === 0 ? match.firstPenaltyTeamId !== teamB?.id : match.firstPenaltyTeamId === teamB?.id)} onClick={() => setPenaltyCapture({ teamId: match.teamBId, scored: false })} className="w-full py-4 bg-gradient-to-r from-red-600 to-rose-600 disabled:opacity-20 disabled:grayscale transition-all hover:from-red-500 hover:to-rose-500 hover:shadow-lg hover:translate-y-[-2px] active:translate-y-[1px] transition-all rounded-xl text-white font-black text-lg shadow-red-900/20 opacity-90">
                                         PERDEU (X)
                                     </button>
                                 </div>
                             </div>
+
+                            {/* Penalty Atleta Selection */}
+                            {penaltyCapture && (
+                                <div className="fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-4">
+                                    <div className="bg-gray-900 rounded-2xl w-full max-w-sm border-2 border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                                        <div className="p-5 border-b border-gray-800 flex justify-between items-center">
+                                            <h3 className="text-lg font-bold text-white uppercase tracking-tighter">
+                                                {penaltyCapture.scored ? "⚽ Quem marcou?" : "❌ Quem perdeu?"}
+                                            </h3>
+                                            <button onClick={() => setPenaltyCapture(null)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>
+                                        </div>
+                                        <div className="p-4 grid grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
+                                            {(penaltyCapture.teamId === teamA?.id ? playersA : playersB).map(player => (
+                                                <button key={player.id} onClick={() => handlePenaltyScore(penaltyCapture.teamId, penaltyCapture.scored, player.id)} className="p-3 bg-gray-800 hover:bg-emerald-900/30 rounded-xl text-left flex items-center gap-3 border border-gray-700 hover:border-emerald-500/50 transition-all group">
+                                                    <div className="w-8 h-8 rounded-lg bg-gray-950 flex items-center justify-center font-bold text-sm text-emerald-500 border border-gray-800 group-hover:border-emerald-500/30">{player.number}</div>
+                                                    <div className="truncate text-sm font-bold text-gray-200 group-hover:text-emerald-400">{player.name}</div>
+                                                </button>
+                                            ))}
+                                            <button onClick={() => handlePenaltyScore(penaltyCapture.teamId, penaltyCapture.scored, undefined)} className="col-span-2 p-3 border-2 border-dashed border-gray-800 text-gray-600 hover:bg-gray-800/50 hover:text-gray-400 rounded-xl text-xs font-bold uppercase transition-all">Não identificado</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="p-4 bg-gray-950 flex justify-center border-t border-gray-800 rounded-b-xl">
                                 <div className="flex gap-4 w-full px-4">
